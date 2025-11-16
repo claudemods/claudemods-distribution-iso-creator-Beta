@@ -148,22 +148,14 @@ private:
 
     
 int execute_command(const std::string& cmd) {
-    // Set cyan color for all command output
-    std::cout << COLOR_CYAN;
-    std::cout.flush();
-    
-    // Execute with sudo - output will automatically be in cyan
-    int status = system(("sudo " + cmd).c_str());
-    
-    // Reset color
-    std::cout << COLOR_RESET;
-    std::cout.flush();
-    
-    if (status != 0) {
-        std::cerr << COLOR_RED << "Error executing command!" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN;
+        int status = system(cmd.c_str());
+        std::cout << COLOR_RESET;
+        if (status != 0) {
+            std::cerr << COLOR_RED << "Error executing command!" << COLOR_RESET << std::endl;
+        }
+        return status;
     }
-    return status;
-}
 
     bool create_directory(const std::string& path) {
         return system(("sudo mkdir -p " + path).c_str()) == 0;
