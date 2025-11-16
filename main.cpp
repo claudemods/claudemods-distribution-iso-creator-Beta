@@ -146,24 +146,24 @@ private:
         return input;
     }
 
-    int execute_command(const std::string& cmd) {
-        // Set cyan color for all command output
-        std::cout << COLOR_CYAN;
-        std::cout.flush();
-        
-        // Execute with sudo - output will automatically be in cyan
-        std::string full_cmd = "sudo " + cmd;
-        int status = system(full_cmd.c_str());
-        
-        // Reset color
-        std::cout << COLOR_RESET;
-        std::cout.flush();
-        
-        if (status != 0) {
-            std::cerr << COLOR_RED << "Error executing command!" << COLOR_RESET << std::endl;
-        }
-        return status;
+    
+int execute_command(const std::string& cmd) {
+    // Set cyan color for all command output
+    std::cout << COLOR_CYAN;
+    std::cout.flush();
+    
+    // Execute with sudo - output will automatically be in cyan
+    int status = system(("sudo " + cmd).c_str());
+    
+    // Reset color
+    std::cout << COLOR_RESET;
+    std::cout.flush();
+    
+    if (status != 0) {
+        std::cerr << COLOR_RED << "Error executing command!" << COLOR_RESET << std::endl;
     }
+    return status;
+}
 
     bool create_directory(const std::string& path) {
         return system(("sudo mkdir -p " + path).c_str()) == 0;
@@ -229,12 +229,18 @@ private:
     }
 
     void mount_system_dirs() {
-        execute_command("mount --bind /dev " + target_folder + "/dev");
-        execute_command("mount --bind /dev/pts " + target_folder + "/dev/pts");
-        execute_command("mount --bind /proc " + target_folder + "/proc");
-        execute_command("mount --bind /sys " + target_folder + "/sys");
-        execute_command("mount --bind /run " + target_folder + "/run");
-    }
+    execute_command("mkdir -p " + target_folder + "/dev");
+    execute_command("mkdir -p " + target_folder + "/dev/pts");
+    execute_command("mkdir -p " + target_folder + "/proc");
+    execute_command("mkdir -p " + target_folder + "/sys");
+    execute_command("mkdir -p " + target_folder + "/run");
+    
+    execute_command("mount --bind /dev " + target_folder + "/dev");
+    execute_command("mount --bind /dev/pts " + target_folder + "/dev/pts");
+    execute_command("mount --bind /proc " + target_folder + "/proc");
+    execute_command("mount --bind /sys " + target_folder + "/sys");
+    execute_command("mount --bind /run " + target_folder + "/run");
+}
 
     void unmount_system_dirs() {
         execute_command("umount " + target_folder + "/dev/pts");
@@ -314,7 +320,7 @@ private:
         execute_command("unzip -o " + target_folder + "/spitfire-minimal.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("cp -r " + currentDir + "/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d");
-        execute_command("cp -r " + currentDir + "/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt");
+        execute_command("cp " + currentDir + "/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt/tweaksspitfire.sh");
         execute_command("chmod +x " + target_folder + "/opt/tweaksspitfire.sh");
         execute_command("chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
         execute_command("cp -r " + currentDir + "/spitfire-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/");
@@ -399,7 +405,7 @@ private:
         execute_command("unzip -o " + target_folder + "/spitfire-full.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("cp -r " + currentDir + "/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d");
-        execute_command("cp -r " + currentDir + "/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt");
+        execute_command("cp " + currentDir + "/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt/tweaksspitfire.sh");
         execute_command("chmod +x " + target_folder + "/opt/tweaksspitfire.sh");
         execute_command("chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
         execute_command("cp -r " + currentDir + "/spitfire-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/");
@@ -484,7 +490,7 @@ private:
         execute_command("unzip -o " + target_folder + "/spitfire-minimal.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("cp -r " + currentDir + "/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d");
-        execute_command("cp -r " + currentDir + "/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt");
+        execute_command("cp " + currentDir + "/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt/tweaksspitfire.sh");
         execute_command("chmod +x " + target_folder + "/opt/tweaksspitfire.sh");
         execute_command("chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
         execute_command("cp -r " + currentDir + "/spitfire-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/");
@@ -569,7 +575,7 @@ private:
         execute_command("unzip -o " + target_folder + "/spitfire-full.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("cp -r " + currentDir + "/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d");
-        execute_command("cp -r " + currentDir + "/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt");
+        execute_command("cp " + currentDir + "/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt/tweaksspitfire.sh");
         execute_command("chmod +x " + target_folder + "/opt/tweaksspitfire.sh");
         execute_command("chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
         execute_command("cp -r " + currentDir + "/spitfire-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/");
@@ -654,7 +660,7 @@ private:
         execute_command("unzip -o " + target_folder + "/apex-minimal.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("cp -r " + currentDir + "/apex-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d");
-        execute_command("cp -r " + currentDir + "/apex-ckge-minimal/tweaksapex.sh " + target_folder + "/opt");
+        execute_command("cp " + currentDir + "/apex-ckge-minimal/tweaksapex.sh " + target_folder + "/opt/tweaksapex.sh");
         execute_command("chmod +x " + target_folder + "/opt/tweaksapex.sh");
         execute_command("chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksapex.sh " + new_username + "'\"");
         execute_command("cp -r " + currentDir + "/apex-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/");
@@ -739,7 +745,7 @@ private:
         execute_command("unzip -o " + target_folder + "/apex-full.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("cp -r " + currentDir + "/apex-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d");
-        execute_command("cp -r " + currentDir + "/apex-ckge-minimal/tweaksapex.sh " + target_folder + "/opt");
+        execute_command("cp " + currentDir + "/apex-ckge-minimal/tweaksapex.sh " + target_folder + "/opt/tweaksapex.sh");
         execute_command("chmod +x " + target_folder + "/opt/tweaksapex.sh");
         execute_command("chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksapex.sh " + new_username + "'\"");
         execute_command("cp -r " + currentDir + "/apex-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/");
@@ -824,7 +830,7 @@ private:
         execute_command("unzip -o " + target_folder + "/apex-minimal.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("cp -r " + currentDir + "/apex-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d");
-        execute_command("cp -r " + currentDir + "/apex-ckge-minimal/tweaksapex.sh " + target_folder + "/opt");
+        execute_command("cp " + currentDir + "/apex-ckge-minimal/tweaksapex.sh " + target_folder + "/opt/tweaksapex.sh");
         execute_command("chmod +x " + target_folder + "/opt/tweaksapex.sh");
         execute_command("chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksapex.sh " + new_username + "'\"");
         execute_command("cp -r " + currentDir + "/apex-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/");
@@ -909,7 +915,7 @@ private:
         execute_command("unzip -o " + target_folder + "/apex-full.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("cp -r " + currentDir + "/apex-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d");
-        execute_command("cp -r " + currentDir + "/apex-ckge-minimal/tweaksapex.sh " + target_folder + "/opt");
+        execute_command("cp " + currentDir + "/apex-ckge-minimal/tweaksapex.sh " + target_folder + "/opt/tweaksapex.sh");
         execute_command("chmod +x " + target_folder + "/opt/tweaksapex.sh");
         execute_command("chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksapex.sh " + new_username + "'\"");
         execute_command("cp -r " + currentDir + "/apex-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/");
