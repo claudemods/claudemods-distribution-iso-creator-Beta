@@ -23,7 +23,7 @@ const std::string COLOR_ORANGE = "\033[38;5;208m";
 const std::string COLOR_PURPLE = "\033[38;5;93m";
 const std::string COLOR_RESET = "\033[0m";
 
-class ClaudemodsInstaller {
+class ClaudemodsCreateer {
 private:
     std::string target_folder;
     std::string new_username;
@@ -62,7 +62,7 @@ private:
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << COLOR_CYAN << "claudemods distribution installer Beta DevBranch v1.01 15-11-2025" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "claudemods distribution iso creator Beta v1.0 16-11-2025" << COLOR_RESET << std::endl;
         std::cout << COLOR_CYAN << "Supports Ext4 And Btrfs filesystems" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
@@ -242,7 +242,7 @@ private:
 
     // SPITFIRE CKGE MINIMAL - EXACT COMMANDS
     void install_spitfire_ckge_minimal() {
-        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Minimal..." << COLOR_RESET << std::endl;
+        std::cout << COLOR_ORANGE << "Createing Spitfire CKGE Minimal..." << COLOR_RESET << std::endl;
         get_user_input();
         std::cout << COLOR_CYAN << "Starting Spitfire CKGE Minimal installation in: " << target_folder << COLOR_RESET << std::endl;
 
@@ -338,7 +338,7 @@ private:
 
     // SPITFIRE CKGE FULL - DIFFERENT COMMANDS
     void install_spitfire_ckge_full() {
-        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Full..." << COLOR_RESET << std::endl;
+        std::cout << COLOR_ORANGE << "Createing Spitfire CKGE Full..." << COLOR_RESET << std::endl;
         get_user_input();
         std::cout << COLOR_CYAN << "Starting Spitfire CKGE Full installation in: " << target_folder << COLOR_RESET << std::endl;
 
@@ -434,7 +434,7 @@ private:
 
     // SPITFIRE CKGE MINIMAL DEV - DIFFERENT COMMANDS
     void install_spitfire_ckge_minimal_dev() {
-        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Minimal Dev..." << COLOR_RESET << std::endl;
+        std::cout << COLOR_ORANGE << "Createing Spitfire CKGE Minimal Dev..." << COLOR_RESET << std::endl;
         get_user_input();
         std::cout << COLOR_CYAN << "Starting Spitfire CKGE Minimal Dev installation in: " << target_folder << COLOR_RESET << std::endl;
 
@@ -530,7 +530,7 @@ private:
 
     // SPITFIRE CKGE FULL DEV - DIFFERENT COMMANDS
     void install_spitfire_ckge_full_dev() {
-        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Full Dev..." << COLOR_RESET << std::endl;
+        std::cout << COLOR_ORANGE << "Createing Spitfire CKGE Full Dev..." << COLOR_RESET << std::endl;
         get_user_input();
         std::cout << COLOR_CYAN << "Starting Spitfire CKGE Full Dev installation in: " << target_folder << COLOR_RESET << std::endl;
 
@@ -626,7 +626,7 @@ private:
 
     // APEX CKGE MINIMAL - COMPLETELY DIFFERENT COMMANDS
     void install_apex_ckge_minimal() {
-        std::cout << COLOR_PURPLE << "Installing Apex CKGE Minimal..." << COLOR_RESET << std::endl;
+        std::cout << COLOR_PURPLE << "Createing Apex CKGE Minimal..." << COLOR_RESET << std::endl;
         get_user_input();
         std::cout << COLOR_CYAN << "Starting Apex CKGE Minimal installation in: " << target_folder << COLOR_RESET << std::endl;
 
@@ -724,7 +724,7 @@ private:
 
     // APEX CKGE FULL - DIFFERENT COMMANDS
     void install_apex_ckge_full() {
-        std::cout << COLOR_PURPLE << "Installing Apex CKGE Full..." << COLOR_RESET << std::endl;
+        std::cout << COLOR_PURPLE << "Createing Apex CKGE Full..." << COLOR_RESET << std::endl;
         get_user_input();
         std::cout << COLOR_CYAN << "Starting Apex CKGE Full installation in: " << target_folder << COLOR_RESET << std::endl;
 
@@ -822,7 +822,7 @@ private:
 
     // APEX CKGE MINIMAL DEV - DIFFERENT COMMANDS
     void install_apex_ckge_minimal_dev() {
-        std::cout << COLOR_PURPLE << "Installing Apex CKGE Minimal Dev..." << COLOR_RESET << std::endl;
+        std::cout << COLOR_PURPLE << "Createing Apex CKGE Minimal Dev..." << COLOR_RESET << std::endl;
         get_user_input();
         std::cout << COLOR_CYAN << "Starting Apex CKGE Minimal Dev installation in: " << target_folder << COLOR_RESET << std::endl;
 
@@ -920,7 +920,7 @@ private:
 
     // APEX CKGE FULL DEV - DIFFERENT COMMANDS
     void install_apex_ckge_full_dev() {
-        std::cout << COLOR_PURPLE << "Installing Apex CKGE Full Dev..." << COLOR_RESET << std::endl;
+        std::cout << COLOR_PURPLE << "Createing Apex CKGE Full Dev..." << COLOR_RESET << std::endl;
         get_user_input();
         std::cout << COLOR_CYAN << "Starting Apex CKGE Full Dev installation in: " << target_folder << COLOR_RESET << std::endl;
 
@@ -1018,19 +1018,19 @@ private:
 
     void show_main_menu() {
         std::vector<std::string> main_options = {
-            "Install Spitfire CKGE Minimal",
-            "Install Spitfire CKGE Full", 
-            "Install Spitfire CKGE Minimal Dev",
-            "Install Spitfire CKGE Full Dev",
-            "Install Apex CKGE Minimal",
-            "Install Apex CKGE Full",
-            "Install Apex CKGE Minimal Dev", 
-            "Install Apex CKGE Full Dev",
+            "Create Spitfire CKGE Minimal Iso",
+            "Create Spitfire CKGE Full Iso", 
+            "Create Spitfire CKGE Minimal Dev Iso",
+            "Create Spitfire CKGE Full Dev Iso",
+            "Create Apex CKGE Minimal Iso",
+            "Create Apex CKGE Full Iso",
+            "Create Apex CKGE Minimal Dev Iso", 
+            "Create Apex CKGE Full Dev Iso",
             "Exit"
         };
 
         while (true) {
-            int choice = show_menu(main_options, "claudemods Distribution Installer");
+            int choice = show_menu(main_options, "claudemods Distribution Createer");
 
             switch(choice) {
                 case 0:
@@ -1081,7 +1081,7 @@ public:
 };
 
 int main() {
-    ClaudemodsInstaller installer;
+    ClaudemodsCreateer installer;
     installer.run();
     return 0;
 }
