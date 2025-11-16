@@ -234,6 +234,7 @@ int execute_command(const std::string& cmd) {
     execute_command("mkdir -p " + target_folder + "/proc");
     execute_command("mkdir -p " + target_folder + "/sys");
     execute_command("mkdir -p " + target_folder + "/run");
+    execute_command("mkdir -p " + target_folder + "/etc");
     
     execute_command("mount --bind /dev " + target_folder + "/dev");
     execute_command("mount --bind /dev/pts " + target_folder + "/dev/pts");
