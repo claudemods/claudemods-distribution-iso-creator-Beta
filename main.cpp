@@ -151,51 +151,11 @@ private:
         return input;
     }
 
-
     int execute_command(const std::string& cmd) {
-        FILE* pipe = popen((cmd + " 2>&1").c_str(), "r");
-        if (!pipe) {
-            std::cerr << COLOR_RED << "Failed to execute command!" << COLOR_RESET << std::endl;
-            return -1;
-        }
-
-        // Set the stream to non-blocking mode for more responsive output
-        int fd = fileno(pipe);
-        int flags = fcntl(fd, F_GETFL, 0);
-        fcntl(fd, F_SETFL, flags | O_NONBLOCK);
-
-        char buffer;
-        std::string line;
-
-        while (true) {
-            ssize_t bytes_read = read(fd, &buffer, 1);
-
-            if (bytes_read > 0) {
-                // Immediately output each character in cyan
-                std::cout << COLOR_CYAN << buffer << std::flush;
-
-                // If we hit a newline, reset the line
-                if (buffer == '\n') {
-                    line.clear();
-                } else {
-                    line += buffer;
-                }
-            }
-            else if (bytes_read == 0) {
-                // End of stream
-                break;
-            }
-            // If bytes_read == -1 and errno == EAGAIN, just means no data available yet
-            // We'll continue the loop
-
-            // Small delay to prevent CPU spinning but maintain responsiveness
-            usleep(1000); // 1ms delay
-        }
-
-        int status = pclose(pipe);
-        if (status != 0) {
-            std::cerr << COLOR_RED << "Error executing command!" << COLOR_RESET << std::endl;
-        }
+        // Set color and immediately execute
+        std::cout << COLOR_CYAN << std::flush;
+        int status = system(cmd.c_str());
+        std::cout << COLOR_RESET << std::flush;
         return status;
     }
 
@@ -203,18 +163,51 @@ private:
         return system(("sudo mkdir -p " + path).c_str()) == 0;
     }
 
-    void get_user_input() {
-        // Get base path and create claudemods-distro folder
+    // NEW: Function to display current settings
+    void display_current_settings() {
+        std::cout << COLOR_YELLOW << "\nCurrent Settings:" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installation Path: " << COLOR_RESET 
+                  << (target_folder.empty() ? "[Not Set]" : target_folder) << std::endl;
+        std::cout << COLOR_CYAN << "Username: " << COLOR_RESET 
+                  << (new_username.empty() ? "[Not Set]" : new_username) << std::endl;
+        std::cout << COLOR_CYAN << "Root Password: " << COLOR_RESET 
+                  << (root_password.empty() ? "[Not Set]" : "********") << std::endl;
+        std::cout << COLOR_CYAN << "User Password: " << COLOR_RESET 
+                  << (user_password.empty() ? "[Not Set]" : "********") << std::endl;
+        std::cout << COLOR_CYAN << "Timezone: " << COLOR_RESET 
+                  << (timezone.empty() ? "[Not Set]" : timezone) << std::endl;
+        std::cout << COLOR_CYAN << "Keyboard Layout: " << COLOR_RESET 
+                  << (keyboard_layout.empty() ? "[Not Set]" : keyboard_layout) << std::endl;
+        std::cout << std::endl;
+    }
+
+    // NEW: Set installation path
+    void set_installation_path() {
         std::string base_path = get_input("Enter base installation path (e.g., /mnt): ");
         target_folder = base_path + "/claudemods-distro";
+        std::cout << COLOR_GREEN << "Installation path set to: " << target_folder << COLOR_RESET << std::endl;
+    }
 
-        std::cout << COLOR_CYAN << "Installation folder: " << target_folder << COLOR_RESET << std::endl;
-
+    // NEW: Set username
+    void set_username() {
         new_username = get_input("Enter username: ");
-        root_password = get_input("Enter root password: ");
-        user_password = get_input("Enter user password: ");
+        std::cout << COLOR_GREEN << "Username set to: " << new_username << COLOR_RESET << std::endl;
+    }
 
-        // Get timezone and keyboard layout
+    // NEW: Set root password
+    void set_root_password() {
+        root_password = get_input("Enter root password: ");
+        std::cout << COLOR_GREEN << "Root password set." << COLOR_RESET << std::endl;
+    }
+
+    // NEW: Set user password
+    void set_user_password() {
+        user_password = get_input("Enter user password: ");
+        std::cout << COLOR_GREEN << "User password set." << COLOR_RESET << std::endl;
+    }
+
+    // NEW: Set timezone
+    void set_timezone() {
         std::vector<std::string> timezone_options = {
             "America/New_York (US English)",
             "Europe/London (UK English)",
@@ -237,7 +230,11 @@ private:
             case 6: timezone = "Asia/Tokyo"; break;
             case 7: timezone = get_input("Enter timezone (e.g., Europe/Berlin): "); break;
         }
+        std::cout << COLOR_GREEN << "Timezone set to: " << timezone << COLOR_RESET << std::endl;
+    }
 
+    // NEW: Set keyboard layout
+    void set_keyboard_layout() {
         std::vector<std::string> keyboard_options = {
             "us (US English)",
             "uk (UK English)",
@@ -260,6 +257,36 @@ private:
             case 6: keyboard_layout = "jp"; break;
             case 7: keyboard_layout = get_input("Enter keyboard layout (e.g., br, ru, pt): "); break;
         }
+        std::cout << COLOR_GREEN << "Keyboard layout set to: " << keyboard_layout << COLOR_RESET << std::endl;
+    }
+
+    // NEW: Check if all required settings are configured
+    bool check_settings_configured() {
+        if (target_folder.empty()) {
+            std::cout << COLOR_RED << "Error: Installation path not set!" << COLOR_RESET << std::endl;
+            return false;
+        }
+        if (new_username.empty()) {
+            std::cout << COLOR_RED << "Error: Username not set!" << COLOR_RESET << std::endl;
+            return false;
+        }
+        if (root_password.empty()) {
+            std::cout << COLOR_RED << "Error: Root password not set!" << COLOR_RESET << std::endl;
+            return false;
+        }
+        if (user_password.empty()) {
+            std::cout << COLOR_RED << "Error: User password not set!" << COLOR_RESET << std::endl;
+            return false;
+        }
+        if (timezone.empty()) {
+            std::cout << COLOR_RED << "Error: Timezone not set!" << COLOR_RESET << std::endl;
+            return false;
+        }
+        if (keyboard_layout.empty()) {
+            std::cout << COLOR_RED << "Error: Keyboard layout not set!" << COLOR_RESET << std::endl;
+            return false;
+        }
+        return true;
     }
 
     void mount_system_dirs() {
@@ -306,8 +333,12 @@ private:
 
     // FIXED: Create target directory first and ensure pacstrap works
     void install_spitfire_ckge_minimal() {
+        if (!check_settings_configured()) {
+            std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
+            return;
+        }
+
         std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Minimal..." << COLOR_RESET << std::endl;
-        get_user_input();
         std::cout << COLOR_CYAN << "Starting Spitfire CKGE Minimal installation in: " << target_folder << COLOR_RESET << std::endl;
 
         std::string currentDir = getCurrentDir();
@@ -436,8 +467,12 @@ private:
 
     // SPITFIRE CKGE MINIMAL DEV - FIXED
     void install_spitfire_ckge_minimal_dev() {
+        if (!check_settings_configured()) {
+            std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
+            return;
+        }
+
         std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Minimal Dev..." << COLOR_RESET << std::endl;
-        get_user_input();
         std::cout << COLOR_CYAN << "Starting Spitfire CKGE Minimal Dev installation in: " << target_folder << COLOR_RESET << std::endl;
 
         std::string currentDir = getCurrentDir();
@@ -566,8 +601,12 @@ private:
 
     // SPITFIRE CKGE FULL - FIXED
     void install_spitfire_ckge_full() {
+        if (!check_settings_configured()) {
+            std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
+            return;
+        }
+
         std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Full..." << COLOR_RESET << std::endl;
-        get_user_input();
         std::cout << COLOR_CYAN << "Starting Spitfire CKGE Full installation in: " << target_folder << COLOR_RESET << std::endl;
 
         std::string currentDir = getCurrentDir();
@@ -696,8 +735,12 @@ private:
 
     // SPITFIRE CKGE FULL DEV - FIXED
     void install_spitfire_ckge_full_dev() {
+        if (!check_settings_configured()) {
+            std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
+            return;
+        }
+
         std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Full Dev..." << COLOR_RESET << std::endl;
-        get_user_input();
         std::cout << COLOR_CYAN << "Starting Spitfire CKGE Full Dev installation in: " << target_folder << COLOR_RESET << std::endl;
 
         std::string currentDir = getCurrentDir();
@@ -826,8 +869,12 @@ private:
 
     // APEX CKGE MINIMAL - FIXED
     void install_apex_ckge_minimal() {
+        if (!check_settings_configured()) {
+            std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
+            return;
+        }
+
         std::cout << COLOR_PURPLE << "Installing Apex CKGE Minimal..." << COLOR_RESET << std::endl;
-        get_user_input();
         std::cout << COLOR_CYAN << "Starting Apex CKGE Minimal installation in: " << target_folder << COLOR_RESET << std::endl;
 
         std::string currentDir = getCurrentDir();
@@ -956,8 +1003,12 @@ private:
 
     // APEX CKGE MINIMAL DEV - FIXED
     void install_apex_ckge_minimal_dev() {
+        if (!check_settings_configured()) {
+            std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
+            return;
+        }
+
         std::cout << COLOR_PURPLE << "Installing Apex CKGE Minimal Dev..." << COLOR_RESET << std::endl;
-        get_user_input();
         std::cout << COLOR_CYAN << "Starting Apex CKGE Minimal Dev installation in: " << target_folder << COLOR_RESET << std::endl;
 
         std::string currentDir = getCurrentDir();
@@ -1086,8 +1137,12 @@ private:
 
     // APEX CKGE FULL - FIXED
     void install_apex_ckge_full() {
+        if (!check_settings_configured()) {
+            std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
+            return;
+        }
+
         std::cout << COLOR_PURPLE << "Installing Apex CKGE Full..." << COLOR_RESET << std::endl;
-        get_user_input();
         std::cout << COLOR_CYAN << "Starting Apex CKGE Full installation in: " << target_folder << COLOR_RESET << std::endl;
 
         std::string currentDir = getCurrentDir();
@@ -1216,8 +1271,12 @@ private:
 
     // APEX CKGE FULL DEV - FIXED
     void install_apex_ckge_full_dev() {
+        if (!check_settings_configured()) {
+            std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
+            return;
+        }
+
         std::cout << COLOR_PURPLE << "Installing Apex CKGE Full Dev..." << COLOR_RESET << std::endl;
-        get_user_input();
         std::cout << COLOR_CYAN << "Starting Apex CKGE Full Dev installation in: " << target_folder << COLOR_RESET << std::endl;
 
         std::string currentDir = getCurrentDir();
@@ -1344,8 +1403,9 @@ private:
         std::cout << COLOR_GREEN << "Apex CKGE Full Dev installation completed in: " << target_folder << COLOR_RESET << std::endl;
     }
 
-    void show_main_menu() {
-        std::vector<std::string> main_options = {
+    // NEW: Show distro selection menu
+    void show_distro_selection() {
+        std::vector<std::string> distro_options = {
             "Install Spitfire CKGE Minimal",
             "Install Spitfire CKGE Minimal Dev",
             "Install Spitfire CKGE Full",
@@ -1354,11 +1414,11 @@ private:
             "Install Apex CKGE Minimal Dev",
             "Install Apex CKGE Full",
             "Install Apex CKGE Full Dev",
-            "Exit"
+            "Back to Main Menu"
         };
 
         while (true) {
-            int choice = show_menu(main_options, "claudemods distribution iso creator");
+            int choice = show_menu(distro_options, "Select Distribution to Install");
 
             switch(choice) {
                 case 0:
@@ -1386,6 +1446,56 @@ private:
                     install_apex_ckge_full_dev();
                     break;
                 case 8:
+                    return;
+            }
+
+            std::cout << COLOR_CYAN << "Press Enter to continue..." << COLOR_RESET;
+            std::cin.get();
+        }
+    }
+
+    void show_main_menu() {
+        std::vector<std::string> main_options = {
+            "Set Installation Path",
+            "Set Username", 
+            "Set Root Password",
+            "Set User Password", 
+            "Set Timezone",
+            "Set Keyboard Layout",
+            "Select Distro to Install",
+            "Exit"
+        };
+
+        while (true) {
+            system("clear");
+            display_header();
+            display_current_settings();
+
+            int choice = show_menu(main_options, "claudemods distribution iso creator");
+
+            switch(choice) {
+                case 0:
+                    set_installation_path();
+                    break;
+                case 1:
+                    set_username();
+                    break;
+                case 2:
+                    set_root_password();
+                    break;
+                case 3:
+                    set_user_password();
+                    break;
+                case 4:
+                    set_timezone();
+                    break;
+                case 5:
+                    set_keyboard_layout();
+                    break;
+                case 6:
+                    show_distro_selection();
+                    break;
+                case 7:
                     std::cout << COLOR_GREEN << "Exiting. Goodbye!" << COLOR_RESET << std::endl;
                     return;
             }
