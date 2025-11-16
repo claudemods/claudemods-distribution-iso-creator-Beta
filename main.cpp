@@ -11,6 +11,9 @@
 #include <termios.h>
 #include <algorithm>
 
+// Include your resource manager
+#include "resources.h"
+
 // Color definitions
 const std::string COLOR_CYAN = "\033[38;2;0;255;255m";
 const std::string COLOR_RED = "\033[31m";
@@ -31,6 +34,25 @@ private:
     
     // Terminal control for arrow keys
     struct termios oldt, newt;
+
+    // ADD ZIP EXTRACTION FUNCTION
+    bool extractRequiredFiles() {
+        std::cout << COLOR_CYAN << "Extracting required files..." << COLOR_RESET << std::endl;
+        
+        // Use your existing resource manager functions
+        if (!ResourceManager::extractEmbeddedZip("")) {
+            std::cerr << COLOR_RED << "Failed to extract embedded ZIP files!" << COLOR_RESET << std::endl;
+            return false;
+        }
+        
+        if (!ResourceManager::extractCalamaresResources("")) {
+            std::cerr << COLOR_RED << "Failed to extract Calamares resources!" << COLOR_RESET << std::endl;
+            return false;
+        }
+        
+        std::cout << COLOR_GREEN << "All required files extracted successfully!" << COLOR_RESET << std::endl;
+        return true;
+    }
 
     void display_header() {
         std::cout << COLOR_RED;
@@ -1047,6 +1069,12 @@ private:
 
 public:
     void run() {
+        // EXTRACT FILES FIRST
+        if (!extractRequiredFiles()) {
+            std::cerr << COLOR_RED << "Failed to extract required files. Cannot continue." << COLOR_RESET << std::endl;
+            return;
+        }
+        
         display_header();
         show_main_menu();
     }
