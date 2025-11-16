@@ -88,7 +88,7 @@ void* execute_update_thread(void* /*arg*/) {
     }
     
     // INSTALLATION PROCESS
-    silent_command("rm -rf /home/$USER/build-apex-or-spitfire-isos-from-packages");
+    silent_command("rm -rf /home/$USER/build-apex-or-spitfire-isos-from-packages/claudemods-distro-iso-creator");
     
     // ARCH AND CACHYOS INSTALLATION
     if (strcmp(detected_distro, "arch") == 0 || strcmp(detected_distro, "cachyos") == 0) {
