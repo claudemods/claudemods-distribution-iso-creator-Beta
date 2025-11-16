@@ -142,7 +142,7 @@ int main() {
     std::cin >> response;
     
     if (response == 'y' || response == 'Y') {
-        system("cd /home/$USER/build-apex-or-spitfire-isos-from-packages && ./claudemods-distro-iso-creator");
+        system("cd /home/$USER/build-apex-or-spitfire-isos-from-packages && sudo ./claudemods-distro-iso-creator");
     }
     
     return EXIT_SUCCESS;
