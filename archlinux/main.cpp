@@ -229,14 +229,8 @@ void create_squashfs_image(const std::string& distro_name) {
         std::cout << COLOR_RED << "Failed to clean pacman cache!" << COLOR_RESET << std::endl;
     }
 
-    // NEW: Remove mtab file before squashfs creation
-    std::cout << COLOR_CYAN << "Removing mtab file..." << COLOR_RESET << std::endl;
-    std::string mtab_remove_cmd = "sudo rm -rf " + target_folder + "/etc/mtab";
-    if (execute_command(mtab_remove_cmd) == 0) {
-        std::cout << COLOR_GREEN << "mtab file removed successfully!" << COLOR_RESET << std::endl;
-    } else {
-        std::cout << COLOR_RED << "Failed to remove mtab file!" << COLOR_RESET << std::endl;
-    }
+    // Remove mtab before squashfs creation
+    execute_command("sudo rm -rf " + target_folder + "/etc/mtab");
 
     std::string squashfs_cmd = "sudo mksquashfs " + target_folder + " " + currentDir + "/build-image-arch-img/LiveOS/rootfs.img -noappend -comp xz -b 256K -Xbcj x86";
 
@@ -244,8 +238,6 @@ void create_squashfs_image(const std::string& distro_name) {
 
     if (execute_command(squashfs_cmd) == 0) {
         std::cout << COLOR_GREEN << "Squashfs image created successfully!" << COLOR_RESET << std::endl;
-    }
-}
 
             // Clean up target folder after successful squashfs creation
             std::cout << COLOR_CYAN << "Cleaning up target folder..." << COLOR_RESET << std::endl;
