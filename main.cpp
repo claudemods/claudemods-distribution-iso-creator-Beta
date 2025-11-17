@@ -643,9 +643,6 @@ private:
         // Extract extra files
         execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
 
-        // Copy cmirsyncinstaller
-        execute_command("sudo cp -r " + currentDir + "/cmirsyncinstaller " + target_folder + "/usr/bin");
-
         // Copy hooks
         execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
 
@@ -816,9 +813,6 @@ private:
 
         // Extract extra files
         execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
-
-        // Copy cmirsyncinstaller
-        execute_command("sudo cp -r " + currentDir + "/cmirsyncinstaller " + target_folder + "/usr/bin");
 
         // Copy hooks
         execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
@@ -991,9 +985,6 @@ private:
         // Extract extra files
         execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
 
-        // Copy cmirsyncinstaller
-        execute_command("sudo cp -r " + currentDir + "/cmirsyncinstaller " + target_folder + "/usr/bin");
-
         // Copy hooks
         execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
 
@@ -1164,9 +1155,6 @@ private:
 
         // Extract extra files
         execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
-
-        // Copy cmirsyncinstaller
-        execute_command("sudo cp -r " + currentDir + "/cmirsyncinstaller " + target_folder + "/usr/bin");
 
         // Copy hooks
         execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
@@ -1339,9 +1327,6 @@ private:
         // Extract extra files
         execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
 
-        // Copy cmirsyncinstaller
-        execute_command("sudo cp -r " + currentDir + "/cmirsyncinstaller " + target_folder + "/usr/bin");
-
         // Copy hooks
         execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
 
@@ -1512,9 +1497,6 @@ private:
 
         // Extract extra files
         execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
-
-        // Copy cmirsyncinstaller
-        execute_command("sudo cp -r " + currentDir + "/cmirsyncinstaller " + target_folder + "/usr/bin");
 
         // Copy hooks
         execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
@@ -1687,9 +1669,6 @@ private:
         // Extract extra files
         execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
 
-        // Copy cmirsyncinstaller
-        execute_command("sudo cp -r " + currentDir + "/cmirsyncinstaller " + target_folder + "/usr/bin");
-
         // Copy hooks
         execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
 
@@ -1860,9 +1839,6 @@ private:
 
         // Extract extra files
         execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
-
-        // Copy cmirsyncinstaller
-        execute_command("sudo cp -r " + currentDir + "/cmirsyncinstaller " + target_folder + "/usr/bin");
 
         // Copy hooks
         execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
