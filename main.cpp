@@ -163,22 +163,57 @@ private:
         return system(("sudo mkdir -p " + path).c_str()) == 0;
     }
 
-    // NEW: Function to display current settings
+    // FIXED: Function to display current settings on main menu
     void display_current_settings() {
         std::cout << COLOR_YELLOW << "\nCurrent Settings:" << COLOR_RESET << std::endl;
-        std::cout << COLOR_CYAN << "Installation Path: " << COLOR_RESET 
-                  << (target_folder.empty() ? "[Not Set]" : target_folder) << std::endl;
-        std::cout << COLOR_CYAN << "Username: " << COLOR_RESET 
-                  << (new_username.empty() ? "[Not Set]" : new_username) << std::endl;
-        std::cout << COLOR_CYAN << "Root Password: " << COLOR_RESET 
-                  << (root_password.empty() ? "[Not Set]" : "********") << std::endl;
-        std::cout << COLOR_CYAN << "User Password: " << COLOR_RESET 
-                  << (user_password.empty() ? "[Not Set]" : "********") << std::endl;
-        std::cout << COLOR_CYAN << "Timezone: " << COLOR_RESET 
-                  << (timezone.empty() ? "[Not Set]" : timezone) << std::endl;
-        std::cout << COLOR_CYAN << "Keyboard Layout: " << COLOR_RESET 
-                  << (keyboard_layout.empty() ? "[Not Set]" : keyboard_layout) << std::endl;
+        std::cout << COLOR_CYAN << "Installation Path: " << COLOR_RESET
+        << (target_folder.empty() ? "[Not Set]" : target_folder) << std::endl;
+        std::cout << COLOR_CYAN << "Username: " << COLOR_RESET
+        << (new_username.empty() ? "[Not Set]" : new_username) << std::endl;
+        std::cout << COLOR_CYAN << "Root Password: " << COLOR_RESET
+        << (root_password.empty() ? "[Not Set]" : "********") << std::endl;
+        std::cout << COLOR_CYAN << "User Password: " << COLOR_RESET
+        << (user_password.empty() ? "[Not Set]" : "********") << std::endl;
+        std::cout << COLOR_CYAN << "Timezone: " << COLOR_RESET
+        << (timezone.empty() ? "[Not Set]" : timezone) << std::endl;
+        std::cout << COLOR_CYAN << "Keyboard Layout: " << COLOR_RESET
+        << (keyboard_layout.empty() ? "[Not Set]" : keyboard_layout) << std::endl;
         std::cout << std::endl;
+    }
+
+    // UPDATED: Function to create squashfs image after installation with additional steps
+    void create_squashfs_image() {
+        std::cout << COLOR_CYAN << "Creating squashfs image..." << COLOR_RESET << std::endl;
+
+        std::string currentDir = getCurrentDir();
+        std::string squashfs_cmd = "sudo mksquashfs " + target_folder + " " + currentDir + "/build-image-arch-img/LiveOS/rootfs.img -noappend -comp xz -b 256K -Xbcj x86";
+
+        std::cout << COLOR_CYAN << "Executing: " << squashfs_cmd << COLOR_RESET << std::endl;
+
+        if (execute_command(squashfs_cmd) == 0) {
+            std::cout << COLOR_GREEN << "Squashfs image created successfully!" << COLOR_RESET << std::endl;
+
+            // NEW: Copy vmlinuz from current system's /boot to build directory
+            std::cout << COLOR_CYAN << "Copying kernel image..." << COLOR_RESET << std::endl;
+            std::string copy_kernel_cmd = "sudo cp /boot/vmlinuz* " + currentDir + "/build-image-arch-img/boot/vmlinuz-x86_64";
+            if (execute_command(copy_kernel_cmd) == 0) {
+                std::cout << COLOR_GREEN << "Kernel image copied successfully!" << COLOR_RESET << std::endl;
+            } else {
+                std::cout << COLOR_RED << "Failed to copy kernel image!" << COLOR_RESET << std::endl;
+            }
+
+            // NEW: Generate initramfs
+            std::cout << COLOR_CYAN << "Generating initramfs..." << COLOR_RESET << std::endl;
+            std::string initramfs_cmd = "cd " + currentDir + "/build-image-arch-img && sudo mkinitcpio -c mkinitcpio.conf -g " + currentDir + "/build-image-arch-img/boot/initramfs-x86_64.img";
+            if (execute_command(initramfs_cmd) == 0) {
+                std::cout << COLOR_GREEN << "Initramfs generated successfully!" << COLOR_RESET << std::endl;
+            } else {
+                std::cout << COLOR_RED << "Failed to generate initramfs!" << COLOR_RESET << std::endl;
+            }
+
+        } else {
+            std::cout << COLOR_RED << "Failed to create squashfs image!" << COLOR_RESET << std::endl;
+        }
     }
 
     // NEW: Set installation path
@@ -463,6 +498,9 @@ private:
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "Spitfire CKGE Minimal installation completed in: " << target_folder << COLOR_RESET << std::endl;
+
+        // CREATE SQUASHFS IMAGE AFTER INSTALLATION
+        create_squashfs_image();
     }
 
     // SPITFIRE CKGE MINIMAL DEV - FIXED
@@ -597,6 +635,9 @@ private:
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "Spitfire CKGE Minimal Dev installation completed in: " << target_folder << COLOR_RESET << std::endl;
+
+        // CREATE SQUASHFS IMAGE AFTER INSTALLATION
+        create_squashfs_image();
     }
 
     // SPITFIRE CKGE FULL - FIXED
@@ -731,6 +772,9 @@ private:
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "Spitfire CKGE Full installation completed in: " << target_folder << COLOR_RESET << std::endl;
+
+        // CREATE SQUASHFS IMAGE AFTER INSTALLATION
+        create_squashfs_image();
     }
 
     // SPITFIRE CKGE FULL DEV - FIXED
@@ -865,6 +909,9 @@ private:
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "Spitfire CKGE Full Dev installation completed in: " << target_folder << COLOR_RESET << std::endl;
+
+        // CREATE SQUASHFS IMAGE AFTER INSTALLATION
+        create_squashfs_image();
     }
 
     // APEX CKGE MINIMAL - FIXED
@@ -999,6 +1046,9 @@ private:
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "Apex CKGE Minimal installation completed in: " << target_folder << COLOR_RESET << std::endl;
+
+        // CREATE SQUASHFS IMAGE AFTER INSTALLATION
+        create_squashfs_image();
     }
 
     // APEX CKGE MINIMAL DEV - FIXED
@@ -1133,6 +1183,9 @@ private:
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "Apex CKGE Minimal Dev installation completed in: " << target_folder << COLOR_RESET << std::endl;
+
+        // CREATE SQUASHFS IMAGE AFTER INSTALLATION
+        create_squashfs_image();
     }
 
     // APEX CKGE FULL - FIXED
@@ -1267,6 +1320,9 @@ private:
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "Apex CKGE Full installation completed in: " << target_folder << COLOR_RESET << std::endl;
+
+        // CREATE SQUASHFS IMAGE AFTER INSTALLATION
+        create_squashfs_image();
     }
 
     // APEX CKGE FULL DEV - FIXED
@@ -1401,6 +1457,9 @@ private:
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "Apex CKGE Full Dev installation completed in: " << target_folder << COLOR_RESET << std::endl;
+
+        // CREATE SQUASHFS IMAGE AFTER INSTALLATION
+        create_squashfs_image();
     }
 
     // NEW: Show distro selection menu
@@ -1457,9 +1516,9 @@ private:
     void show_main_menu() {
         std::vector<std::string> main_options = {
             "Set Installation Path",
-            "Set Username", 
+            "Set Username",
             "Set Root Password",
-            "Set User Password", 
+            "Set User Password",
             "Set Timezone",
             "Set Keyboard Layout",
             "Select Distro to Install",
@@ -1469,7 +1528,7 @@ private:
         while (true) {
             system("clear");
             display_header();
-            display_current_settings();
+            display_current_settings(); // This will now show settings on main menu
 
             int choice = show_menu(main_options, "claudemods distribution iso creator");
 
