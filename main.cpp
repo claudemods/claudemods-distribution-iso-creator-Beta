@@ -232,10 +232,7 @@ private:
             std::cout << COLOR_RED << "Failed to clean pacman cache!" << COLOR_RESET << std::endl;
         }
 
-        // Remove mtab before squashfs creation
-        execute_command("sudo rm -rf " + target_folder + "/etc/mtab");
-
-        std::string squashfs_cmd = "sudo mksquashfs " + target_folder + " " + currentDir + "/build-image-arch-img/LiveOS/rootfs.img -noappend -comp xz -b 256K -Xbcj x86";
+        std::string squashfs_cmd = "sudo mksquashfs " + target_folder + " " + currentDir + "/build-image-arch-img/LiveOS/rootfs.img -noappend -comp xz -b 256K -Xbcj x86 -e etc/udev/rules.d/70-persistent-cd.rules -e etc/udev/rules.d/70-persistent-net.rules -e etc/mtab -e etc/fstab";
 
         std::cout << COLOR_CYAN << "Executing: " << squashfs_cmd << COLOR_RESET << std::endl;
 
@@ -595,7 +592,7 @@ private:
         execute_command("cd " + target_folder);
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-minimal.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt/Arch-Systemtool");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt");
         execute_command("sudo unzip -o " + currentDir + "/spitfire-minimal.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
@@ -653,6 +650,13 @@ private:
         execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
 
         execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
 
         // Remove manjaro branding
         execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
@@ -762,7 +766,7 @@ private:
         execute_command("cd " + target_folder);
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-minimal.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt/Arch-Systemtool");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt");
         execute_command("sudo unzip -o " + currentDir + "/spitfire-minimal.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
@@ -820,6 +824,13 @@ private:
         execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
 
         execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
 
         // Remove manjaro branding
         execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
@@ -929,7 +940,7 @@ private:
         execute_command("cd " + target_folder);
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-full.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt/Arch-Systemtool");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt");
         execute_command("sudo unzip -o " + currentDir + "/spitfire-full.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
@@ -987,6 +998,13 @@ private:
         execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
 
         execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
 
         // Remove manjaro branding
         execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
@@ -1096,7 +1114,7 @@ private:
         execute_command("cd " + target_folder);
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-full.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt/Arch-Systemtool");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt");
         execute_command("sudo unzip -o " + currentDir + "/spitfire-full.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
@@ -1154,6 +1172,13 @@ private:
         execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
 
         execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
 
         // Remove manjaro branding
         execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
@@ -1263,7 +1288,7 @@ private:
         execute_command("cd " + target_folder);
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/apex-minimal.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt/Arch-Systemtool");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt");
         execute_command("sudo unzip -o " + currentDir + "/apex-minimal.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/apex-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
@@ -1321,6 +1346,13 @@ private:
         execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
 
         execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
 
         // Remove manjaro branding
         execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
@@ -1430,7 +1462,7 @@ private:
         execute_command("cd " + target_folder);
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/apex-minimal.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt/Arch-Systemtool");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt");
         execute_command("sudo unzip -o " + currentDir + "/apex-minimal.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/apex-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
@@ -1488,6 +1520,13 @@ private:
         execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
 
         execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
 
         // Remove manjaro branding
         execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
@@ -1597,7 +1636,7 @@ private:
         execute_command("cd " + target_folder);
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/apex-full.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt/Arch-Systemtool");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt");
         execute_command("sudo unzip -o " + currentDir + "/apex-full.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/apex-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
@@ -1655,6 +1694,13 @@ private:
         execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
 
         execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
 
         // Remove manjaro branding
         execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
@@ -1764,7 +1810,7 @@ private:
         execute_command("cd " + target_folder);
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/apex-full.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt/Arch-Systemtool");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt");
         execute_command("sudo unzip -o " + currentDir + "/apex-full.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/apex-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
@@ -1822,6 +1868,13 @@ private:
         execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
 
         execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
 
         // Remove manjaro branding
         execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
