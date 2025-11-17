@@ -581,13 +581,13 @@ private:
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
 
         // Copy calamares config
-        execute_command("sudo cp -r " + currentDir + "/calamres-files/calamares " + target_folder + "/etc/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
 
         // Copy custom branding
-        execute_command("sudo cp -r " + currentDir + "/calamres-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
 
         // Extract extra files
-        execute_command("sudo unzip -o -q " + currentDir + "/calamres-files/extras.zip -d " + target_folder);
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
 
         // Copy cmirsyncinstaller
         execute_command("sudo cp -r " + currentDir + "/cmirsyncinstaller " + target_folder + "/usr/bin");
@@ -747,13 +747,13 @@ private:
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
 
         // Copy calamares config
-        execute_command("sudo cp -r " + currentDir + "/calamres-files/calamares " + target_folder + "/etc/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
 
         // Copy custom branding
-        execute_command("sudo cp -r " + currentDir + "/calamres-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
 
         // Extract extra files
-        execute_command("sudo unzip -o -q " + currentDir + "/calamres-files/extras.zip -d " + target_folder);
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
 
         // Copy cmirsyncinstaller
         execute_command("sudo cp -r " + currentDir + "/cmirsyncinstaller " + target_folder + "/usr/bin");
@@ -913,13 +913,13 @@ private:
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
 
         // Copy calamares config
-        execute_command("sudo cp -r " + currentDir + "/calamres-files/calamares " + target_folder + "/etc/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
 
         // Copy custom branding
-        execute_command("sudo cp -r " + currentDir + "/calamres-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
 
         // Extract extra files
-        execute_command("sudo unzip -o -q " + currentDir + "/calamres-files/extras.zip -d " + target_folder);
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
 
         // Copy cmirsyncinstaller
         execute_command("sudo cp -r " + currentDir + "/cmirsyncinstaller " + target_folder + "/usr/bin");
@@ -1079,13 +1079,13 @@ private:
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
 
         // Copy calamares config
-        execute_command("sudo cp -r " + currentDir + "/calamres-files/calamares " + target_folder + "/etc/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
 
         // Copy custom branding
-        execute_command("sudo cp -r " + currentDir + "/calamres-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
 
         // Extract extra files
-        execute_command("sudo unzip -o -q " + currentDir + "/calamres-files/extras.zip -d " + target_folder);
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
 
         // Copy cmirsyncinstaller
         execute_command("sudo cp -r " + currentDir + "/cmirsyncinstaller " + target_folder + "/usr/bin");
@@ -1245,13 +1245,13 @@ private:
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
 
         // Copy calamares config
-        execute_command("sudo cp -r " + currentDir + "/calamres-files/calamares " + target_folder + "/etc/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
 
         // Copy custom branding
-        execute_command("sudo cp -r " + currentDir + "/calamres-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
 
         // Extract extra files
-        execute_command("sudo unzip -o -q " + currentDir + "/calamres-files/extras.zip -d " + target_folder);
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
 
         // Copy cmirsyncinstaller
         execute_command("sudo cp -r " + currentDir + "/cmirsyncinstaller " + target_folder + "/usr/bin");
@@ -1411,13 +1411,13 @@ private:
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
 
         // Copy calamares config
-        execute_command("sudo cp -r " + currentDir + "/calamres-files/calamares " + target_folder + "/etc/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
 
         // Copy custom branding
-        execute_command("sudo cp -r " + currentDir + "/calamres-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
 
         // Extract extra files
-        execute_command("sudo unzip -o -q " + currentDir + "/calamres-files/extras.zip -d " + target_folder);
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
 
         // Copy cmirsyncinstaller
         execute_command("sudo cp -r " + currentDir + "/cmirsyncinstaller " + target_folder + "/usr/bin");
@@ -1577,13 +1577,13 @@ private:
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
 
         // Copy calamares config
-        execute_command("sudo cp -r " + currentDir + "/calamres-files/calamares " + target_folder + "/etc/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
 
         // Copy custom branding
-        execute_command("sudo cp -r " + currentDir + "/calamres-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
 
         // Extract extra files
-        execute_command("sudo unzip -o -q " + currentDir + "/calamres-files/extras.zip -d " + target_folder);
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
 
         // Copy cmirsyncinstaller
         execute_command("sudo cp -r " + currentDir + "/cmirsyncinstaller " + target_folder + "/usr/bin");
@@ -1743,13 +1743,13 @@ private:
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
 
         // Copy calamares config
-        execute_command("sudo cp -r " + currentDir + "/calamres-files/calamares " + target_folder + "/etc/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
 
         // Copy custom branding
-        execute_command("sudo cp -r " + currentDir + "/calamres-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
 
         // Extract extra files
-        execute_command("sudo unzip -o -q " + currentDir + "/calamres-files/extras.zip -d " + target_folder);
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
 
         // Copy cmirsyncinstaller
         execute_command("sudo cp -r " + currentDir + "/cmirsyncinstaller " + target_folder + "/usr/bin");
