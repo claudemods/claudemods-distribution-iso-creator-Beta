@@ -132,8 +132,9 @@ private:
                     switch(i) {
                         case 0: setting_value = target_folder.empty() ? "[Not Set]" : target_folder; break;
                         case 1: setting_value = new_username.empty() ? "[Not Set]" : new_username; break;
-                        case 2: setting_value = root_password.empty() ? "[Not Set]" : "********"; break;
-                        case 3: setting_value = user_password.empty() ? "[Not Set]" : "********"; break;
+                        // CHANGED: Show actual passwords instead of ******
+                        case 2: setting_value = root_password.empty() ? "[Not Set]" : root_password; break;
+                        case 3: setting_value = user_password.empty() ? "[Not Set]" : user_password; break;
                         case 4: setting_value = timezone.empty() ? "[Not Set]" : timezone; break;
                         case 5: setting_value = keyboard_layout.empty() ? "[Not Set]" : keyboard_layout; break;
                         case 6: setting_value = current_distro_name.empty() ? "[Not Set]" : current_distro_name; break;
@@ -191,17 +192,18 @@ private:
         return system(("sudo mkdir -p " + path).c_str()) == 0;
     }
 
-    // FIXED: Function to display current settings on main menu
+    // FIXED: Function to display current settings on main menu - CHANGED to show actual passwords
     void display_current_settings() {
         std::cout << COLOR_YELLOW << "\nCurrent Settings:" << COLOR_RESET << std::endl;
         std::cout << COLOR_CYAN << "Installation Path: " << COLOR_RESET
         << (target_folder.empty() ? "[Not Set]" : target_folder) << std::endl;
         std::cout << COLOR_CYAN << "Username: " << COLOR_RESET
         << (new_username.empty() ? "[Not Set]" : new_username) << std::endl;
+        // CHANGED: Show actual passwords instead of ******
         std::cout << COLOR_CYAN << "Root Password: " << COLOR_RESET
-        << (root_password.empty() ? "[Not Set]" : "********") << std::endl;
+        << (root_password.empty() ? "[Not Set]" : root_password) << std::endl;
         std::cout << COLOR_CYAN << "User Password: " << COLOR_RESET
-        << (user_password.empty() ? "[Not Set]" : "********") << std::endl;
+        << (user_password.empty() ? "[Not Set]" : user_password) << std::endl;
         std::cout << COLOR_CYAN << "Timezone: " << COLOR_RESET
         << (timezone.empty() ? "[Not Set]" : timezone) << std::endl;
         std::cout << COLOR_CYAN << "Keyboard Layout: " << COLOR_RESET
@@ -214,14 +216,33 @@ private:
     // UPDATED: Function to create squashfs image after installation with additional steps
     void create_squashfs_image(const std::string& distro_name) {
         std::cout << COLOR_CYAN << "Creating squashfs image..." << COLOR_RESET << std::endl;
-
+        
         std::string currentDir = getCurrentDir();
+        
+        // NEW: Clean pacman cache before creating squashfs
+        std::cout << COLOR_CYAN << "Cleaning pacman cache..." << COLOR_RESET << std::endl;
+        std::string cache_clean_cmd = "sudo rm -rf " + target_folder + "/var/cache/pacman/pkg/*";
+        if (execute_command(cache_clean_cmd) == 0) {
+            std::cout << COLOR_GREEN << "Pacman cache cleaned successfully!" << COLOR_RESET << std::endl;
+        } else {
+            std::cout << COLOR_RED << "Failed to clean pacman cache!" << COLOR_RESET << std::endl;
+        }
+        
         std::string squashfs_cmd = "sudo mksquashfs " + target_folder + " " + currentDir + "/build-image-arch-img/LiveOS/rootfs.img -noappend -comp xz -b 256K -Xbcj x86";
 
         std::cout << COLOR_CYAN << "Executing: " << squashfs_cmd << COLOR_RESET << std::endl;
 
         if (execute_command(squashfs_cmd) == 0) {
             std::cout << COLOR_GREEN << "Squashfs image created successfully!" << COLOR_RESET << std::endl;
+
+            // NEW: Delete target folder after successful squashfs creation
+            std::cout << COLOR_CYAN << "Cleaning up target folder..." << COLOR_RESET << std::endl;
+            std::string cleanup_cmd = "sudo rm -rf " + target_folder;
+            if (execute_command(cleanup_cmd) == 0) {
+                std::cout << COLOR_GREEN << "Target folder deleted successfully: " << target_folder << COLOR_RESET << std::endl;
+            } else {
+                std::cout << COLOR_RED << "Failed to delete target folder: " << target_folder << COLOR_RESET << std::endl;
+            }
 
             // NEW: Copy vmlinuz from current system's /boot to build directory
             std::cout << COLOR_CYAN << "Copying kernel image..." << COLOR_RESET << std::endl;
@@ -278,7 +299,7 @@ private:
         "-no-emul-boot "
         "-iso-level 3 "
         "-o \"" + currentDir + "/build-image-arch-img/" + distro_name + ".iso\" " +
-        currentDir + "/build-image-arch-img";
+        currentDir + "/";
 
         std::cout << COLOR_CYAN << "Executing: " << xorriso_cmd << COLOR_RESET << std::endl;
 
