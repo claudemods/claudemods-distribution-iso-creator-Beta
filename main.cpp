@@ -134,7 +134,7 @@ private:
                 if (title == "claudemods distribution iso creator") {
                     std::string setting_value;
                     switch(i) {
-                        case 0: setting_value = getTargetFolder(); break; // Always show current directory path
+                        case 0: setting_value = "current directory as claudemods-distro"; break;
                         case 1: setting_value = new_username.empty() ? "[Not Set]" : new_username; break;
                         // CHANGED: Show actual passwords instead of ******
                         case 2: setting_value = root_password.empty() ? "[Not Set]" : root_password; break;
@@ -199,7 +199,7 @@ private:
     // FIXED: Function to display current settings on main menu - CHANGED to show actual passwords
     void display_current_settings() {
         std::cout << COLOR_YELLOW << "\nCurrent Settings:" << COLOR_RESET << std::endl;
-        std::cout << COLOR_CYAN << "Installation Path: " << COLOR_RESET << getTargetFolder() << std::endl;
+        std::cout << COLOR_CYAN << "Installation Path: " << COLOR_RESET << "current directory as claudemods-distro" << std::endl;
         std::cout << COLOR_CYAN << "Username: " << COLOR_RESET
         << (new_username.empty() ? "[Not Set]" : new_username) << std::endl;
         // CHANGED: Show actual passwords instead of ******
@@ -1887,7 +1887,7 @@ private:
 
     void show_main_menu() {
         std::vector<std::string> main_options = {
-            "Installation Path: " + getTargetFolder(),
+            "Installation Path: ",
             "Set Username",
             "Set Root Password",
             "Set User Password",
@@ -1902,9 +1902,6 @@ private:
             system("clear");
             display_header();
             display_current_settings(); // This will now show settings on main menu
-
-            // Update the first option to always show current path
-            main_options[0] = "Installation Path: " + getTargetFolder();
 
             selected = show_menu(main_options, "claudemods distribution iso creator", selected);
 
