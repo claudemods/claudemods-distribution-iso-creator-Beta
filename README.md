@@ -6,6 +6,13 @@
 <a href="https://cachyos.org/" target="_blank"><img src="https://img.shields.io/badge/DISTRO-CachyOS-00FFFF?style=for-the-badge&logo=CachyOS" /></a>
 <div align="center">
 
+##  [Click Here For Changelog](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/changelog.md)
+
+##  [Click Here For claudemods distribution readme](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/claudemods-distributions.md)
+
+##  [Click Here For cachyos distribution readme](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/cachyos-distribution.md)
+
+##  [Click Here For Arch Distribution readme](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/arch-distribution.md)
 
 
 
