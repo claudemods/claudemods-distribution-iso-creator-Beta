@@ -278,8 +278,10 @@ private:
                 std::cout << COLOR_GREEN << "Target folder deleted successfully: " << target_folder << COLOR_RESET << std::endl;
             }
 
-            // Copy kernel image
+            // Copy kernel image with user selection
             std::cout << COLOR_CYAN << "Searching for kernel images..." << COLOR_RESET << std::endl;
+
+            // Get list of vmlinuz files
             std::vector<std::string> kernel_files;
             std::string find_cmd = "find /boot -name 'vmlinuz-*' -type f 2>/dev/null | sort";
             FILE* pipe = popen(find_cmd.c_str(), "r");
@@ -293,13 +295,34 @@ private:
                 pclose(pipe);
             }
 
-            if (!kernel_files.empty()) {
-                std::string copy_cmd = "sudo cp " + kernel_files[0] + " " + currentDir + "/build-image-arch-img/boot/vmlinuz-x86_64";
-                if (execute_command(copy_cmd) == 0) {
-                    std::cout << COLOR_GREEN << "Kernel copied successfully!" << COLOR_RESET << std::endl;
+            if (kernel_files.empty()) {
+                std::cout << COLOR_RED << "No kernel images found!" << COLOR_RESET << std::endl;
+            } else {
+                // Show available kernels
+                std::cout << COLOR_CYAN << "Available kernels:" << COLOR_RESET << std::endl;
+                for (size_t i = 0; i < kernel_files.size(); i++) {
+                    std::cout << "[" << i + 1 << "] " << kernel_files[i] << std::endl;
+                }
+
+                // Get selection
+                std::cout << COLOR_CYAN << "Select kernel (1-" << kernel_files.size() << "): " << COLOR_RESET;
+                std::string input;
+                std::getline(std::cin, input);
+
+                try {
+                    int choice = std::stoi(input);
+                    if (choice >= 1 && choice <= kernel_files.size()) {
+                        std::string copy_cmd = "sudo cp " + kernel_files[choice - 1] + " " + currentDir + "/build-image-arch-img/boot/vmlinuz-x86_64";
+                        if (execute_command(copy_cmd) == 0) {
+                            std::cout << COLOR_GREEN << "Kernel copied successfully!" << COLOR_RESET << std::endl;
+                        } else {
+                            std::cout << COLOR_RED << "Failed to copy kernel!" << COLOR_RESET << std::endl;
+                        }
+                    }
+                } catch (...) {
+                    std::cout << COLOR_RED << "Invalid selection!" << COLOR_RESET << std::endl;
                 }
             }
-
             // Generate initramfs
             std::cout << COLOR_CYAN << "Generating initramfs..." << COLOR_RESET << std::endl;
             std::string initramfs_cmd = "cd " + currentDir + "/build-image-arch-img && sudo mkinitcpio -c mkinitcpio.conf -g " + currentDir + "/build-image-arch-img/boot/initramfs-x86_64.img";
