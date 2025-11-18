@@ -40,6 +40,56 @@ private:
     // Terminal control for arrow keys
     struct termios oldt, newt;
 
+    // Configuration file path
+    std::string getConfigFilePath() {
+        return getCurrentDir() + "/configurationclaudemods.txt";
+    }
+
+    // Save configuration to file
+    void saveConfiguration() {
+        std::string configFile = getConfigFilePath();
+        std::ofstream file(configFile);
+        if (file.is_open()) {
+            file << "username=" << new_username << std::endl;
+            file << "root_password=" << root_password << std::endl;
+            file << "user_password=" << user_password << std::endl;
+            file << "timezone=" << timezone << std::endl;
+            file << "keyboard_layout=" << keyboard_layout << std::endl;
+            file << "current_distro=" << current_distro_name << std::endl;
+            file.close();
+            std::cout << COLOR_GREEN << "Configuration saved to " << configFile << COLOR_RESET << std::endl;
+        } else {
+            std::cerr << COLOR_RED << "Failed to save configuration to " << configFile << COLOR_RESET << std::endl;
+        }
+    }
+
+    // Load configuration from file
+    void loadConfiguration() {
+        std::string configFile = getConfigFilePath();
+        std::ifstream file(configFile);
+        if (file.is_open()) {
+            std::string line;
+            while (std::getline(file, line)) {
+                size_t delimiter = line.find('=');
+                if (delimiter != std::string::npos) {
+                    std::string key = line.substr(0, delimiter);
+                    std::string value = line.substr(delimiter + 1);
+                    
+                    if (key == "username") new_username = value;
+                    else if (key == "root_password") root_password = value;
+                    else if (key == "user_password") user_password = value;
+                    else if (key == "timezone") timezone = value;
+                    else if (key == "keyboard_layout") keyboard_layout = value;
+                    else if (key == "current_distro") current_distro_name = value;
+                }
+            }
+            file.close();
+            std::cout << COLOR_GREEN << "Configuration loaded from " << configFile << COLOR_RESET << std::endl;
+        } else {
+            std::cout << COLOR_YELLOW << "No existing configuration found. Starting with default settings." << COLOR_RESET << std::endl;
+        }
+    }
+
     // Get current working directory
     std::string getCurrentDir() {
         char cwd[1024];
@@ -551,19 +601,19 @@ private:
     // NEW: Set username
     void set_username() {
         new_username = get_input("Enter username: ");
-        // REMOVED the green confirmation message
+        saveConfiguration(); // Save after setting
     }
 
     // NEW: Set root password
     void set_root_password() {
         root_password = get_input("Enter root password: ");
-        // REMOVED the green confirmation message
+        saveConfiguration(); // Save after setting
     }
 
     // NEW: Set user password
     void set_user_password() {
         user_password = get_input("Enter user password: ");
-        // REMOVED the green confirmation message
+        saveConfiguration(); // Save after setting
     }
 
     // NEW: Set timezone
@@ -590,7 +640,7 @@ private:
             case 6: timezone = "Asia/Tokyo"; break;
             case 7: timezone = get_input("Enter timezone (e.g., Europe/Berlin): "); break;
         }
-        // REMOVED the green confirmation message
+        saveConfiguration(); // Save after setting
     }
 
     // NEW: Set keyboard layout
@@ -617,7 +667,7 @@ private:
             case 6: keyboard_layout = "jp"; break;
             case 7: keyboard_layout = get_input("Enter keyboard layout (e.g., br, ru, pt): "); break;
         }
-        // REMOVED the green confirmation message
+        saveConfiguration(); // Save after setting
     }
 
     // NEW: Check if all required settings are configured
@@ -694,6 +744,7 @@ private:
     // UPDATED: Spitfire CKGE Minimal - using common functions
     void install_spitfire_ckge_minimal() {
         current_distro_name = "Spitfire-CKGE-Minimal";
+        saveConfiguration(); // Save distro selection
         if (!check_settings_configured()) {
             std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
             return;
@@ -774,6 +825,7 @@ private:
     // UPDATED: Spitfire CKGE Minimal Dev - using common functions
     void install_spitfire_ckge_minimal_dev() {
         current_distro_name = "Spitfire-CKGE-Minimal-Dev";
+        saveConfiguration(); // Save distro selection
         if (!check_settings_configured()) {
             std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
             return;
@@ -854,6 +906,7 @@ private:
     // UPDATED: Spitfire CKGE Full - using common functions
     void install_spitfire_ckge_full() {
         current_distro_name = "Spitfire-CKGE-Full";
+        saveConfiguration(); // Save distro selection
         if (!check_settings_configured()) {
             std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
             return;
@@ -935,6 +988,7 @@ private:
     // UPDATED: Spitfire CKGE Full Dev - using common functions
     void install_spitfire_ckge_full_dev() {
         current_distro_name = "Spitfire-CKGE-Full-Dev";
+        saveConfiguration(); // Save distro selection
         if (!check_settings_configured()) {
             std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
             return;
@@ -1016,6 +1070,7 @@ private:
     // UPDATED: Apex CKGE Minimal - using common functions
     void install_apex_ckge_minimal() {
         current_distro_name = "Apex-CKGE-Minimal";
+        saveConfiguration(); // Save distro selection
         if (!check_settings_configured()) {
             std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
             return;
@@ -1096,6 +1151,7 @@ private:
     // UPDATED: Apex CKGE Minimal Dev - using common functions
     void install_apex_ckge_minimal_dev() {
         current_distro_name = "Apex-CKGE-Minimal-Dev";
+        saveConfiguration(); // Save distro selection
         if (!check_settings_configured()) {
             std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
             return;
@@ -1176,6 +1232,7 @@ private:
     // UPDATED: Apex CKGE Full - using common functions
     void install_apex_ckge_full() {
         current_distro_name = "Apex-CKGE-Full";
+        saveConfiguration(); // Save distro selection
         if (!check_settings_configured()) {
             std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
             return;
@@ -1257,6 +1314,7 @@ private:
     // UPDATED: Apex CKGE Full Dev - using common functions
     void install_apex_ckge_full_dev() {
         current_distro_name = "Apex-CKGE-Full-Dev";
+        saveConfiguration(); // Save distro selection
         if (!check_settings_configured()) {
             std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
             return;
@@ -1441,7 +1499,10 @@ private:
 
 public:
     void run() {
-        // EXTRACT FILES FIRST
+        // LOAD CONFIGURATION FIRST
+        loadConfiguration();
+
+        // EXTRACT FILES
         if (!extractRequiredFiles()) {
             std::cerr << COLOR_RED << "Failed to extract required files. Cannot continue." << COLOR_RESET << std::endl;
             return;
