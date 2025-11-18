@@ -40,8 +40,55 @@ private:
     std::string current_desktop_name;
     std::string extra_packages;
 
-    // Terminal control for arrow keys
     struct termios oldt, newt;
+    std::string config_file = "configurationarch.txt";
+
+    // FIXED: WORKING CONFIGURATION SYSTEM
+    void save_configuration() {
+        FILE* config = fopen(config_file.c_str(), "w");
+        if (config) {
+            fprintf(config, "username=%s\n", new_username.c_str());
+            fprintf(config, "root_password=%s\n", root_password.c_str());
+            fprintf(config, "user_password=%s\n", user_password.c_str());
+            fprintf(config, "timezone=%s\n", timezone.c_str());
+            fprintf(config, "keyboard_layout=%s\n", keyboard_layout.c_str());
+            fprintf(config, "kernel=%s\n", selected_kernel.c_str());
+            fprintf(config, "desktop=%s\n", current_desktop_name.c_str());
+            fprintf(config, "extra_packages=%s\n", extra_packages.c_str());
+            fclose(config);
+        }
+    }
+
+    // FIXED: Improved load_configuration function
+    void load_configuration() {
+        FILE* config = fopen(config_file.c_str(), "r");
+        if (!config) return;
+
+        char line[256];
+        while (fgets(line, sizeof(line), config)) {
+            char* equals = strchr(line, '=');
+            if (equals) {
+                *equals = '\0';
+                char* value = equals + 1;
+                // Remove newline from value
+                char* newline = strchr(value, '\n');
+                if (newline) *newline = '\0';
+
+                std::string key = line;
+                std::string val = value;
+
+                if (key == "username") new_username = val;
+                else if (key == "root_password") root_password = val;
+                else if (key == "user_password") user_password = val;
+                else if (key == "timezone") timezone = val;
+                else if (key == "keyboard_layout") keyboard_layout = val;
+                else if (key == "kernel") selected_kernel = val;
+                else if (key == "desktop") current_desktop_name = val;
+                else if (key == "extra_packages") extra_packages = val;
+            }
+        }
+        fclose(config);
+    }
 
     // Get current working directory
     std::string getCurrentDir() {
@@ -54,6 +101,11 @@ private:
 
     // Get target folder path (always in current directory)
     std::string getTargetFolder() {
+        return "current directory as claudemods-distro"; // Changed to your exact text
+    }
+
+    // Get full target path for actual operations
+    std::string getFullTargetPath() {
         return getCurrentDir() + "/claudemods-distro";
     }
 
@@ -142,6 +194,7 @@ private:
         return ch;
     }
 
+    // FIXED: Updated show_menu to properly display loaded configuration values and fix duplication
     int show_menu(const std::vector<std::string>& options, const std::string& title, int selected = 0) {
         setup_terminal();
 
@@ -164,7 +217,7 @@ private:
 
                 // Create the menu line with proper formatting
                 std::string menu_line;
-                if (title == "claudemods arch distribution iso creator") {
+                if (title == "claudemods distribution iso creator arch") {
                     std::string setting_value;
                     switch(i) {
                         case 0: setting_value = getTargetFolder(); break;
@@ -179,8 +232,12 @@ private:
                         default: setting_value = ""; break;
                     }
 
-                    // Build the complete line with menu item and setting
-                    menu_line = options[i] + " " + setting_value;
+                    // FIXED: For installation path (i=0), don't add setting_value to avoid duplication
+                    if (i == 0) {
+                        menu_line = options[i];
+                    } else {
+                        menu_line = options[i] + " " + setting_value;
+                    }
                 } else {
                     menu_line = options[i];
                 }
@@ -225,16 +282,16 @@ private:
         return status;
     }
 
-    // FIXED: Function to display current settings on main menu
+    // FIXED: Function to display current settings on main menu - now shows loaded values
     void display_current_settings() {
         std::cout << COLOR_YELLOW << "\nCurrent Settings:" << COLOR_RESET << std::endl;
         std::cout << COLOR_CYAN << "Installation Path: " << COLOR_RESET << getTargetFolder() << std::endl;
         std::cout << COLOR_CYAN << "Username: " << COLOR_RESET
         << (new_username.empty() ? "[Not Set]" : new_username) << std::endl;
         std::cout << COLOR_CYAN << "Root Password: " << COLOR_RESET
-        << (root_password.empty() ? "[Not Set]" : root_password) << std::endl;
+        << (root_password.empty() ? "[Not Set]" : "******") << std::endl;
         std::cout << COLOR_CYAN << "User Password: " << COLOR_RESET
-        << (user_password.empty() ? "[Not Set]" : user_password) << std::endl;
+        << (user_password.empty() ? "[Not Set]" : "******") << std::endl;
         std::cout << COLOR_CYAN << "Timezone: " << COLOR_RESET
         << (timezone.empty() ? "[Not Set]" : timezone) << std::endl;
         std::cout << COLOR_CYAN << "Keyboard Layout: " << COLOR_RESET
@@ -250,7 +307,7 @@ private:
 
     // NEW: Common installation setup (shared by all desktop environments)
     bool setup_installation_environment() {
-        std::string target_folder = getTargetFolder();
+        std::string target_folder = getFullTargetPath();
         std::string currentDir = getCurrentDir();
 
         // CREATE TARGET DIRECTORY
@@ -285,19 +342,19 @@ private:
 
     // NEW: Common package installation function
     bool install_base_packages(const std::string& desktop_packages, const std::string& display_manager = "") {
-        std::string target_folder = getTargetFolder();
-        
+        std::string target_folder = getFullTargetPath();
+
         // BUILD COMPLETE PACKAGE LIST
         std::string packages = "base " + selected_kernel + " linux-firmware grub efibootmgr os-prober sudo arch-install-scripts mkinitcpio networkmanager";
-        
+
         // Add display manager packages if specified
         if (!display_manager.empty()) {
             packages += " " + display_manager;
         }
-        
+
         // Add desktop-specific packages
         packages += " " + desktop_packages;
-        
+
         // Add extra packages if specified
         if (!extra_packages.empty()) {
             packages += " " + extra_packages;
@@ -321,29 +378,29 @@ private:
 
     // NEW: Common service enablement
     void enable_services(const std::string& display_manager_service) {
-        std::string target_folder = getTargetFolder();
-        
+        std::string target_folder = getFullTargetPath();
+
         mount_system_dirs();
-        
+
         // Always enable NetworkManager
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable NetworkManager\"");
-        
+
         // Enable display manager if specified
         if (!display_manager_service.empty()) {
             execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable " + display_manager_service + "\"");
         }
-        
+
         apply_timezone_keyboard_settings();
         create_user();
     }
 
     // NEW: Common post-installation steps
     void complete_installation(const std::string& desktop_name) {
-        std::string target_folder = getTargetFolder();
-        
+        std::string target_folder = getFullTargetPath();
+
         // Install Calamares
         install_calamares();
-        
+
         unmount_system_dirs();
         std::cout << COLOR_GREEN << desktop_name << " installation completed!" << COLOR_RESET << std::endl;
 
@@ -353,11 +410,11 @@ private:
 
     // NEW: Dedicated function to install Calamares (eliminates code duplication)
     void install_calamares() {
-        std::string target_folder = getTargetFolder();
+        std::string target_folder = getFullTargetPath();
         std::string currentDir = getCurrentDir();
 
         std::cout << COLOR_CYAN << "Installing Calamares installer..." << COLOR_RESET << std::endl;
-        
+
         // Copy Calamares package files
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
@@ -406,7 +463,7 @@ private:
         std::cout << COLOR_CYAN << "Creating squashfs image..." << COLOR_RESET << std::endl;
 
         std::string currentDir = getCurrentDir();
-        std::string target_folder = getTargetFolder();
+        std::string target_folder = getFullTargetPath();
 
         // NEW: Clean pacman cache before creating squashfs
         std::cout << COLOR_CYAN << "Cleaning pacman cache..." << COLOR_RESET << std::endl;
@@ -530,16 +587,19 @@ private:
     // Set username
     void set_username() {
         new_username = get_input("Enter username: ");
+        save_configuration();
     }
 
     // Set root password
     void set_root_password() {
         root_password = get_input("Enter root password: ");
+        save_configuration();
     }
 
     // Set user password
     void set_user_password() {
         user_password = get_input("Enter user password: ");
+        save_configuration();
     }
 
     // Set timezone
@@ -566,6 +626,7 @@ private:
             case 6: timezone = "Asia/Tokyo"; break;
             case 7: timezone = get_input("Enter timezone (e.g., Europe/Berlin): "); break;
         }
+        save_configuration();
     }
 
     // Set keyboard layout
@@ -592,6 +653,7 @@ private:
             case 6: keyboard_layout = "jp"; break;
             case 7: keyboard_layout = get_input("Enter keyboard layout (e.g., br, ru, pt): "); break;
         }
+        save_configuration();
     }
 
     // Set kernel
@@ -610,6 +672,7 @@ private:
             case 2: selected_kernel = "linux-zen"; break;
             case 3: selected_kernel = "linux-hardened"; break;
         }
+        save_configuration();
     }
 
     // NEW: Set extra packages
@@ -617,6 +680,7 @@ private:
         std::cout << COLOR_CYAN << "Enter additional packages to install (space-separated):" << COLOR_RESET << std::endl;
         std::cout << COLOR_YELLOW << "Examples: vim git htop curl wget firefox" << COLOR_RESET << std::endl;
         extra_packages = get_input("Extra packages: ");
+        save_configuration();
     }
 
     // Check if all required settings are configured
@@ -653,7 +717,7 @@ private:
     }
 
     void mount_system_dirs() {
-        std::string target_folder = getTargetFolder();
+        std::string target_folder = getFullTargetPath();
         execute_command("sudo mkdir -p " + target_folder + "/dev");
         execute_command("sudo mkdir -p " + target_folder + "/dev/pts");
         execute_command("sudo mkdir -p " + target_folder + "/proc");
@@ -669,7 +733,7 @@ private:
     }
 
     void unmount_system_dirs() {
-        std::string target_folder = getTargetFolder();
+        std::string target_folder = getFullTargetPath();
         execute_command("sudo umount " + target_folder + "/dev/pts");
         execute_command("sudo umount " + target_folder + "/dev");
         execute_command("sudo umount " + target_folder + "/proc");
@@ -678,7 +742,7 @@ private:
     }
 
     void create_user() {
-        std::string target_folder = getTargetFolder();
+        std::string target_folder = getFullTargetPath();
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"useradd -m -G wheel -s /bin/bash " + new_username + "\"");
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"echo 'root:" + root_password + "' | chpasswd\"");
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"echo '" + new_username + ":" + user_password + "' | chpasswd\"");
@@ -686,7 +750,7 @@ private:
     }
 
     void apply_timezone_keyboard_settings() {
-        std::string target_folder = getTargetFolder();
+        std::string target_folder = getFullTargetPath();
         std::cout << COLOR_CYAN << "Setting timezone to: " << timezone << COLOR_RESET << std::endl;
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"ln -sf /usr/share/zoneinfo/" + timezone + " /etc/localtime\"");
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"hwclock --systohc\"");
@@ -706,7 +770,7 @@ private:
         }
 
         std::cout << COLOR_CYAN << "Starting installation with selected desktop: " << current_desktop_name << COLOR_RESET << std::endl;
-        
+
         // Call the appropriate installation function based on current_desktop_name
         if (current_desktop_name == "Arch-TTY-Grub") {
             install_arch_tty_grub();
@@ -739,138 +803,138 @@ private:
 
     void install_arch_tty_grub() {
         std::cout << COLOR_CYAN << "Installing Arch TTY Grub..." << COLOR_RESET << std::endl;
-        
+
         if (!setup_installation_environment()) return;
-        
+
         // TTY-specific packages (no desktop, no display manager)
         std::string desktop_packages = "vim nano bash-completion systemd";
         if (!install_base_packages(desktop_packages, "")) return;
-        
+
         // Enable services (no display manager for TTY)
         enable_services("");
-        
+
         complete_installation("Arch-TTY-Grub");
     }
 
     void install_gnome_desktop() {
         std::cout << COLOR_CYAN << "Installing Arch GNOME Desktop..." << COLOR_RESET << std::endl;
-        
+
         if (!setup_installation_environment()) return;
-        
+
         std::string desktop_packages = "gnome gnome-extra";
         if (!install_base_packages(desktop_packages, "gdm")) return;
-        
+
         enable_services("gdm");
         complete_installation("Arch-GNOME");
     }
 
     void install_kde_plasma() {
         std::cout << COLOR_CYAN << "Installing Arch KDE Plasma..." << COLOR_RESET << std::endl;
-        
+
         if (!setup_installation_environment()) return;
-        
+
         std::string desktop_packages = "plasma sddm dolphin konsole kate";
         if (!install_base_packages(desktop_packages, "sddm")) return;
-        
+
         enable_services("sddm");
         complete_installation("Arch-KDE-Plasma");
     }
 
     void install_xfce_desktop() {
         std::cout << COLOR_CYAN << "Installing Arch XFCE..." << COLOR_RESET << std::endl;
-        
+
         if (!setup_installation_environment()) return;
-        
+
         std::string desktop_packages = "xfce4 xfce4-goodies lightdm lightdm-gtk-greeter";
         if (!install_base_packages(desktop_packages, "lightdm")) return;
-        
+
         enable_services("lightdm");
         complete_installation("Arch-XFCE");
     }
 
     void install_lxqt_desktop() {
         std::cout << COLOR_CYAN << "Installing Arch LXQt..." << COLOR_RESET << std::endl;
-        
+
         if (!setup_installation_environment()) return;
-        
+
         std::string desktop_packages = "lxqt sddm";
         if (!install_base_packages(desktop_packages, "sddm")) return;
-        
+
         enable_services("sddm");
         complete_installation("Arch-LXQt");
     }
 
     void install_cinnamon_desktop() {
         std::cout << COLOR_CYAN << "Installing Arch Cinnamon..." << COLOR_RESET << std::endl;
-        
+
         if (!setup_installation_environment()) return;
-        
+
         std::string desktop_packages = "cinnamon lightdm lightdm-gtk-greeter";
         if (!install_base_packages(desktop_packages, "lightdm")) return;
-        
+
         enable_services("lightdm");
         complete_installation("Arch-Cinnamon");
     }
 
     void install_mate_desktop() {
         std::cout << COLOR_CYAN << "Installing Arch MATE..." << COLOR_RESET << std::endl;
-        
+
         if (!setup_installation_environment()) return;
-        
+
         std::string desktop_packages = "mate mate-extra lightdm lightdm-gtk-greeter";
         if (!install_base_packages(desktop_packages, "lightdm")) return;
-        
+
         enable_services("lightdm");
         complete_installation("Arch-MATE");
     }
 
     void install_budgie_desktop() {
         std::cout << COLOR_CYAN << "Installing Arch Budgie..." << COLOR_RESET << std::endl;
-        
+
         if (!setup_installation_environment()) return;
-        
+
         std::string desktop_packages = "budgie-desktop lightdm lightdm-gtk-greeter";
         if (!install_base_packages(desktop_packages, "lightdm")) return;
-        
+
         enable_services("lightdm");
         complete_installation("Arch-Budgie");
     }
 
     void install_i3_wm() {
         std::cout << COLOR_CYAN << "Installing Arch i3 (tiling WM)..." << COLOR_RESET << std::endl;
-        
+
         if (!setup_installation_environment()) return;
-        
+
         std::string desktop_packages = "i3-wm i3status i3lock dmenu lightdm lightdm-gtk-greeter";
         if (!install_base_packages(desktop_packages, "lightdm")) return;
-        
+
         enable_services("lightdm");
         complete_installation("Arch-i3");
     }
 
     void install_sway_wm() {
         std::cout << COLOR_CYAN << "Installing Arch Sway (Wayland tiling)..." << COLOR_RESET << std::endl;
-        
+
         if (!setup_installation_environment()) return;
-        
+
         std::string desktop_packages = "sway swaybg waybar wofi lightdm lightdm-gtk-greeter";
         if (!install_base_packages(desktop_packages, "lightdm")) return;
-        
+
         enable_services("lightdm");
         complete_installation("Arch-Sway");
     }
 
     void install_hyprland() {
         std::cout << COLOR_PURPLE << "Installing Arch Hyprland (Modern Wayland Compositor)..." << COLOR_RESET << std::endl;
-        
+
         if (!setup_installation_environment()) return;
-        
+
         std::string desktop_packages = "hyprland waybar rofi wl-clipboard sddm";
         if (!install_base_packages(desktop_packages, "sddm")) return;
-        
+
         enable_services("sddm");
-        
-        std::string target_folder = getTargetFolder();
+
+        std::string target_folder = getFullTargetPath();
         unmount_system_dirs();
         std::cout << COLOR_PURPLE << "Hyprland installed! Note: You may need to configure ~/.config/hypr/hyprland.conf" << COLOR_RESET << std::endl;
 
@@ -902,46 +966,57 @@ private:
                 case 0:
                     current_desktop_name = "Arch-TTY-Grub";
                     std::cout << COLOR_GREEN << "Desktop environment set to: Arch TTY Grub" << COLOR_RESET << std::endl;
+                    save_configuration();
                     return;
                 case 1:
                     current_desktop_name = "Arch-GNOME";
                     std::cout << COLOR_GREEN << "Desktop environment set to: GNOME Desktop" << COLOR_RESET << std::endl;
+                    save_configuration();
                     return;
                 case 2:
                     current_desktop_name = "Arch-KDE-Plasma";
                     std::cout << COLOR_GREEN << "Desktop environment set to: KDE Plasma" << COLOR_RESET << std::endl;
+                    save_configuration();
                     return;
                 case 3:
                     current_desktop_name = "Arch-XFCE";
                     std::cout << COLOR_GREEN << "Desktop environment set to: XFCE Desktop" << COLOR_RESET << std::endl;
+                    save_configuration();
                     return;
                 case 4:
                     current_desktop_name = "Arch-LXQt";
                     std::cout << COLOR_GREEN << "Desktop environment set to: LXQt Desktop" << COLOR_RESET << std::endl;
+                    save_configuration();
                     return;
                 case 5:
                     current_desktop_name = "Arch-Cinnamon";
                     std::cout << COLOR_GREEN << "Desktop environment set to: Cinnamon Desktop" << COLOR_RESET << std::endl;
+                    save_configuration();
                     return;
                 case 6:
                     current_desktop_name = "Arch-MATE";
                     std::cout << COLOR_GREEN << "Desktop environment set to: MATE Desktop" << COLOR_RESET << std::endl;
+                    save_configuration();
                     return;
                 case 7:
                     current_desktop_name = "Arch-Budgie";
                     std::cout << COLOR_GREEN << "Desktop environment set to: Budgie Desktop" << COLOR_RESET << std::endl;
+                    save_configuration();
                     return;
                 case 8:
                     current_desktop_name = "Arch-i3";
                     std::cout << COLOR_GREEN << "Desktop environment set to: i3 (tiling WM)" << COLOR_RESET << std::endl;
+                    save_configuration();
                     return;
                 case 9:
                     current_desktop_name = "Arch-Sway";
                     std::cout << COLOR_GREEN << "Desktop environment set to: Sway (Wayland tiling)" << COLOR_RESET << std::endl;
+                    save_configuration();
                     return;
                 case 10:
                     current_desktop_name = "Arch-Hyprland";
                     std::cout << COLOR_GREEN << "Desktop environment set to: Hyprland (Wayland)" << COLOR_RESET << std::endl;
+                    save_configuration();
                     return;
                 case 11:
                     return;
@@ -1018,7 +1093,10 @@ private:
 
 public:
     void run() {
-        // EXTRACT FILES FIRST
+        // LOAD CONFIGURATION FIRST - FIXED: This now happens before anything else
+        load_configuration();
+
+        // EXTRACT FILES
         if (!extractRequiredFiles()) {
             std::cerr << COLOR_RED << "Failed to extract required files. Cannot continue." << COLOR_RESET << std::endl;
             return;
