@@ -643,10 +643,7 @@ private:
 
         apply_timezone_keyboard_settings();
         create_user();
-
-        unmount_system_dirs();
-        std::cout << COLOR_GREEN << "Arch TTY Grub installation completed in: " << target_folder << COLOR_RESET << std::endl;
-
+        
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
@@ -684,6 +681,9 @@ private:
         execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
         execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
         execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
+
+        unmount_system_dirs();
+        std::cout << COLOR_GREEN << "Arch TTY Grub installation completed in: " << target_folder << COLOR_RESET << std::endl;
 
         // CREATE SQUASHFS IMAGE
         create_squashfs_image("Arch-TTY-Grub");
@@ -726,10 +726,7 @@ private:
 
         apply_timezone_keyboard_settings();
         create_user();
-
-        unmount_system_dirs();
-        std::cout << COLOR_GREEN << "GNOME Desktop installation completed!" << COLOR_RESET << std::endl;
-
+        
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
@@ -767,6 +764,9 @@ private:
         execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
         execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
         execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
+
+        unmount_system_dirs();
+        std::cout << COLOR_GREEN << "GNOME Desktop installation completed!" << COLOR_RESET << std::endl;
 
         create_squashfs_image("Arch-GNOME");
     }
@@ -808,10 +808,7 @@ private:
 
         apply_timezone_keyboard_settings();
         create_user();
-
-        unmount_system_dirs();
-        std::cout << COLOR_GREEN << "KDE Plasma installation completed!" << COLOR_RESET << std::endl;
-
+        
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
@@ -849,6 +846,9 @@ private:
         execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
         execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
         execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
+
+        unmount_system_dirs();
+        std::cout << COLOR_GREEN << "KDE Plasma installation completed!" << COLOR_RESET << std::endl;
 
         create_squashfs_image("Arch-KDE-Plasma");
     }
@@ -890,10 +890,7 @@ private:
 
         apply_timezone_keyboard_settings();
         create_user();
-
-        unmount_system_dirs();
-        std::cout << COLOR_GREEN << "XFCE installation completed!" << COLOR_RESET << std::endl;
-
+        
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
@@ -931,6 +928,9 @@ private:
         execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
         execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
         execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
+
+        unmount_system_dirs();
+        std::cout << COLOR_GREEN << "XFCE installation completed!" << COLOR_RESET << std::endl;
 
         create_squashfs_image("Arch-XFCE");
     }
@@ -972,10 +972,7 @@ private:
 
         apply_timezone_keyboard_settings();
         create_user();
-
-        unmount_system_dirs();
-        std::cout << COLOR_GREEN << "LXQt installation completed!" << COLOR_RESET << std::endl;
-
+        
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
@@ -1013,6 +1010,9 @@ private:
         execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
         execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
         execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
+
+        unmount_system_dirs();
+        std::cout << COLOR_GREEN << "LXQt installation completed!" << COLOR_RESET << std::endl;
 
         create_squashfs_image("Arch-LXQt");
     }
@@ -1055,9 +1055,6 @@ private:
         apply_timezone_keyboard_settings();
         create_user();
 
-        unmount_system_dirs();
-        std::cout << COLOR_GREEN << "Cinnamon installation completed!" << COLOR_RESET << std::endl;
-
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
@@ -1095,6 +1092,9 @@ private:
         execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
         execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
         execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
+        
+        unmount_system_dirs();
+        std::cout << COLOR_GREEN << "Cinnamon installation completed!" << COLOR_RESET << std::endl;
 
         create_squashfs_image("Arch-Cinnamon");
     }
@@ -1136,10 +1136,7 @@ private:
 
         apply_timezone_keyboard_settings();
         create_user();
-
-        unmount_system_dirs();
-        std::cout << COLOR_GREEN << "MATE installation completed!" << COLOR_RESET << std::endl;
-
+        
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
@@ -1177,6 +1174,9 @@ private:
         execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
         execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
         execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
+
+        unmount_system_dirs();
+        std::cout << COLOR_GREEN << "MATE installation completed!" << COLOR_RESET << std::endl;
 
         create_squashfs_image("Arch-MATE");
     }
@@ -1218,10 +1218,7 @@ private:
 
         apply_timezone_keyboard_settings();
         create_user();
-
-        unmount_system_dirs();
-        std::cout << COLOR_GREEN << "Budgie installation completed!" << COLOR_RESET << std::endl;
-
+        
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
@@ -1259,6 +1256,9 @@ private:
         execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
         execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
         execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
+
+        unmount_system_dirs();
+        std::cout << COLOR_GREEN << "Budgie installation completed!" << COLOR_RESET << std::endl;
 
         create_squashfs_image("Arch-Budgie");
     }
@@ -1300,10 +1300,7 @@ private:
 
         apply_timezone_keyboard_settings();
         create_user();
-
-        unmount_system_dirs();
-        std::cout << COLOR_GREEN << "i3 installation completed!" << COLOR_RESET << std::endl;
-
+         
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
@@ -1340,7 +1337,10 @@ private:
         execute_command("sudo rm -f " + target_folder + "/calamares-3.4.0-1-x86_64.pkg.tar.zst");
         execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
         execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
-        execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
+        execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar"); 
+         
+        unmount_system_dirs();
+        std::cout << COLOR_GREEN << "i3 installation completed!" << COLOR_RESET << std::endl;
 
         create_squashfs_image("Arch-i3");
     }
@@ -1382,10 +1382,7 @@ private:
 
         apply_timezone_keyboard_settings();
         create_user();
-
-        unmount_system_dirs();
-        std::cout << COLOR_GREEN << "Sway installation completed!" << COLOR_RESET << std::endl;
-
+        
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
@@ -1423,6 +1420,9 @@ private:
         execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
         execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
         execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
+
+        unmount_system_dirs();
+        std::cout << COLOR_GREEN << "Sway installation completed!" << COLOR_RESET << std::endl;
 
         create_squashfs_image("Arch-Sway");
     }
@@ -1465,9 +1465,6 @@ private:
         apply_timezone_keyboard_settings();
         create_user();
 
-        unmount_system_dirs();
-        std::cout << COLOR_PURPLE << "Hyprland installed! Note: You may need to configure ~/.config/hypr/hyprland.conf" << COLOR_RESET << std::endl;
-
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
@@ -1505,6 +1502,9 @@ private:
         execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
         execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
         execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
+        
+        unmount_system_dirs();
+        std::cout << COLOR_PURPLE << "Hyprland installed! Note: You may need to configure ~/.config/hypr/hyprland.conf" << COLOR_RESET << std::endl;
 
         create_squashfs_image("Arch-Hyprland");
     }
