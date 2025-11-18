@@ -28,15 +28,14 @@ const std::string COLOR_ORANGE = "\033[38;5;208m";
 const std::string COLOR_PURPLE = "\033[38;5;93m";
 const std::string COLOR_RESET = "\033[0m";
 
-class ArchDesktopInstaller {
+class ClaudemodsInstaller {
 private:
     std::string new_username;
     std::string root_password;
     std::string user_password;
     std::string timezone;
     std::string keyboard_layout;
-    std::string current_desktop_name;
-    std::string selected_kernel;
+    std::string current_distro_name; // Store the current distro name for ISO
 
     // Terminal control for arrow keys
     struct termios oldt, newt;
@@ -52,12 +51,42 @@ private:
 
     // Get target folder path (always in current directory)
     std::string getTargetFolder() {
-        return getCurrentDir() + "/arch-desktop-install";
+        return getCurrentDir() + "/claudemods-distro";
     }
 
-    // ADD ZIP EXTRACTION FUNCTION
+    // Check if directory exists
+    bool directoryExists(const std::string& path) {
+        struct stat info;
+        return (stat(path.c_str(), &info) == 0 && (info.st_mode & S_IFDIR));
+    }
+
+    // MODIFIED: Extract required files only if folders don't exist
     bool extractRequiredFiles() {
-        std::cout << COLOR_CYAN << "Extracting required files..." << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Checking for required folders..." << COLOR_RESET << std::endl;
+
+        std::string currentDir = getCurrentDir();
+        bool buildImageExists = directoryExists(currentDir + "/build-image-arch-img");
+        bool calamaresFilesExists = directoryExists(currentDir + "/calamares-files");
+        bool workingHooksExists = directoryExists(currentDir + "/working-hooks-btrfs-ext4");
+
+        // Check if all required folders already exist
+        if (buildImageExists && calamaresFilesExists && workingHooksExists) {
+            std::cout << COLOR_GREEN << "All required folders already exist. Skipping extraction." << COLOR_RESET << std::endl;
+            return true;
+        }
+
+        std::cout << COLOR_CYAN << "Some folders missing, extracting required files..." << COLOR_RESET << std::endl;
+
+        // Extract only what's needed
+        if (!buildImageExists) {
+            std::cout << COLOR_CYAN << "Extracting build-image-arch-img..." << COLOR_RESET << std::endl;
+        }
+        if (!calamaresFilesExists) {
+            std::cout << COLOR_CYAN << "Extracting calamares files..." << COLOR_RESET << std::endl;
+        }
+        if (!workingHooksExists) {
+            std::cout << COLOR_CYAN << "Extracting working hooks..." << COLOR_RESET << std::endl;
+        }
 
         // Use your existing resource manager functions
         if (!ResourceManager::extractEmbeddedZip("")) {
@@ -229,10 +258,7 @@ void create_squashfs_image(const std::string& distro_name) {
         std::cout << COLOR_RED << "Failed to clean pacman cache!" << COLOR_RESET << std::endl;
     }
 
-    // Remove mtab before squashfs creation
-    execute_command("sudo rm -rf " + target_folder + "/etc/mtab");
-
-    std::string squashfs_cmd = "sudo mksquashfs " + target_folder + " " + currentDir + "/build-image-arch-img/LiveOS/rootfs.img -noappend -comp xz -b 256K -Xbcj x86";
+    std::string squashfs_cmd = "sudo mksquashfs " + target_folder + " " + currentDir + "/build-image-arch-img/LiveOS/rootfs.img -noappend -comp xz -b 256K -Xbcj x86 -e etc/udev/rules.d/70-persistent-cd.rules -e etc/udev/rules.d/70-persistent-net.rules -e etc/mtab -e etc/fstab -e dev/* -e proc/* -e sys/* -e tmp/* -e run/* -e mnt/* -e media/* -e lost+found";
 
     std::cout << COLOR_CYAN << "Executing: " << squashfs_cmd << COLOR_RESET << std::endl;
 
@@ -552,6 +578,44 @@ void create_squashfs_image(const std::string& distro_name) {
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "Arch TTY Grub installation completed in: " << target_folder << COLOR_RESET << std::endl;
+        
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/ckbcomp-1.227-2-any.pkg.tar " + target_folder);
+
+        // Install in chroot
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
+
+        // Copy calamares config
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
+
+        // Copy custom branding
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+
+        // Extract extra files
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
+
+        // Copy hooks
+        execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
+
+        execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
+
+        // Remove manjaro branding
+        execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
+
+        // Delete the package files from target folder
+        execute_command("sudo rm -f " + target_folder + "/calamares-3.4.0-1-x86_64.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
+        execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
 
         // CREATE SQUASHFS IMAGE
         create_squashfs_image("Arch-TTY-Grub");
@@ -605,6 +669,44 @@ void create_squashfs_image(const std::string& distro_name) {
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "GNOME Desktop installation completed!" << COLOR_RESET << std::endl;
+        
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/ckbcomp-1.227-2-any.pkg.tar " + target_folder);
+
+        // Install in chroot
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
+
+        // Copy calamares config
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
+
+        // Copy custom branding
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+
+        // Extract extra files
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
+
+        // Copy hooks
+        execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
+
+        execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
+
+        // Remove manjaro branding
+        execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
+
+        // Delete the package files from target folder
+        execute_command("sudo rm -f " + target_folder + "/calamares-3.4.0-1-x86_64.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
+        execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
 
         create_squashfs_image("Arch-GNOME");
     }
@@ -657,6 +759,44 @@ void create_squashfs_image(const std::string& distro_name) {
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "KDE Plasma installation completed!" << COLOR_RESET << std::endl;
+        
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/ckbcomp-1.227-2-any.pkg.tar " + target_folder);
+
+        // Install in chroot
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
+
+        // Copy calamares config
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
+
+        // Copy custom branding
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+
+        // Extract extra files
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
+
+        // Copy hooks
+        execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
+
+        execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
+
+        // Remove manjaro branding
+        execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
+
+        // Delete the package files from target folder
+        execute_command("sudo rm -f " + target_folder + "/calamares-3.4.0-1-x86_64.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
+        execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
 
         create_squashfs_image("Arch-KDE-Plasma");
     }
@@ -709,6 +849,44 @@ void create_squashfs_image(const std::string& distro_name) {
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "XFCE installation completed!" << COLOR_RESET << std::endl;
+        
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/ckbcomp-1.227-2-any.pkg.tar " + target_folder);
+
+        // Install in chroot
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
+
+        // Copy calamares config
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
+
+        // Copy custom branding
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+
+        // Extract extra files
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
+
+        // Copy hooks
+        execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
+
+        execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
+
+        // Remove manjaro branding
+        execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
+
+        // Delete the package files from target folder
+        execute_command("sudo rm -f " + target_folder + "/calamares-3.4.0-1-x86_64.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
+        execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
 
         create_squashfs_image("Arch-XFCE");
     }
@@ -761,6 +939,44 @@ void create_squashfs_image(const std::string& distro_name) {
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "LXQt installation completed!" << COLOR_RESET << std::endl;
+        
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/ckbcomp-1.227-2-any.pkg.tar " + target_folder);
+
+        // Install in chroot
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
+
+        // Copy calamares config
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
+
+        // Copy custom branding
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+
+        // Extract extra files
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
+
+        // Copy hooks
+        execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
+
+        execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
+
+        // Remove manjaro branding
+        execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
+
+        // Delete the package files from target folder
+        execute_command("sudo rm -f " + target_folder + "/calamares-3.4.0-1-x86_64.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
+        execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
 
         create_squashfs_image("Arch-LXQt");
     }
@@ -813,6 +1029,44 @@ void create_squashfs_image(const std::string& distro_name) {
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "Cinnamon installation completed!" << COLOR_RESET << std::endl;
+        
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/ckbcomp-1.227-2-any.pkg.tar " + target_folder);
+
+        // Install in chroot
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
+
+        // Copy calamares config
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
+
+        // Copy custom branding
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+
+        // Extract extra files
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
+
+        // Copy hooks
+        execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
+
+        execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
+
+        // Remove manjaro branding
+        execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
+
+        // Delete the package files from target folder
+        execute_command("sudo rm -f " + target_folder + "/calamares-3.4.0-1-x86_64.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
+        execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
 
         create_squashfs_image("Arch-Cinnamon");
     }
@@ -865,6 +1119,44 @@ void create_squashfs_image(const std::string& distro_name) {
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "MATE installation completed!" << COLOR_RESET << std::endl;
+        
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/ckbcomp-1.227-2-any.pkg.tar " + target_folder);
+
+        // Install in chroot
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
+
+        // Copy calamares config
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
+
+        // Copy custom branding
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+
+        // Extract extra files
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
+
+        // Copy hooks
+        execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
+
+        execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
+
+        // Remove manjaro branding
+        execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
+
+        // Delete the package files from target folder
+        execute_command("sudo rm -f " + target_folder + "/calamares-3.4.0-1-x86_64.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
+        execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
 
         create_squashfs_image("Arch-MATE");
     }
@@ -917,6 +1209,44 @@ void create_squashfs_image(const std::string& distro_name) {
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "Budgie installation completed!" << COLOR_RESET << std::endl;
+        
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/ckbcomp-1.227-2-any.pkg.tar " + target_folder);
+
+        // Install in chroot
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
+
+        // Copy calamares config
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
+
+        // Copy custom branding
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+
+        // Extract extra files
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
+
+        // Copy hooks
+        execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
+
+        execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
+
+        // Remove manjaro branding
+        execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
+
+        // Delete the package files from target folder
+        execute_command("sudo rm -f " + target_folder + "/calamares-3.4.0-1-x86_64.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
+        execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
 
         create_squashfs_image("Arch-Budgie");
     }
@@ -969,6 +1299,44 @@ void create_squashfs_image(const std::string& distro_name) {
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "i3 installation completed!" << COLOR_RESET << std::endl;
+        
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/ckbcomp-1.227-2-any.pkg.tar " + target_folder);
+
+        // Install in chroot
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
+
+        // Copy calamares config
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
+
+        // Copy custom branding
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+
+        // Extract extra files
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
+
+        // Copy hooks
+        execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
+
+        execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
+
+        // Remove manjaro branding
+        execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
+
+        // Delete the package files from target folder
+        execute_command("sudo rm -f " + target_folder + "/calamares-3.4.0-1-x86_64.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
+        execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
 
         create_squashfs_image("Arch-i3");
     }
@@ -1021,6 +1389,44 @@ void create_squashfs_image(const std::string& distro_name) {
 
         unmount_system_dirs();
         std::cout << COLOR_GREEN << "Sway installation completed!" << COLOR_RESET << std::endl;
+        
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/ckbcomp-1.227-2-any.pkg.tar " + target_folder);
+
+        // Install in chroot
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
+
+        // Copy calamares config
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
+
+        // Copy custom branding
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+
+        // Extract extra files
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
+
+        // Copy hooks
+        execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
+
+        execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
+
+        // Remove manjaro branding
+        execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
+
+        // Delete the package files from target folder
+        execute_command("sudo rm -f " + target_folder + "/calamares-3.4.0-1-x86_64.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
+        execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
 
         create_squashfs_image("Arch-Sway");
     }
@@ -1070,6 +1476,44 @@ void create_squashfs_image(const std::string& distro_name) {
 
         unmount_system_dirs();
         std::cout << COLOR_PURPLE << "Hyprland installed! Note: You may need to configure ~/.config/hypr/hyprland.conf" << COLOR_RESET << std::endl;
+        
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/calamares-files/ckbcomp-1.227-2-any.pkg.tar " + target_folder);
+
+        // Install in chroot
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
+
+        // Copy calamares config
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
+
+        // Copy custom branding
+        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+
+        // Extract extra files
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
+
+        // Copy hooks
+        execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
+
+        execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
+
+        // Remove manjaro branding
+        execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
+
+        // Delete the package files from target folder
+        execute_command("sudo rm -f " + target_folder + "/calamares-3.4.0-1-x86_64.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
+        execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
 
         create_squashfs_image("Arch-Hyprland");
     }
