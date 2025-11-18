@@ -69,7 +69,7 @@ detect_distro
 # Conditional logic based on the detected distribution
 if [[ "$DISTRO" == "arch" || "$DISTRO" == "cachyos" ]]; then
     # Commands for Arch/CachyOS
-    print_status "claudemods distribution iso creator Beta v1.0 16-11-2025"
+    print_status "claudemods distribution iso creator Beta v1.0 18-11-2025"
     print_status "Updating pacman database"
     print_status "Installing dependencies"
     print_status "git clone and install main script"
@@ -78,13 +78,13 @@ if [[ "$DISTRO" == "arch" || "$DISTRO" == "cachyos" ]]; then
     print_status "Installing dependencies"
     run_command_cyan "sudo pacman -S --needed --noconfirm git rsync squashfs-tools xorriso grub dosfstools unzip nano arch-install-scripts bash-completion erofs-utils findutils jq libarchive libisoburn lsb-release lvm2 mkinitcpio-archiso mkinitcpio-nfs-utils mtools nbd pacman-contrib parted procps-ng pv python sshfs syslinux xdg-utils zsh-completions kernel-modules-hook virt-manager gcc btrfs-progs e2fsprogs f2fs-tools xfsprogs xfsdump cmake"
     print_status "Git cloning repository"
-    run_command_cyan "git clone https://github.com/claudemods/build-apex-or-spitfire-isos-from-packages"
+    run_command_cyan "git clone https://github.com/claudemods/claudemods-distribution-iso-creator-Beta"
     print_status "Installing dependency fixes due to current squashfs and device mapper package problems"
-    run_command_cyan "cd /home/$USER/build-apex-or-spitfire-isos-from-packages && sudo pacman -U device-mapper-2.03.36-1-x86_64.pkg.tar squashfs-tools-4.7.2-1-x86_64.pkg.tar"
+    run_command_cyan "cd /home/$USER/claudemods-distribution-iso-creator-Beta && sudo pacman -U device-mapper-2.03.36-1-x86_64.pkg.tar squashfs-tools-4.7.2-1-x86_64.pkg.tar"
     print_status "Building installer"
-    run_command_cyan "cd /home/$USER/build-apex-or-spitfire-isos-from-packages/updater && g++ -std=c++23 main.cpp -o updater.bin"
+    run_command_cyan "cd /home/$USER/claudemods-distribution-iso-creator-Beta/updater && g++ -std=c++23 main.cpp -o updater.bin"
     print_status "Installing"
-    run_command_cyan "cd /home/$USER/build-apex-or-spitfire-isos-from-packages/updater && ./updater.bin"
+    run_command_cyan "cd /home/$USER/claudemods-distribution-iso-creator-Beta/updater && ./updater.bin"
     else
         print_error "Unsupported distribution: $DISTRO"
         exit 1
