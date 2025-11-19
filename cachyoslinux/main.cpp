@@ -567,7 +567,7 @@ private:
             std::cout << COLOR_RED << "Failed to create squashfs image!" << COLOR_RESET << std::endl;
         }
     }
-        // NEW: Create ISO image with XORRISO
+
     void create_iso_image(const std::string& distro_name) {
         std::cout << COLOR_CYAN << "Creating ISO image with XORRISO..." << COLOR_RESET << std::endl;
 
@@ -602,10 +602,12 @@ private:
 
         if (execute_command(xorriso_cmd) == 0) {
             std::cout << COLOR_GREEN << "ISO image created successfully: " << distro_name + ".iso" << COLOR_RESET << std::endl;
+            // Change ownership to current user
+            execute_command("sudo chown $USER:$USER \"" + currentDir + "/" + distro_name + ".iso\"");
         } else {
             std::cout << COLOR_RED << "Failed to create ISO image!" << COLOR_RESET << std::endl;
         }
-    }
+    } 
 
     // Set username
     void set_username() {
