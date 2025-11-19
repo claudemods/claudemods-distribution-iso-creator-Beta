@@ -468,7 +468,7 @@ private:
         execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
         
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/.config/fish");
-        execute_command("sudo cp " + currentDir + "/fish_variables " + target_folder + "/home/" + new_username + "/.config/fish/fish_variables");
+        execute_command("sudo cp " + currentDir + "/cachyoslinux/fish_variables " + target_folder + "/home/" + new_username + "/.config/fish/fish_variables");
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/.local/share/konsole");
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/.local/share");
 
