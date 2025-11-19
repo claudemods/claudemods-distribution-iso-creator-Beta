@@ -8,13 +8,17 @@
 
 ##  [Click Here For Changelog](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/changelog.md)
 
-##  [Click Here For claudemods distribution readme](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/claudemods-distributions.md)
+<div align="center">
 
-##  [Click Here For cachyos distribution readme](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/cachyos-distribution.md)
+##  [Click Here For claudemods guide](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/claudemodsguide.md)
 
-##  [Click Here For arch distribution readme](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/arch-distribution.md)
+<div align="center">
 
-##  [Click Here For Guides](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/guides.md)
+##  [Click Here For cachyos linux guide](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/cachyoslinux/cachyosguide.md)
+
+<div align="center">
+
+##  [Click Here For arch linux guide](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/archlinux/archguide.md)
 
 
 
