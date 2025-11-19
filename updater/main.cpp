@@ -54,7 +54,7 @@ void* execute_update_thread(void* /*arg*/) {
     
     // 2. CURRENT VERSION
     try {
-        std::string version_output = run_command("cat /home/$USER/claudemods-distribution-iso-creator-Beta/version.txt");
+        std::string version_output = run_command("cat /home/$USER/claudemods-distribution-iso-creator-Beta/versionclaudemods.txt");
         strncpy(current_version, version_output.empty() ? "not installed" : version_output.c_str(), 
                 sizeof(current_version) - 1);
     } catch (...) {
@@ -80,7 +80,7 @@ void* execute_update_thread(void* /*arg*/) {
     if (strcmp(detected_distro, "arch") == 0 || strcmp(detected_distro, "cachyos") == 0) {
         try {
             std::string version_output = run_command(
-                "cat /home/$USER/claudemods-distribution-iso-creator-Beta/version/version.txt");
+                "cat /home/$USER/claudemods-distribution-iso-creator-Beta/version/versionclaudemods.txt");
             strncpy(downloaded_version, version_output.c_str(), sizeof(downloaded_version) - 1);
         } catch (...) {
             strcpy(downloaded_version, "unknown");
@@ -92,13 +92,13 @@ void* execute_update_thread(void* /*arg*/) {
     
     // ARCH AND CACHYOS INSTALLATION
     if (strcmp(detected_distro, "arch") == 0 || strcmp(detected_distro, "cachyos") == 0) {
-        silent_command("cp /home/$USER/claudemods-distribution-iso-creator-Beta/version/version.txt /home/$USER/claudemods-distribution-iso-creator-Beta");
+        silent_command("cp /home/$USER/claudemods-distribution-iso-creator-Beta/version/versionclaudemods.txt /home/$USER/claudemods-distribution-iso-creator-Beta");
         silent_command("cd /home/$USER/claudemods-distribution-iso-creator-Beta && g++ -std=c++23 -Wl,--format=binary -Wl,build-image-arch-img.zip -Wl,calamares-files.zip -Wl,claudemods.zip -Wl,--format=default main.cpp -o claudemods-distro-iso-creator >/dev/null 2>&1");
     }
         
     // GET INSTALLED VERSION
     try {
-        std::string installed_version_output = run_command("cat /home/$USER/claudemods-distribution-iso-creator-Beta/version.txt");
+        std::string installed_version_output = run_command("cat /home/$USER/claudemods-distribution-iso-creator-Beta/versionclaudemods.txt");
         strncpy(installed_version, installed_version_output.c_str(), sizeof(installed_version) - 1);
     } catch (...) {
         strcpy(installed_version, "unknown");
