@@ -929,7 +929,7 @@ private:
             // Update the first option to always show current path
             main_options[0] = "Installation Path: " + getTargetFolder();
 
-            selected = show_menu(main_options, "claudemods distribution iso creator arch", selected);
+            selected = show_menu(main_options, "claudemods CachyOS distribution iso creator", selected);
 
             switch(selected) {
                 case 0:
