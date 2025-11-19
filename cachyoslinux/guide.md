@@ -17,8 +17,9 @@ C++ tool for building custom CachyOS Linux distribution ISOs. 🛠️
 - 🚪 **Exit**
 
 ## ❓ What It Does
-
-Creates bootable CachyOS ISO files with your selected configuration. All settings display exactly as entered including passwords. 💾
+🎯 **Creates bootable CachyOS ISO files** with your customized configuration selections.  
+🔒 **All settings display exactly as entered** - including passwords for full transparency.  
+💾 **Automatically saves configuration** to `configurationcachyos.txt` in the current directory for future reference and backup.
 
 ## 🖥️ Desktop Environments
 
