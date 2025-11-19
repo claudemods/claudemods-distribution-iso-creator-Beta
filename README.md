@@ -14,6 +14,8 @@
 
 ##  [Click Here For arch distribution readme](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/arch-distribution.md)
 
+##  [Click Here For Guides](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/guides.md)
+
 
 
 <div align="center">
