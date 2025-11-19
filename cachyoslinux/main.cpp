@@ -459,6 +459,16 @@ private:
         execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
         execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
         execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
+        
+        execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/.config/fish");
+        execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/.local/share/konsole");
+        execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/.local/share");
+
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/.config/fish/config.fish");
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"chmod +x /usr/share/fish/config.fish\"");
+        execute_command("sudo cp -r " + currentDir + "/spitfire-ckge-minimal/grub " + target_folder + "/etc/default/grub");
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
 
         std::cout << COLOR_GREEN << "Calamares installation completed!" << COLOR_RESET << std::endl;
     }
