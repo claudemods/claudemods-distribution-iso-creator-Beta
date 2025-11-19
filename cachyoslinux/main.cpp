@@ -217,7 +217,7 @@ private:
 
                 // Create the menu line with proper formatting - SHOW ALL VALUES AS SET
                 std::string menu_line;
-                if (title == "claudemods distribution iso creator arch") {
+                if (title == "claudemods CachyOS distribution iso creator") {
                     std::string setting_value;
                     switch(i) {
                         case 0: setting_value = getTargetFolder(); break;
@@ -243,8 +243,8 @@ private:
                 }
 
                 // Truncate if too long to fit in the box
-                if (menu_line.length() > 80) {
-                    menu_line = menu_line.substr(0, 77) + "...";
+                if (menu_line.length() > 56) {
+                    menu_line = menu_line.substr(0, 53) + "...";
                 }
 
                 std::cout << std::left << std::setw(56) << menu_line;
@@ -466,7 +466,7 @@ private:
         execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
         execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
         execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
-        
+
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/.config/fish");
         execute_command("sudo cp " + currentDir + "/cachyoslinux/fish_variables " + target_folder + "/home/" + new_username + "/.config/fish/fish_variables");
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"chsh -s $(which fish)\"");
@@ -558,7 +558,7 @@ private:
                     std::cout << COLOR_RED << "Invalid selection!" << COLOR_RESET << std::endl;
                 }
             }
-            
+
             // Generate initramfs
             std::cout << COLOR_CYAN << "Generating initramfs..." << COLOR_RESET << std::endl;
             std::string initramfs_cmd = "cd " + currentDir + "/build-image-arch-img && sudo mkinitcpio -c mkinitcpio.conf -g " + currentDir + "/build-image-arch-img/boot/initramfs-x86_64.img";
@@ -911,7 +911,7 @@ private:
         std::vector<std::string> main_options = {
             "Installation Path: " + getTargetFolder(),
             "Set Username",
-            "Set Root Password", 
+            "Set Root Password",
             "Set User Password",
             "Set Timezone",
             "Set Keyboard Layout",
