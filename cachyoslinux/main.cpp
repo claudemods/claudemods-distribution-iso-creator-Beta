@@ -419,7 +419,14 @@ private:
         std::string currentDir = getCurrentDir();
 
         std::cout << COLOR_CYAN << "Installing Calamares installer..." << COLOR_RESET << std::endl;
-
+        execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "Desktop");
+        execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "Documents");
+        execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "Downloads");
+        execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "Music");
+        execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "Pictures");
+        execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "Videos");
+        execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "Public");
+        execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "Templates");
         // Copy Calamares package files
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
         execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
