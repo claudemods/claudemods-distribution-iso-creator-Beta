@@ -40,6 +40,28 @@ C++ tool for building custom CachyOS Linux distribution ISOs. 🛠️
 - 🧪 **linux-cachyos-rc**
 - 🔧 **linux-cachyos-bmq**
 
+  ## 🌍 Supported Timezones
+
+- 🇺🇸 America/New_York (US English)
+- 🇬🇧 Europe/London (UK English)
+- 🇩🇪 Europe/Berlin (German)
+- 🇫🇷 Europe/Paris (French)
+- 🇪🇸 Europe/Madrid (Spanish)
+- 🇮🇹 Europe/Rome (Italian)
+- 🇯🇵 Asia/Tokyo (Japanese)
+- 🌐 Custom timezone entry
+
+## ⌨️ Keyboard Layouts
+
+- 🇺🇸 us (US English)
+- 🇬🇧 uk (UK English)
+- 🇩🇪 de (German)
+- 🇫🇷 fr (French)
+- 🇪🇸 es (Spanish)
+- 🇮🇹 it (Italian)
+- 🇯🇵 jp (Japanese)
+- 🌐 Custom layout entry
+
 ## 💡 Kernel Information
 ℹ️ Please note: the kernel you select you will need to be currently running for this to work
 
