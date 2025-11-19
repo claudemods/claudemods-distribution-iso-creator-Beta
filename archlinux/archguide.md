@@ -72,6 +72,14 @@ C++ tool for building custom Arch Linux distribution ISOs with multiple desktop 
 
 📝 Change line `linux-cachyos` to e.g `linux-zen` before opening calamares
 
+## 🎯 Usage
+
+1. ▶️ **Run the program**
+2. ⚙️ **Configure all menu options**
+3. 🚀 **Select "Start Installation"**
+4. 📁 **Program creates ISO in current directory**
+5. 💿 **Burn ISO to USB/disc and boot**
+
 ## 🛠️ Features
 
 - 🎨 **Colorful terminal interface** with intuitive arrow-key navigation
@@ -81,10 +89,12 @@ C++ tool for building custom Arch Linux distribution ISOs with multiple desktop 
 - 🖥️ **Multiple display managers** - GDM, SDDM, LightDM support
 - 🛠️ **Calamares integration** - includes graphical installer with custom branding
 
-## 🎯 Usage
+  ## ⚠️ Important Notes
 
-1. ▶️ **Run the program**
-2. ⚙️ **Configure all menu options**
-3. 🚀 **Select "Start Installation"**
-4. 📁 **Program creates ISO in current directory**
-5. 💿 **Burn ISO to USB/disc and boot**
+- 🔒 **Passwords are displayed in plaintext** for verification
+- 💻 **Requires sudo privileges** for system operations
+- 🌐 **Needs internet connection** for package downloads
+- 💾 **Approximately 10-15GB disk space** required depending on what you choose
+- ⏱️ **Process takes 15-60 minutes** depending on selection and internet speed
+
+
