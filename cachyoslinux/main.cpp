@@ -166,7 +166,7 @@ private:
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << COLOR_CYAN << "claudemods CachyOS distribution iso creator v1.0 19-11-2025" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "claudemods CachyOS distribution iso creator v1.0 20-11-2025" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
 
