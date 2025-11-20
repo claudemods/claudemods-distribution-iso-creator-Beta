@@ -335,8 +335,8 @@ private:
         // COPY CONFIGURATION FILES
         execute_command("sudo cp -r " + currentDir + "/vconsole.conf " + target_folder + "/etc/vconsole.conf");
         execute_command("sudo cp -r /etc/resolv.conf " + target_folder + "/etc/resolv.conf");
-        execute_command("sudo unzip -o " + currentDir + "/pacman.d.zip -d " + target_folder + "/etc/pacman.d");
-        execute_command("sudo unzip -o " + currentDir + "/pacman.d.zip -d /etc/pacman.d");
+        execute_command("sudo unzip -o " + currentDir + "/archpacman.d.zip -d " + target_folder + "/etc/pacman.d");
+        execute_command("sudo unzip -o " + currentDir + "/archpacman.d.zip -d /etc/pacman.d");
         execute_command("sudo cp -r " + currentDir + "/pacman.conf " + target_folder + "/etc/pacman.conf");
         execute_command("sudo cp -r " + currentDir + "/pacman.conf /etc/pacman.conf");
         
