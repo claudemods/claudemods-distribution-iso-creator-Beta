@@ -396,14 +396,13 @@ private:
         
         apply_timezone_keyboard_settings();
         create_user();
+        // Install Calamares
+        install_calamares();
     }
     
     // NEW: Common post-installation steps
     void complete_installation(const std::string& desktop_name) {
         std::string target_folder = getFullTargetPath();
-        
-        // Install Calamares
-        install_calamares();
         
         unmount_system_dirs();
         std::cout << COLOR_GREEN << desktop_name << " installation completed!" << COLOR_RESET << std::endl;
