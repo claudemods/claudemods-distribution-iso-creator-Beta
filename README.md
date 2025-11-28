@@ -41,7 +41,7 @@ cachyos distribution iso creator Beta v1.0 19-11-2025 (working fine)
 
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/cachyoslinux/installer/patch.sh)"
 ```
-arch distribution iso creator Beta v1.0 19-11-2025 (needs more work)
+arch distribution iso creator Beta v1.0 19-11-2025 (working fine)
 
 ```bash
 
