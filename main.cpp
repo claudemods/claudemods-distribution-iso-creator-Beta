@@ -304,6 +304,7 @@ private:
 
     // NEW: Common setup function for all distributions
     bool setup_target_directory(const std::string& target_folder) {
+        std::string currentDir = getCurrentDir();  // ADD THIS LINE
         std::cout << COLOR_CYAN << "Creating target directory: " << target_folder << COLOR_RESET << std::endl;
         execute_command("sudo mkdir -p " + target_folder);
 
