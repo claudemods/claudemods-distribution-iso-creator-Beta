@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0 - 28-11-2025 11:26AM GMT (UK time)
+- my last test using spitfire ckge full dev didnt work 
+- ive made some adjustments to all scripts to include and copy /usr/lib/initcpio/udev/11-dm-initramfs.rules
+- i will run alot more tests on all when im free and update changelog
+
 ## v1.0 - 19-11-2025 23:16AM GMT (UK time)
 - spitfire and cachyos working fine arch calamares is broken but you can make isos
 - all configuration menus working
