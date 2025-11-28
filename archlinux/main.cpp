@@ -353,7 +353,7 @@ private:
         std::string currentDir = getCurrentDir();  // ADD THIS LINE
         
         // BUILD COMPLETE PACKAGE LIST - USING ARCH LINUX PACKAGES
-        std::string packages = "base base-devel calamares-fix linux-firmware grub efibootmgr os-prober sudo arch-install-scripts mkinitcpio vim nano bash-completion systemd networkmanager " + selected_kernel;
+        std::string packages = "base base-devel calamares-fix dosfstools mtools rsync linux-firmware grub efibootmgr os-prober sudo arch-install-scripts mkinitcpio vim nano bash-completion systemd networkmanager " + selected_kernel;
         
         // Add desktop environment packages
         if (!desktop_packages.empty()) {
