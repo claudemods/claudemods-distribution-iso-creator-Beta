@@ -331,6 +331,10 @@ private:
         // CREATE ESSENTIAL DIRECTORIES
         execute_command("sudo mkdir -p " + target_folder + "/etc/pacman.d");
         execute_command("sudo mkdir -p " + target_folder + "/boot/grub");
+        execute_command("sudo mkdir -p " + target_folder + "/usr/");
+        execute_command("sudo mkdir -p " + target_folder + "/usr/lib");
+        execute_command("sudo mkdir -p " + target_folder + "/usr/lib/initcpio/");
+        execute_command("sudo mkdir -p " + target_folder + "/usr/lib/initcpio/udev/");
 
         // COPY CONFIGURATION FILES
         execute_command("sudo cp -r " + currentDir + "/vconsole.conf " + target_folder + "/etc/vconsole.conf");
@@ -339,6 +343,8 @@ private:
         execute_command("sudo unzip -o " + currentDir + "/pacman.d.zip -d /etc/pacman.d");
         execute_command("sudo cp -r " + currentDir + "/pacman.conf " + target_folder + "/etc/pacman.conf");
         execute_command("sudo cp -r " + currentDir + "/pacman.conf /etc/pacman.conf");
+        execute_command("sudo cp -r " + currentDir + "11-dm-initramfs.rules " + target_folder + "/usr/lib/initcpio/udev/11-dm-initramfs.rules");
+        execute_command("sudo cp -r " + currentDir + "11-dm-initramfs.rules /usr/lib/initcpio/udev/11-dm-initramfs.rules");
 
         execute_command("sudo pacman -Sy");
         return true;
@@ -376,8 +382,6 @@ private:
             std::cerr << COLOR_RED << "pacstrap failed! /bin/bash not found in target." << COLOR_RESET << std::endl;
             return false;
         }
-        execute_command("sudo cp -r " + currentDir + "11-dm-initramfs.rules " + target_folder + "/usr/lib/initcpio/udev/11-dm-initramfs.rules");
-        execute_command("sudo cp -r " + currentDir + "11-dm-initramfs.rules /usr/lib/initcpio/udev/11-dm-initramfs.rules");
         execute_command("sudo mkdir -p " + target_folder + "/boot");
         execute_command("sudo mkdir -p " + target_folder + "/boot/grub");
         return true;
