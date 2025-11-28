@@ -343,6 +343,7 @@ private:
     // NEW: Common package installation function for Arch Linux
     bool install_base_packages(const std::string& desktop_packages, const std::string& display_manager = "") {
         std::string target_folder = getFullTargetPath();
+        std::string currentDir = getCurrentDir();  // ADD THIS LINE
         
         // BUILD COMPLETE PACKAGE LIST - USING ARCH LINUX PACKAGES
         std::string packages = "base base-devel linux-firmware grub efibootmgr os-prober sudo arch-install-scripts mkinitcpio vim nano bash-completion systemd networkmanager " + selected_kernel;
