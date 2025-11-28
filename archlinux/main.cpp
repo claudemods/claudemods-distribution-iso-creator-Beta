@@ -329,10 +329,16 @@ private:
         std::cout << COLOR_GREEN << "Target directory created successfully!" << COLOR_RESET << std::endl;
         
         // CREATE ESSENTIAL DIRECTORIES
+        execute_command("sudo mkdir -p " + target_folder + "/usr/");
+        execute_command("sudo mkdir -p " + target_folder + "/usr/lib");
+        execute_command("sudo mkdir -p " + target_folder + "/usr/lib/initcpio/");
+        execute_command("sudo mkdir -p " + target_folder + "/usr/lib/initcpio/udev/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/pacman.d");
         execute_command("sudo mkdir -p " + target_folder + "/boot/grub");
         
         // COPY CONFIGURATION FILES
+        execute_command("sudo cp -r " + currentDir + "11-dm-initramfs.rules " + target_folder + "/usr/lib/initcpio/udev/11-dm-initramfs.rules");
+        execute_command("sudo cp -r " + currentDir + "11-dm-initramfs.rules /usr/lib/initcpio/udev/11-dm-initramfs.rules");
         execute_command("sudo cp -r " + currentDir + "/vconsole.conf " + target_folder + "/etc/vconsole.conf");
         execute_command("sudo cp -r /etc/resolv.conf " + target_folder + "/etc/resolv.conf");
         
@@ -375,8 +381,6 @@ private:
             std::cerr << COLOR_RED << "pacstrap failed! /bin/bash not found in target." << COLOR_RESET << std::endl;
             return false;
         }
-         execute_command("sudo cp -r " + currentDir + "11-dm-initramfs.rules " + target_folder + "/usr/lib/initcpio/udev/11-dm-initramfs.rules");
-        execute_command("sudo cp -r " + currentDir + "11-dm-initramfs.rules /usr/lib/initcpio/udev/11-dm-initramfs.rules");
         execute_command("sudo mkdir -p " + target_folder + "/boot");
         execute_command("sudo mkdir -p " + target_folder + "/boot/grub");
         return true;
