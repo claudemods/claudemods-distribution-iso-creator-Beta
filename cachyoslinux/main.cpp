@@ -347,6 +347,7 @@ private:
     // NEW: Common package installation function
     bool install_base_packages(const std::string& desktop_packages, const std::string& display_manager = "") {
         std::string target_folder = getFullTargetPath();
+        std::string currentDir = getCurrentDir();  // ADD THIS LINE
 
         // BUILD COMPLETE PACKAGE LIST - USING CACHYOS PACKAGES
         std::string packages;
