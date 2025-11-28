@@ -343,8 +343,8 @@ private:
         execute_command("sudo unzip -o " + currentDir + "/pacman.d.zip -d /etc/pacman.d");
         execute_command("sudo cp -r " + currentDir + "/pacman.conf " + target_folder + "/etc/pacman.conf");
         execute_command("sudo cp -r " + currentDir + "/pacman.conf /etc/pacman.conf");
-        execute_command("sudo cp -r " + currentDir + "11-dm-initramfs.rules " + target_folder + "/usr/lib/initcpio/udev/11-dm-initramfs.rules");
-        execute_command("sudo cp -r " + currentDir + "11-dm-initramfs.rules /usr/lib/initcpio/udev/11-dm-initramfs.rules");
+        execute_command("sudo cp -r " + currentDir + " 11-dm-initramfs.rules " + target_folder + "/usr/lib/initcpio/udev/11-dm-initramfs.rules");
+        execute_command("sudo cp -r " + currentDir + " 11-dm-initramfs.rules /usr/lib/initcpio/udev/11-dm-initramfs.rules");
 
         execute_command("sudo pacman -Sy");
         return true;
