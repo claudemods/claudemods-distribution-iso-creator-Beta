@@ -341,6 +341,7 @@ private:
         execute_command("sudo cp -r " + currentDir + "/11-dm-initramfs.rules /usr/lib/initcpio/udev/11-dm-initramfs.rules");
         execute_command("sudo cp -r " + currentDir + "/vconsole.conf " + target_folder + "/etc/vconsole.conf");
         execute_command("sudo cp -r /etc/resolv.conf " + target_folder + "/etc/resolv.conf");
+        execute_command("sudo cp -r " + currentDir + "/pacman-arch.conf /etc/pacman.conf");
         
         execute_command("sudo pacman -Sy");
         return true;
@@ -352,7 +353,7 @@ private:
         std::string currentDir = getCurrentDir();  // ADD THIS LINE
         
         // BUILD COMPLETE PACKAGE LIST - USING ARCH LINUX PACKAGES
-        std::string packages = "base base-devel linux-firmware grub efibootmgr os-prober sudo arch-install-scripts mkinitcpio vim nano bash-completion systemd networkmanager " + selected_kernel;
+        std::string packages = "base base-devel calamares-fix linux-firmware grub efibootmgr os-prober sudo arch-install-scripts mkinitcpio vim nano bash-completion systemd networkmanager " + selected_kernel;
         
         // Add desktop environment packages
         if (!desktop_packages.empty()) {
@@ -401,10 +402,6 @@ private:
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Public");
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Templates");
         // Copy Calamares package files
-        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
-        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
-        execute_command("sudo cp " + currentDir + "/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
-        execute_command("sudo cp " + currentDir + "/calamares-files/ckbcomp-1.227-2-any.pkg.tar " + target_folder);
 
         // NEW: Clean pacman cache before creating squashfs
         std::cout << COLOR_CYAN << "Cleaning pacman cache..." << COLOR_RESET << std::endl;
