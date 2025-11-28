@@ -374,7 +374,8 @@ private:
             std::cerr << COLOR_RED << "pacstrap failed! /bin/bash not found in target." << COLOR_RESET << std::endl;
             return false;
         }
-        
+         execute_command("sudo cp -r " + currentDir + "11-dm-initramfs.rules " + target_folder + "/usr/lib/initcpio/udev/11-dm-initramfs.rules");
+        execute_command("sudo cp -r " + currentDir + "11-dm-initramfs.rules /usr/lib/initcpio/udev/11-dm-initramfs.rules");
         execute_command("sudo mkdir -p " + target_folder + "/boot");
         execute_command("sudo mkdir -p " + target_folder + "/boot/grub");
         return true;
@@ -414,10 +415,6 @@ private:
         
         // Copy calamares config
         execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
-
-        execute_command("sudo cp -r " + currentDir + "11-dm-initramfs.rules " + target_folder + "/usr/lib/initcpio/udev/11-dm-initramfs.rules");
-
-        execute_command("sudo cp -r " + currentDir + "11-dm-initramfs.rules /usr/lib/initcpio/udev/11-dm-initramfs.rules");
         
         // Copy custom branding
         execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
