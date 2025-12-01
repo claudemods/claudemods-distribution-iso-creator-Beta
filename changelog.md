@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0 - 01-12-2025 17:34PM GMT (UK time)
+- missing calamares packages added back to claudemods distribution option
+- no other changes needed since everything else works
+
 ## v1.0 - 28-11-2025 18:27PM GMT (UK time)
 - arch has now been fixed to work 100%
 - filesystem packages for arch added btrfs-progs f2fs-tools xfsprogs
