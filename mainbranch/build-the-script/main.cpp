@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "claudemods.h"
+#include "arch.h"
 
 // Function to set text color
 void setColor(const std::string& colorCode) {
@@ -51,10 +52,10 @@ void handleSelection(int choice) {
             std::cout << "You selected: Claudemods Distributions" << std::endl;
             std::cout << "Starting Claudemods ISO creation process..." << std::endl;
             resetColor();
-            
+
             // Clear input buffer before launching installer
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            
+
             // Launch the Claudemods installer
             {
                 ClaudemodsInstaller installer;
@@ -72,8 +73,16 @@ void handleSelection(int choice) {
             setColor("\033[38;2;0;255;255m");
             std::cout << "You selected: Arch Distributions" << std::endl;
             std::cout << "Starting Arch ISO creation process..." << std::endl;
-            // Add Arch installer integration here
             resetColor();
+
+            // Clear input buffer before launching installer
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+            // Launch the Arch installer
+            {
+                ArchInstaller installer;
+                installer.run();
+            }
             break;
         case 4:
             setColor("\033[38;2;0;255;255m");
@@ -94,9 +103,9 @@ int main() {
     do {
         // Clear screen (optional)
         #ifdef _WIN32
-            system("cls");
+        system("cls");
         #else
-            system("clear");
+        system("clear");
         #endif
 
         displayHeader();
@@ -110,7 +119,7 @@ int main() {
             // Clear error state and invalid input
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << COLOR_RED << "Invalid input! Please enter a number 1-4." << COLOR_RESET << std::endl;
+            std::cout << "\033[31m" << "Invalid input! Please enter a number 1-4." << "\033[0m" << std::endl;
             continue;
         }
 
