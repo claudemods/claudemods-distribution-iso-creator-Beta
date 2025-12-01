@@ -356,11 +356,11 @@ private:
 
         // Set package based on desktop selection
         if (current_desktop_name == "CachyOS-TTY-Grub") {
-            packages = "cachyosttygrub";
+            packages = "cachyosttygrub calamares-fix";
         } else if (current_desktop_name == "CachyOS-KDE-Grub") {
-            packages = "cachyoskdegrub";
+            packages = "cachyoskdegrub calamares-fix";
         } else if (current_desktop_name == "CachyOS-GNOME-Grub") {
-            packages = "cachyosgnomegrub";
+            packages = "cachyosgnomegrub calamares-fix";
         }
 
         // Add extra packages if specified
@@ -430,14 +430,7 @@ private:
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Public");
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Templates");
         // Copy Calamares package files
-        execute_command("sudo cp " + currentDir + "/calamares-cachyos/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
-        execute_command("sudo cp " + currentDir + "/calamares-cachyos/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
-        execute_command("sudo cp " + currentDir + "/calamares-cachyos/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
-        execute_command("sudo cp " + currentDir + "/calamares-cachyos/calamares-files/ckbcomp-1.227-2-any.pkg.tar " + target_folder);
-
-        // Install in chroot
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
-
+        
         // Copy calamares config
         execute_command("sudo cp -r " + currentDir + "/calamares-cachyos/calamares-files/calamares " + target_folder + "/etc/");
 
@@ -463,11 +456,6 @@ private:
         // Remove manjaro branding
         execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
 
-        // Delete the package files from target folder
-        execute_command("sudo rm -f " + target_folder + "/calamares-3.4.0-1-x86_64.pkg.tar.zst");
-        execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
-        execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
-        execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
 
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/.config/fish");
         execute_command("sudo cp " + currentDir + "/needed-files/fish_variables " + target_folder + "/home/" + new_username + "/.config/fish/fish_variables");
