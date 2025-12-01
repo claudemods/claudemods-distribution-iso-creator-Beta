@@ -149,7 +149,7 @@ private:
         }
 
         // Extract the three ZIP files only if needed
-        std::string sourceDir = currentDir + "/needed-files/calamares-per-distro/claudemods";
+        std::string sourceDir = currentDir + "/calamares-per-distro/claudemods";
         std::vector<std::string> zipFiles = {
             "calamares-claudemods.zip",
             "claudemods.zip",
@@ -448,40 +448,52 @@ private:
         }
     }
 
-    // MODIFIED: Dedicated function for Calamares installation using extracted ZIP files
+    // NEW: Dedicated function for Calamares installation to avoid duplication
     void install_calamares(const std::string& target_folder) {
         std::string currentDir = getCurrentDir();
-        std::string calamaresFolder = currentDir + "/needed-files/calamares-claudemods";
-
+        
         std::cout << COLOR_CYAN << "Installing Calamares installer..." << COLOR_RESET << std::endl;
+        
+        // Copy Calamares package files to target
+        execute_command("sudo cp " + currentDir + "/claudemods-calamares/calamares-files/calamares-3.4.0-1-x86_64.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/claudemods-calamares/calamares-files/calamares-oem-kde-settings-20240616-3-any.pkg.tar " + target_folder);
+        execute_command("sudo cp " + currentDir + "/claudemods-calamares/calamares-files/calamares-tools-0.1.0-1-any.pkg.tar.zst " + target_folder);
+        execute_command("sudo cp " + currentDir + "/claudemods-calamares/calamares-files/ckbcomp-1.227-2-any.pkg.tar " + target_folder);
 
-        // Copy Calamares files from extracted ZIPs
-        execute_command("sudo cp -r " + calamaresFolder + "/calamares-files/* " + target_folder + "/ 2>/dev/null || true");
-        execute_command("sudo cp -r " + calamaresFolder + "/calamares " + target_folder + "/etc/ 2>/dev/null || true");
-        execute_command("sudo cp -r " + calamaresFolder + "/claudemods " + target_folder + "/usr/share/calamares/branding/ 2>/dev/null || true");
-        execute_command("sudo cp -r " + calamaresFolder + "/working-hooks-btrfs-ext4/* /etc/initcpio 2>/dev/null || true");
-        execute_command("sudo cp -r " + calamaresFolder + "/build-image-arch-img/* " + currentDir + "/calamares-claudemods/build-image-arch-img/ 2>/dev/null || true");
+        // Install in chroot
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm\"");
 
-        // Install Calamares packages in chroot
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"pacman -U *.pkg.tar* --noconfirm 2>/dev/null || true\"");
+        // Copy calamares config
+        execute_command("sudo cp -r " + currentDir + "/claudemods-calamares/calamares-files/calamares " + target_folder + "/etc/");
 
-        // Copy additional Calamares configuration
-        execute_command("sudo cp -r " + calamaresFolder + "/calamares " + target_folder + "/etc/ 2>/dev/null || true");
-        execute_command("sudo cp " + calamaresFolder + "/mount.conf " + target_folder + "/usr/share/calamares/modules/ 2>/dev/null || true");
+
+        // Copy custom branding
+        execute_command("sudo cp -r " + currentDir + "/claudemods-calamares/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+
+        // Extract extra files
+        execute_command("sudo unzip -o -q " + currentDir + "/claudemods-calamares/calamares-files/extras.zip -d " + target_folder);
+
+        // Copy hooks
+        execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
+
+        execute_command("sudo cp " + currentDir + "/claudemods-calamares/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
 
         // Copy desktop shortcuts
-        execute_command("sudo cp " + currentDir + "/needed-files/Calamares " + target_folder + "/home/" + new_username + "/Desktop 2>/dev/null || true");
-        execute_command("sudo cp " + currentDir + "/needed-files/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop 2>/dev/null || true");
-        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares 2>/dev/null || true");
-        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer 2>/dev/null || true");
+        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
         execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
-        execute_command("sudo tar xzf " + currentDir + "/needed-files/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer 2>/dev/null || true");
+        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
 
         // Remove manjaro branding
         execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
 
-        // Clean up package files from target folder
-        execute_command("sudo rm -f " + target_folder + "/*.pkg.tar* 2>/dev/null || true");
+        // Delete the package files from target folder
+        execute_command("sudo rm -f " + target_folder + "/calamares-3.4.0-1-x86_64.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/calamares-oem-kde-settings-20240616-3-any.pkg.tar");
+        execute_command("sudo rm -f " + target_folder + "/calamares-tools-0.1.0-1-any.pkg.tar.zst");
+        execute_command("sudo rm -f " + target_folder + "/ckbcomp-1.227-2-any.pkg.tar");
 
         std::cout << COLOR_GREEN << "Calamares installation completed!" << COLOR_RESET << std::endl;
     }
