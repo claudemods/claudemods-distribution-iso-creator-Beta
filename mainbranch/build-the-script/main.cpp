@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
 #include "claudemods.h"
+#include "cachyos.h"
 #include "arch.h"
+
 
 // Function to set text color
 void setColor(const std::string& colorCode) {
@@ -37,7 +39,7 @@ void displayMenu() {
     setColor("\033[38;2;0;255;255m"); // Your cyan color
     std::cout << "=== DISTRIBUTIONS MENU ===" << std::endl;
     std::cout << "1. Claudemods Distributions" << std::endl;
-    std::cout << "2. Cachyos Distributions" << std::endl;
+    std::cout << "2. Cachyos Distributions" << std::endl;  // Now fully implemented
     std::cout << "3. Arch Distributions" << std::endl;
     std::cout << "4. Exit" << std::endl;
     std::cout << "==========================" << std::endl;
@@ -66,8 +68,16 @@ void handleSelection(int choice) {
             setColor("\033[38;2;0;255;255m");
             std::cout << "You selected: Cachyos Distributions" << std::endl;
             std::cout << "Starting Cachyos ISO creation process..." << std::endl;
-            // Add Cachyos installer integration here
             resetColor();
+
+            // Clear input buffer before launching installer
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+            // Launch the Cachyos installer
+            {
+                CachyosInstaller installer;  // Changed from ClaudemodsInstaller to CachyosInstaller
+                installer.run();
+            }
             break;
         case 3:
             setColor("\033[38;2;0;255;255m");
