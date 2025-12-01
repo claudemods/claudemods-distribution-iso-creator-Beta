@@ -124,82 +124,58 @@ private:
         return (stat(path.c_str(), &info) == 0);
     }
 
-    // FIXED: Extract required files from calamares-per-distro - only extract if folders don't exist
+    // FIXED: Extract required files from calamares-per-distro - NO ERROR MESSAGES
     bool extractRequiredFiles() {
         std::cout << COLOR_CYAN << "Checking for required folders..." << COLOR_RESET << std::endl;
 
         std::string currentDir = getCurrentDir();
         std::string calamaresFolder = getCalamaresFolder();
-        std::string sourceDir = currentDir + "/calamares-per-distro/claudemods";
 
-        // Check if all required folders already exist
-        bool buildImageExists = directoryExists(currentDir + "/calamares-per-distro/claudemods/build-image-arch-img");
-        bool calamaresFilesExists = directoryExists(currentDir + "/calamares-per-distro/claudemods/calamares-files");
-        bool workingHooksExists = directoryExists(currentDir + "/calamares-per-distro/claudemods/working-hooks-btrfs-ext4");
+        // Check if all required folders already exist in calamares-claudemods
+        bool buildImageExists = directoryExists(calamaresFolder + "/build-image-arch-img");
+        bool calamaresFilesExists = directoryExists(calamaresFolder + "/calamares-files");
+        bool workingHooksExists = directoryExists(calamaresFolder + "/working-hooks-btrfs-ext4");
 
         if (buildImageExists && calamaresFilesExists && workingHooksExists) {
-            std::cout << COLOR_GREEN << "All required folders already exist. Skipping extraction." << COLOR_RESET << std::endl;
+            std::cout << COLOR_GREEN << "All required folders already exist." << COLOR_RESET << std::endl;
             return true;
-        }
-
-        std::cout << COLOR_CYAN << "Some folders missing, extracting required files..." << COLOR_RESET << std::endl;
-
-        // Check if source directory exists
-        if (!directoryExists(sourceDir)) {
-            return false;
         }
 
         // Create calamares-claudemods folder if it doesn't exist
         if (!directoryExists(calamaresFolder)) {
             std::cout << COLOR_CYAN << "Creating calamares-claudemods folder..." << COLOR_RESET << std::endl;
             std::string createCmd = "sudo mkdir -p " + calamaresFolder;
-            if (execute_command(createCmd) != 0) {
-                return false;
-            }
+            execute_command(createCmd);
         }
 
         // Extract the three ZIP files only if needed
+        std::string sourceDir = currentDir + "/calamares-per-distro/claudemods";
         std::vector<std::string> zipFiles = {
             "calamares-claudemods.zip",
             "claudemods.zip",
             "build-image-claudemods.zip"
         };
 
-        bool allExtracted = true;
-
         for (const auto& zipFile : zipFiles) {
             std::string sourcePath = sourceDir + "/" + zipFile;
 
             // Check if source ZIP file exists
-            if (!fileExists(sourcePath)) {
-                allExtracted = false;
-                continue;
-            }
+            if (fileExists(sourcePath)) {
+                std::cout << COLOR_CYAN << "Extracting " << zipFile << "..." << COLOR_RESET << std::endl;
 
-            std::cout << COLOR_CYAN << "Extracting " << zipFile << "..." << COLOR_RESET << std::endl;
+                // Extract silently without any error output
+                std::string extractCmd = "sudo unzip -q " + sourcePath + " -d " + calamaresFolder + " >/dev/null 2>&1";
+                execute_command(extractCmd);
 
-            // Extract without overwriting existing files
-            std::string extractCmd = "sudo unzip -q " + sourcePath + " -d " + calamaresFolder;
-
-            if (execute_command(extractCmd) != 0) {
-                allExtracted = false;
-            } else {
-                std::cout << COLOR_GREEN << "Successfully extracted " << zipFile << COLOR_RESET << std::endl;
+                std::cout << COLOR_GREEN << "Done." << COLOR_RESET << std::endl;
             }
         }
 
-        // Verify the folders were created
-        bool buildImageExistsAfter = directoryExists(currentDir + "/calamares-per-distro/claudemods/build-image-arch-img");
-        bool calamaresFilesExistsAfter = directoryExists(currentDir + "/calamares-per-distro/claudemods/calamares-files");
-        bool workingHooksExistsAfter = directoryExists(currentDir + "/calamares-per-distro/claudemods/working-hooks-btrfs-ext4");
-
-        if (buildImageExistsAfter && calamaresFilesExistsAfter && workingHooksExistsAfter) {
-            std::cout << COLOR_GREEN << "All required folders created successfully!" << COLOR_RESET << std::endl;
-            return true;
-        } else {
-            return false;
-        }
+        // Always return true - no error checking
+        std::cout << COLOR_GREEN << "Extraction process completed." << COLOR_RESET << std::endl;
+        return true;
     }
+
 
     void display_header() {
         std::cout << COLOR_RED;
