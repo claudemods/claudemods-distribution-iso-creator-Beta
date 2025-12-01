@@ -328,11 +328,11 @@ private:
         execute_command("sudo mkdir -p " + target_folder + "/boot/grub");
 
         // COPY CONFIGURATION FILES
-        execute_command("sudo cp -r " + currentDir + "/11-dm-initramfs.rules " + target_folder + "/usr/lib/initcpio/udev/11-dm-initramfs.rules");
-        execute_command("sudo cp -r " + currentDir + "/11-dm-initramfs.rules /usr/lib/initcpio/udev/11-dm-initramfs.rules");
-        execute_command("sudo cp -r " + currentDir + "/vconsole.conf " + target_folder + "/etc/vconsole.conf");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/11-dm-initramfs.rules " + target_folder + "/usr/lib/initcpio/udev/11-dm-initramfs.rules");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/11-dm-initramfs.rules /usr/lib/initcpio/udev/11-dm-initramfs.rules");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/vconsole.conf " + target_folder + "/etc/vconsole.conf");
         execute_command("sudo cp -r /etc/resolv.conf " + target_folder + "/etc/resolv.conf");
-        execute_command("sudo cp -r " + currentDir + "/pacman-arch.conf /etc/pacman.conf");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/pacman-arch.conf /etc/pacman.conf");
 
         execute_command("sudo pacman -Sy");
         return true;
@@ -404,26 +404,26 @@ private:
         }
 
         // Copy calamares config
-        execute_command("sudo cp -r " + currentDir + "/calamares-files/calamares " + target_folder + "/etc/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-arch/calamares-files/calamares " + target_folder + "/etc/");
 
         // Copy custom branding
-        execute_command("sudo cp -r " + currentDir + "/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-arch/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
 
         // Extract extra files
-        execute_command("sudo unzip -o -q " + currentDir + "/calamares-files/extras.zip -d " + target_folder);
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-arch/calamares-files/extras.zip -d " + target_folder);
 
         // Copy hooks
-        execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
+        execute_command("sudo cp -r " + currentDir + "calamares-arch/working-hooks-btrfs-ext4/* /etc/initcpio");
 
-        execute_command("sudo cp " + currentDir + "/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+        execute_command("sudo cp " + currentDir + "/calamares-arch/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
 
         // Copy desktop shortcuts
-        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
-        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/needed-files/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/needed-files/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
         execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
         execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
         execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
-        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo tar xzf " + currentDir + "/needed-files/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
 
         // Remove manjaro branding
         execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
@@ -469,7 +469,7 @@ private:
         std::string currentDir = getCurrentDir();
         std::string target_folder = getFullTargetPath();
 
-        std::string squashfs_cmd = "sudo mksquashfs " + target_folder + " " + currentDir + "/build-image-arch-img/LiveOS/rootfs.img -noappend -comp xz -b 256K -Xbcj x86 -e etc/udev/rules.d/70-persistent-cd.rules -e etc/udev/rules.d/70-persistent-net.rules -e etc/mtab -e etc/fstab -e dev/* -e proc/* -e sys/* -e tmp/* -e run/* -e mnt/* -e media/* -e lost+found";
+        std::string squashfs_cmd = "sudo mksquashfs " + target_folder + " " + currentDir + "/calamares-arch/build-image-arch-img/LiveOS/rootfs.img -noappend -comp xz -b 256K -Xbcj x86 -e etc/udev/rules.d/70-persistent-cd.rules -e etc/udev/rules.d/70-persistent-net.rules -e etc/mtab -e etc/fstab -e dev/* -e proc/* -e sys/* -e tmp/* -e run/* -e mnt/* -e media/* -e lost+found";
 
         std::cout << ARCH_COLOR_CYAN << "Executing: " << squashfs_cmd << ARCH_COLOR_RESET << std::endl;
 
@@ -517,7 +517,7 @@ private:
                 try {
                     int choice = std::stoi(input);
                     if (choice >= 1 && choice <= kernel_files.size()) {
-                        std::string copy_cmd = "sudo cp " + kernel_files[choice - 1] + " " + currentDir + "/build-image-arch-img/boot/vmlinuz-x86_64";
+                        std::string copy_cmd = "sudo cp " + kernel_files[choice - 1] + " " + currentDir + "/calamares-arch/build-image-arch-img/boot/vmlinuz-x86_64";
                         if (execute_command(copy_cmd) == 0) {
                             std::cout << ARCH_COLOR_GREEN << "Kernel copied successfully!" << ARCH_COLOR_RESET << std::endl;
                         } else {
@@ -531,7 +531,7 @@ private:
 
             // Generate initramfs
             std::cout << ARCH_COLOR_CYAN << "Generating initramfs..." << ARCH_COLOR_RESET << std::endl;
-            std::string initramfs_cmd = "cd " + currentDir + "/build-image-arch-img && sudo mkinitcpio -c mkinitcpio.conf -g " + currentDir + "/build-image-arch-img/boot/initramfs-x86_64.img";
+            std::string initramfs_cmd = "cd " + currentDir + "/calamares-arch/build-image-arch-img && sudo mkinitcpio -c mkinitcpio.conf -g " + currentDir + "/calamares-arch/build-image-arch-img/boot/initramfs-x86_64.img";
             if (execute_command(initramfs_cmd) == 0) {
                 std::cout << ARCH_COLOR_GREEN << "Initramfs generated successfully!" << ARCH_COLOR_RESET << std::endl;
                 create_iso_image(distro_name);
@@ -558,18 +558,18 @@ private:
         "-r -graft-points -no-pad "
         "--sort-weight 0 / "
         "--sort-weight 1 /boot "
-        "--grub2-mbr " + currentDir + "/build-image-arch-img/boot/grub/i386-pc/boot_hybrid.img "
+        "--grub2-mbr " + currentDir + "/calamares-arch/build-image-arch-img/boot/grub/i386-pc/boot_hybrid.img "
         "-partition_offset 16 "
         "-b boot/grub/i386-pc/eltorito.img "
         "-c boot.catalog "
         "-no-emul-boot -boot-load-size 4 -boot-info-table --grub2-boot-info "
         "-eltorito-alt-boot "
-        "-append_partition 2 0xef " + currentDir + "/build-image-arch-img/boot/efi.img "
+        "-append_partition 2 0xef " + currentDir + "/calamares-arch/build-image-arch-img/boot/efi.img "
         "-e --interval:appended_partition_2:all:: "
         "-no-emul-boot "
         "-iso-level 3 "
         "-o \"" + currentDir + "/" + distro_name + ".iso\" " +
-        currentDir + "/build-image-arch-img/";
+        currentDir + "/calamares-arch/build-image-arch-img/";
 
         std::cout << ARCH_COLOR_CYAN << "Executing: " << xorriso_cmd << ARCH_COLOR_RESET << std::endl;
 
