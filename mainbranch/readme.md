@@ -1,6 +1,6 @@
 # the future for v1.01 (being built)
 
-## v1.01 focuses on improving the needec file layout for the scripts and adding additional improvements and features
+## v1.01 focuses on improving the needed file layout for the scripts and adding additional improvements and features
 - the main app will have the 3 distribution options to use and build isos from
 - the main app will also have the guide built in
 - the main app will also include the changelogs
