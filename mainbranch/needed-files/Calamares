@@ -1,0 +1,21 @@
+[Desktop Entry]
+Categories=Qt;System;
+Comment[en_GB]=Install the operating system to disk
+Comment=Install the operating system to disk
+Exec=pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY KDE_SESSION_VERSION=5 KDE_FULL_SESSION=true calamares %U;
+GenericName[en_GB]=Live Installer
+GenericName=Live Installer
+Icon=calamares
+MimeType=
+Name[en_GB]=Install System
+Name=Install System
+NoDisplay=false
+Path=
+PrefersNonDefaultGPU=false
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+Version=1.0
+X-KDE-SubstituteUID=false
+X-KDE-Username=
