@@ -350,6 +350,7 @@ private:
         execute_command("sudo mkdir -p " + target_folder + "/usr/lib/initcpio/udev/");
         execute_command("sudo cp -r " + currentDir + "/needed-files/11-dm-initramfs.rules " + target_folder + "/usr/lib/initcpio/udev/11-dm-initramfs.rules");
         execute_command("sudo cp -r " + currentDir + "/needed-files/11-dm-initramfs.rules /usr/lib/initcpio/udev/11-dm-initramfs.rules");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/80-gamecompatibility.conf " + target_folder + "/etc/sysctl.d/80-gamecompatibility.conf");
         execute_command("sudo mkdir -p " + target_folder + "/etc/pacman.d");
         execute_command("sudo mkdir -p " + target_folder + "/boot/grub");
         execute_command("sudo mkdir -p " + target_folder + "/usr/share/grub/themes");
