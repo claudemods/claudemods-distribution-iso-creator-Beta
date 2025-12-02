@@ -185,7 +185,7 @@ private:
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << COLOR_CYAN << "claudemods distribution iso creator Beta v1.01 1-12-2025" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "claudemods distribution iso creator Beta v1.01 02-12-2025" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
 
@@ -815,7 +815,7 @@ private:
 
         // INSTALL BASE SYSTEM WITH PACSTRAP - INTEGRATE EXTRA PACKAGES
         std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop calamares-fix";
+        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop calamares-fix protonup-qt hhd adjustor hhd-ui";
         if (!extra_packages.empty()) {
             pacstrap_cmd += " " + extra_packages;
         }
@@ -893,7 +893,7 @@ private:
 
         // INSTALL BASE SYSTEM WITH PACSTRAP - INTEGRATE EXTRA PACKAGES
         std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-dev calamares-fix";
+        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-dev calamares-fix protonup-qt hhd adjustor hhd-ui";
         if (!extra_packages.empty()) {
             pacstrap_cmd += " " + extra_packages;
         }
@@ -971,7 +971,7 @@ private:
 
         // INSTALL BASE SYSTEM WITH PACSTRAP - INTEGRATE EXTRA PACKAGES
         std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-full calamares-fix";
+        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-full calamares-fix protonup-qt hhd adjustor hhd-ui";
         if (!extra_packages.empty()) {
             pacstrap_cmd += " " + extra_packages;
         }
@@ -1050,7 +1050,7 @@ private:
 
         // INSTALL BASE SYSTEM WITH PACSTRAP - INTEGRATE EXTRA PACKAGES
         std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-fulldev calamares-fix";
+        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-fulldev calamares-fix protonup-qt hhd adjustor hhd-ui";
         if (!extra_packages.empty()) {
             pacstrap_cmd += " " + extra_packages;
         }
@@ -1129,7 +1129,7 @@ private:
 
         // INSTALL BASE SYSTEM WITH PACSTRAP - INTEGRATE EXTRA PACKAGES
         std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop calamares-fix";
+        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop calamares-fix protonup-qt hhd adjustor hhd-ui";
         if (!extra_packages.empty()) {
             pacstrap_cmd += " " + extra_packages;
         }
@@ -1207,7 +1207,7 @@ private:
 
         // INSTALL BASE SYSTEM WITH PACSTRAP - INTEGRATE EXTRA PACKAGES
         std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-dev calamares-fix";
+        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-dev calamares-fix protonup-qt hhd adjustor hhd-ui";
         if (!extra_packages.empty()) {
             pacstrap_cmd += " " + extra_packages;
         }
@@ -1285,7 +1285,7 @@ private:
 
         // INSTALL BASE SYSTEM WITH PACSTRAP - INTEGRATE EXTRA PACKAGES
         std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-full calamares-fix";
+        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-full calamares-fix protonup-qt hhd adjustor hhd-ui";
         if (!extra_packages.empty()) {
             pacstrap_cmd += " " + extra_packages;
         }
@@ -1364,7 +1364,7 @@ private:
 
         // INSTALL BASE SYSTEM WITH PACSTRAP - INTEGRATE EXTRA PACKAGES
         std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-fulldev calamares-fix";
+        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-fulldev calamares-fix protonup-qt hhd adjustor hhd-ui";
         if (!extra_packages.empty()) {
             pacstrap_cmd += " " + extra_packages;
         }
