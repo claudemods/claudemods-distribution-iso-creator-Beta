@@ -611,7 +611,7 @@ private:
         "-e --interval:appended_partition_2:all:: "
         "-no-emul-boot "
         "-iso-level 3 "
-        "-o \"" + currentDir + "/needed-files/" + distro_name + ".iso\" " +
+        "-o \"" + currentDir + "" + distro_name + ".iso\" " +
         currentDir + "/calamares-claudemods/build-image-arch-img/";
 
         std::cout << COLOR_CYAN << "Executing: " << xorriso_cmd << COLOR_RESET << std::endl;
