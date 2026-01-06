@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0 - 06-01-2026 00:16PM GMT (UK time)
+- claudemods packagelists updates
+- cachyos kde packagelist updated
+
 ## v1.0 - 01-12-2025 17:34PM GMT (UK time)
 - missing calamares packages added back to claudemods distribution option
 - no other changes needed since everything else works
