@@ -464,7 +464,6 @@ private:
         execute_command("sudo cp -r " + currentDir + "/calamares-claudemods/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
 
         // Extract extra files
-        execute_command("sudo unzip -o -q " + currentDir + "/calamares-claudemods/calamares-files/extras.zip -d " + target_folder);
 
         execute_command("sudo cp -r " + currentDir + "/calamares-claudemods/calamares-files/extras/* " + target_folder + "/");
 
