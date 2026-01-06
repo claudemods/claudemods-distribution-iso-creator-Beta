@@ -457,28 +457,30 @@ private:
         std::cout << COLOR_CYAN << "Installing Calamares installer..." << COLOR_RESET << std::endl;
 
         // Copy calamares config
-        execute_command("sudo cp -r " + currentDir + "/claudemods-calamares/calamares-files/calamares " + target_folder + "/etc/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-claudemods/calamares-files/calamares " + target_folder + "/etc/");
 
 
         // Copy custom branding
-        execute_command("sudo cp -r " + currentDir + "/claudemods-calamares/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
+        execute_command("sudo cp -r " + currentDir + "/calamares-claudemods/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
 
         // Extract extra files
-        execute_command("sudo unzip -o -q " + currentDir + "/claudemods-calamares/calamares-files/extras.zip -d " + target_folder);
+        execute_command("sudo unzip -o -q " + currentDir + "/calamares-claudemods/calamares-files/extras.zip -d " + target_folder);
+
+        execute_command("sudo cp -r " + currentDir + "/calamares-claudemods/calamares-files/extras/* " + target_folder + "/");
 
         // Copy hooks
-        execute_command("sudo cp -r " + currentDir + "/working-hooks-btrfs-ext4/* /etc/initcpio");
+        execute_command("sudo cp -r " + currentDir + "/calamares-claudemods/working-hooks-btrfs-ext4/* /etc/initcpio");
 
-        execute_command("sudo cp " + currentDir + "/claudemods-calamares/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
+        execute_command("sudo cp " + currentDir + "/calamares-claudemods/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
 
         // Copy desktop shortcuts
-        execute_command("sudo cp " + currentDir + "/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
-        execute_command("sudo cp " + currentDir + "/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
+        execute_command("sudo cp " + currentDir + "/needed-files/Calamares " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
+        execute_command("sudo cp " + currentDir + "/needed-files/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
         execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
         execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
         execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
-        execute_command("sudo tar xzf " + currentDir + "/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/wireless-regdom /etc/conf.d/wireless-regdom");
+        execute_command("sudo tar xzf " + currentDir + "/needed-files/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/wireless-regdom " + target_folder + "/etc/conf.d/wireless-regdom");
 
         // Remove manjaro branding
         execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
@@ -853,8 +855,8 @@ private:
         execute_command("cd " + target_folder);
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-minimal.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool.zip");
-        execute_command("sudo unzip -o " + currentDir + "/needed-files/Arch-Systemtool.zip -d " + target_folder + "/opt");
-        execute_command("sudo unzip -o " + currentDir + "/needed-files/spitfire-minimal.zip -d " + target_folder + "/home/" + new_username + "/");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt");
+        execute_command("sudo unzip -o " + currentDir + "/spitfire-minimal.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
         execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt/tweaksspitfire.sh");
@@ -864,8 +866,6 @@ private:
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin " + target_folder + "/usr/share/sddm/themes/SpitFireLogin");
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
-        execute_command("sudo rm -rf " + currentDir + "/needed-files/Arch-Systemtool.zip");
-        execute_command("sudo rm -rf " + currentDir + "/needed-files/spitfire-minimal.zip");
         execute_command("sudo rm -rf " + target_folder + "/opt/tweaksspitfire.sh");
 
         // ORIGINAL user-places.xbel FIX
