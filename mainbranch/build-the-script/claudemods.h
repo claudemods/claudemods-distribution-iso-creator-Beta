@@ -185,7 +185,7 @@ private:
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << COLOR_CYAN << "claudemods distribution iso creator Beta v1.01 06-01-2026" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "claudemods distribution iso creator Beta v1.01 07-01-2026" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
 
@@ -1007,10 +1007,10 @@ private:
 
         // DISTRIBUTION-SPECIFIC FILES
         execute_command("cd " + target_folder);
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-full.zip");
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool.zip");
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-full-v1.01.zip");
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-v1.01.zip");
         execute_command("sudo unzip -o " + currentDir + "/needed-files/Arch-Systemtool.zip -d " + target_folder + "/opt");
-        execute_command("sudo unzip -o " + currentDir + "/needed-files/spitfire-full.zip -d " + target_folder + "/home/" + new_username + "/");
+        execute_command("sudo unzip -o " + currentDir + "/needed-files/spitfire-full-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
         execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt/tweaksspitfire.sh");
@@ -1020,8 +1020,8 @@ private:
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin " + target_folder + "/usr/share/sddm/themes/SpitFireLogin");
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
-        execute_command("sudo rm -rf " + currentDir + "/needed-files/Arch-Systemtool.zip");
-        execute_command("sudo rm -rf " + currentDir + "/needed-files/spitfire-full.zip");
+        execute_command("sudo rm -rf " + currentDir + "/needed-files/Arch-Systemtool-v1.01.zip");
+        execute_command("sudo rm -rf " + currentDir + "/needed-files/spitfire-full-v1.01.zip");
         execute_command("sudo rm -rf " + target_folder + "/opt/tweaksspitfire.sh");
 
         // ORIGINAL user-places.xbel FIX
@@ -1086,10 +1086,10 @@ private:
 
         // DISTRIBUTION-SPECIFIC FILES
         execute_command("cd " + target_folder);
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-full.zip");
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool.zip");
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-full-v1.01.zip");
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-v1.01.zip");
         execute_command("sudo unzip -o " + currentDir + "/needed-files/Arch-Systemtool.zip -d " + target_folder + "/opt");
-        execute_command("sudo unzip -o " + currentDir + "/needed-files/spitfire-full.zip -d " + target_folder + "/home/" + new_username + "/");
+        execute_command("sudo unzip -o " + currentDir + "/needed-files/spitfire-full-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
         execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt/tweaksspitfire.sh");
@@ -1099,8 +1099,8 @@ private:
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin " + target_folder + "/usr/share/sddm/themes/SpitFireLogin");
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
-        execute_command("sudo rm -rf " + currentDir + "/needed-files/Arch-Systemtool.zip");
-        execute_command("sudo rm -rf " + currentDir + "/needed-files/spitfire-full.zip");
+        execute_command("sudo rm -rf " + currentDir + "/needed-files/Arch-Systemtool-v1.01.zip");
+        execute_command("sudo rm -rf " + currentDir + "/needed-files/spitfire-full-v1.01.zip");
         execute_command("sudo rm -rf " + target_folder + "/opt/tweaksspitfire.sh");
 
         // ORIGINAL user-places.xbel FIX
@@ -1321,10 +1321,10 @@ private:
 
         // DISTRIBUTION-SPECIFIC FILES
         execute_command("cd " + target_folder);
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/apex-full.zip");
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool.zip");
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/apex-full-v1.01.zip");
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-v1.01.zip");
         execute_command("sudo unzip -o " + currentDir + "/needed-files/Arch-Systemtool.zip -d " + target_folder + "/opt");
-        execute_command("sudo unzip -o " + currentDir + "/needed-files/apex-full.zip -d " + target_folder + "/home/" + new_username + "/");
+        execute_command("sudo unzip -o " + currentDir + "/needed-files/apex-full-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
         execute_command("sudo cp " + currentDir + "/needed-files/apex-ckge-minimal/tweaksapex.sh " + target_folder + "/opt/tweaksapex.sh");
@@ -1334,8 +1334,8 @@ private:
         execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/ApexLogin2 " + target_folder + "/usr/share/sddm/themes/ApexLogin2");
         execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
         execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
-        execute_command("sudo rm -rf " + currentDir + "/needed-files/Arch-Systemtool.zip");
-        execute_command("sudo rm -rf " + currentDir + "/needed-files/apex-full.zip");
+        execute_command("sudo rm -rf " + currentDir + "/needed-files/Arch-Systemtool-v1.01.zip");
+        execute_command("sudo rm -rf " + currentDir + "/needed-files/apex-full-v1.01.zip");
         execute_command("sudo rm -rf " + target_folder + "/opt/tweaksapex.sh");
 
         // ORIGINAL user-places.xbel FIX FOR APEX
@@ -1400,10 +1400,10 @@ private:
 
         // DISTRIBUTION-SPECIFIC FILES
         execute_command("cd " + target_folder);
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/apex-full.zip");
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool.zip");
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/apex-full-v1.01.zip");
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-v1.01.zip");
         execute_command("sudo unzip -o " + currentDir + "/needed-files/Arch-Systemtool.zip -d " + target_folder + "/opt");
-        execute_command("sudo unzip -o " + currentDir + "/needed-files/apex-full.zip -d " + target_folder + "/home/" + new_username + "/");
+        execute_command("sudo unzip -o " + currentDir + "/needed-files/apex-full-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
         execute_command("sudo cp " + currentDir + "/needed-files/apex-ckge-minimal/tweaksapex.sh " + target_folder + "/opt/tweaksapex.sh");
@@ -1413,8 +1413,8 @@ private:
         execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/ApexLogin2 " + target_folder + "/usr/share/sddm/themes/ApexLogin2");
         execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
         execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
-        execute_command("sudo rm -rf " + currentDir + "/needed-files/Arch-Systemtool.zip");
-        execute_command("sudo rm -rf " + currentDir + "/needed-files/apex-full.zip");
+        execute_command("sudo rm -rf " + currentDir + "/needed-files/Arch-Systemtool-v1.01.zip");
+        execute_command("sudo rm -rf " + currentDir + "/needed-files/apex-full-v1.01.zip");
         execute_command("sudo rm -rf " + target_folder + "/opt/tweaksapex.sh");
 
         // ORIGINAL user-places.xbel FIX FOR APEX
