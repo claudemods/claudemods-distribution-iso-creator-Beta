@@ -1,5 +1,5 @@
 
-## to test this script (claudemods option have only been updated 60% as of yet)
+## to test this script (claudemods options have only been updated 60% as of yet)
 ## use command below to compile then copy the file test to folder (mainbranch) 
 command: g++ -std=c++23 main.cpp -o test
 
