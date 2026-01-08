@@ -453,7 +453,7 @@ private:
     // NEW: Dedicated function for Calamares installation to avoid duplication
     void install_calamares(const std::string& target_folder) {
         std::string currentDir = getCurrentDir();
-        
+
         std::cout << COLOR_CYAN << "Installing Calamares installer..." << COLOR_RESET << std::endl;
 
         // Copy calamares config
@@ -1323,7 +1323,7 @@ private:
         execute_command("cd " + target_folder);
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/apex-full-v1.01.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-v1.01.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-v1.01.zip -d " + target_folder + "/opt");
         execute_command("sudo unzip -o " + currentDir + "/apex-full-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
@@ -1402,7 +1402,7 @@ private:
         execute_command("cd " + target_folder);
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/apex-full-v1.01.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-v1.01.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-v1.01.zip -d " + target_folder + "/opt");
         execute_command("sudo unzip -o " + currentDir + "/apex-full-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
