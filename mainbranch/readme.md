@@ -1,3 +1,8 @@
+
+## to test this script use command below to compile then copy the file test to folder (mainbranch)
+g++ -std=c++23 main.cpp -o test
+
+
 # the future for v1.01 (being built)
 
 ## v1.01 focuses on improving the needed file layout for the scripts and adding additional improvements and features
