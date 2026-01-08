@@ -2,7 +2,7 @@
 ## to test this script 
 - claudemods options have only been updated 60% as of yet nothing else will work yet
 - navigate to build-the-script
-- then use command below to compile then copy the file (test) to folder (mainbranch) 
+- then use command below to compile then copy the file (test) to folder (mainbranch) then execute in konsole (test)
 - command: g++ -std=c++23 main.cpp -o test
 
 
