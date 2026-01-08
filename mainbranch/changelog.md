@@ -1,4 +1,9 @@
 
+## changlelog claudemods distributions v1.01 08-01-2026 17:36 GMT (uk time)
+- fixes to script so apex full .zips now work
+- new apex full .zip updated to website
+- i will now move onto my handheld editions by getting package list then build script to create a iso for them
+
 ## changlelog claudemods distributions v1.01 08-01-2026
 - many things updated in the script e.g wireless-regdom and 80-gamecompatibility.conf
 - spitfire full edition .zips have been updated
