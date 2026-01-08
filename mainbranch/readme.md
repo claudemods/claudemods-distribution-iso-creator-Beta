@@ -1,7 +1,7 @@
 
 ## to test this script (claudemods option have only been updated 60% as of yet)
-## usie command below to compile then copy the file test to folder (mainbranch) 
-g++ -std=c++23 main.cpp -o test
+## use command below to compile then copy the file test to folder (mainbranch) 
+command: (g++ -std=c++23 main.cpp -o test)
 
 
 # the future for v1.01 (being built)
