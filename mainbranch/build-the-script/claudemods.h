@@ -185,7 +185,7 @@ private:
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << COLOR_CYAN << "claudemods distribution iso creator Beta v1.01 07-01-2026" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "claudemods distribution iso creator Beta v1.01 12-01-2026" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
 
@@ -1453,42 +1453,42 @@ private:
                     current_distro_name = "Spitfire-CKGE-Minimal";
                     saveConfiguration();
                     std::cout << COLOR_GREEN << "Spitfire CKGE Minimal selected. Use 'Start Installation' to begin." << COLOR_RESET << std::endl;
-                    break;
+                    return; // ADDED THIS LINE
                 case 1:
                     current_distro_name = "Spitfire-CKGE-Minimal-Dev";
                     saveConfiguration();
                     std::cout << COLOR_GREEN << "Spitfire CKGE Minimal Dev selected. Use 'Start Installation' to begin." << COLOR_RESET << std::endl;
-                    break;
+                    return; // ADDED THIS LINE
                 case 2:
                     current_distro_name = "Spitfire-CKGE-Full";
                     saveConfiguration();
                     std::cout << COLOR_GREEN << "Spitfire CKGE Full selected. Use 'Start Installation' to begin." << COLOR_RESET << std::endl;
-                    break;
+                    return; // ADDED THIS LINE
                 case 3:
                     current_distro_name = "Spitfire-CKGE-Full-Dev";
                     saveConfiguration();
                     std::cout << COLOR_GREEN << "Spitfire CKGE Full Dev selected. Use 'Start Installation' to begin." << COLOR_RESET << std::endl;
-                    break;
+                    return; // ADDED THIS LINE
                 case 4:
                     current_distro_name = "Apex-CKGE-Minimal";
                     saveConfiguration();
                     std::cout << COLOR_GREEN << "Apex CKGE Minimal selected. Use 'Start Installation' to begin." << COLOR_RESET << std::endl;
-                    break;
+                    return; // ADDED THIS LINE
                 case 5:
                     current_distro_name = "Apex-CKGE-Minimal-Dev";
                     saveConfiguration();
                     std::cout << COLOR_GREEN << "Apex CKGE Minimal Dev selected. Use 'Start Installation' to begin." << COLOR_RESET << std::endl;
-                    break;
+                    return; // ADDED THIS LINE
                 case 6:
                     current_distro_name = "Apex-CKGE-Full";
                     saveConfiguration();
                     std::cout << COLOR_GREEN << "Apex CKGE Full selected. Use 'Start Installation' to begin." << COLOR_RESET << std::endl;
-                    break;
+                    return; // ADDED THIS LINE
                 case 7:
                     current_distro_name = "Apex-CKGE-Full-Dev";
                     saveConfiguration();
                     std::cout << COLOR_GREEN << "Apex CKGE Full Dev selected. Use 'Start Installation' to begin." << COLOR_RESET << std::endl;
-                    break;
+                    return; // ADDED THIS LINE
                 case 8:
                     return;
             }
