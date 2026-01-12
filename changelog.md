@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0 - 12-01-2026 16:53PM GMT (UK time)
+i missed 1 thing causing errors with calamares thats now been removed and fixed
+
 ## v1.0 - 12-01-2026 15:21PM GMT (UK time)
 calamares package has been updated for all distros
 
