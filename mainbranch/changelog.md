@@ -4,6 +4,8 @@
 - then use command below to compile then copy the file (test) to folder (mainbranch) then execute in konsole (test)
 - command: g++ -std=c++23 main.cpp -o test
 
+## changlelog claudemods distributions v1.01 12-01-2026 16:54 GMT (uk time)
+- 1 file removed to fix all calamares errors its now fixed
 
 ## changlelog claudemods distributions v1.01 12-01-2026 15:21 GMT (uk time)
 - calamares package has been updated for all distros e.g claudemods cachyos and arch
