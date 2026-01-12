@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.0 - 12-01-2026 00:16PM GMT (UK time)
+## v1.0 - 12-01-2026 15:21PM GMT (UK time)
 calamares package has been updated for all distros
 
 ## v1.0 - 06-01-2026 00:16PM GMT (UK time)
