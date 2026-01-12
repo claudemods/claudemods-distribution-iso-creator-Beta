@@ -40,7 +40,7 @@ void displayMenu() {
     std::cout << "=== DISTRIBUTIONS MENU ===" << std::endl;
     std::cout << "1. claudemods Desktop Distributions" << std::endl;
     std::cout << "2. claudemods Handheld Distributions" << std::endl;  // New option
-    std::cout << "3. Cachyos Distributions" << std::endl;
+    std::cout << "3. Cachyos Desktop Distributions" << std::endl;
     std::cout << "4. Cachyos Handheld Distributions" << std::endl;  // New option
     std::cout << "5. Arch Distributions" << std::endl;
     std::cout << "6. Exit" << std::endl;
