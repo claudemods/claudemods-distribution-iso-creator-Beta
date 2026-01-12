@@ -5,6 +5,11 @@
 - command: g++ -std=c++23 main.cpp -o test
 
 
+## changlelog claudemods distributions v1.01 12-01-2026 15:21 GMT (uk time)
+- calamares package has been updated for all distros e.g claudemods cachyos and arch
+- artwork for claudemods calamares has been updated
+- script has been polished so the selection menu works better
+- new options for main.cpp added but not integrated yet 
 
 ## changlelog claudemods distributions v1.01 08-01-2026 17:42 GMT (uk time)
 - fixes to script so apex full .zip now works
