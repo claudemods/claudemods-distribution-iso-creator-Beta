@@ -1,10 +1,14 @@
 # Changelog
 
+## v1.0 - 13-01-2026 14:10PM GMT (UK time)
+- more calamares fixes since i missed some things yesterday
+- claudemods dev editions will now work fine i had to update packagelist to include kde-banana-kquickimageeditor-git
+
 ## v1.0 - 12-01-2026 16:53PM GMT (UK time)
-i missed 1 thing causing errors with calamares thats now been removed and fixed
+- i missed 1 thing causing errors with calamares thats now been removed and fixed
 
 ## v1.0 - 12-01-2026 15:21PM GMT (UK time)
-calamares package has been updated for all distros
+- calamares package has been updated for all distros
 
 ## v1.0 - 06-01-2026 00:16PM GMT (UK time)
 - claudemods packagelists updated
