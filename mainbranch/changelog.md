@@ -4,6 +4,11 @@
 - then use command below to compile then copy the file (test) to folder (mainbranch) then execute in konsole (test)
 - command: g++ -std=c++23 main.cpp -o test
 
+## changlelog claudemods distributions v1.01 13-01-2026 13:10 GMT (uk time)
+- more calamares fixes since i missed some things yesterday
+- claudemods dev editions will now work fine i had to update packagelist to include kde-banana-kquickimageeditor-git
+- new .h files created but code needs to be integrated and tested i will polish main options e.g cachyos desktops and arch desktops before hand
+
 ## changlelog claudemods distributions v1.01 12-01-2026 16:54 GMT (uk time)
 - 1 file removed to fix all calamares errors its now fixed
 
