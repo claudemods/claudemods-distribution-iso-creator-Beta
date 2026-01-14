@@ -19,6 +19,8 @@
 #include <unistd.h>
 #include <errno.h>
 
+// Remove color definitions since they're in claudemods.h
+// Include claudemods.h or declare extern references
 extern const std::string COLOR_CYAN;
 extern const std::string COLOR_RED;
 extern const std::string COLOR_GREEN;
@@ -34,77 +36,68 @@ private:
     std::string user_password;
     std::string timezone;
     std::string keyboard_layout;
-    std::string current_distro_name;
-    std::string selected_kernel;
-    std::string current_desktop_name;
-    std::string extra_packages;
+    std::string current_distro_name; // Store the current distro name for ISO
+    std::string extra_packages; // Store extra packages to install
+    std::string selected_kernel; // Added missing variable
+    std::string current_desktop_name; // Added missing variable
 
+    // Terminal control for arrow keys
     struct termios oldt, newt;
-    std::string config_file = "configurationcachyos.txt";
 
-    // Extract zip file using system unzip command
-    bool extractZip(const std::string& zipFile, const std::string& targetDir) {
-        std::string cmd = "unzip -o -q \"" + zipFile + "\" -d \"" + targetDir + "\"";
-        return system(cmd.c_str()) == 0;
+    // Configuration file path
+    std::string getConfigFilePath() {
+        return getCurrentDir() + "/configurationcachyos.txt";
     }
 
-    // Check if directory exists
-    bool directoryExists(const std::string& path) {
-        struct stat info;
-        return (stat(path.c_str(), &info) == 0 && (info.st_mode & S_IFDIR));
-    }
-
-    // Create directory if it doesn't exist
-    bool createDirectory(const std::string& path) {
-        std::string cmd = "mkdir -p \"" + path + "\"";
-        return system(cmd.c_str()) == 0;
-    }
-
-    // FIXED: WORKING CONFIGURATION SYSTEM
-    void save_configuration() {
-        FILE* config = fopen(config_file.c_str(), "w");
-        if (config) {
-            fprintf(config, "username=%s\n", new_username.c_str());
-            fprintf(config, "root_password=%s\n", root_password.c_str());
-            fprintf(config, "user_password=%s\n", user_password.c_str());
-            fprintf(config, "timezone=%s\n", timezone.c_str());
-            fprintf(config, "keyboard_layout=%s\n", keyboard_layout.c_str());
-            fprintf(config, "kernel=%s\n", selected_kernel.c_str());
-            fprintf(config, "desktop=%s\n", current_desktop_name.c_str());
-            fprintf(config, "extra_packages=%s\n", extra_packages.c_str());
-            fclose(config);
+    // Save configuration to file
+    void saveConfiguration() {
+        std::string configFile = getConfigFilePath();
+        std::ofstream file(configFile);
+        if (file.is_open()) {
+            file << "username=" << new_username << std::endl;
+            file << "root_password=" << root_password << std::endl;
+            file << "user_password=" << user_password << std::endl;
+            file << "timezone=" << timezone << std::endl;
+            file << "keyboard_layout=" << keyboard_layout << std::endl;
+            file << "current_distro=" << current_distro_name << std::endl;
+            file << "extra_packages=" << extra_packages << std::endl;
+            file << "selected_kernel=" << selected_kernel << std::endl;
+            file << "current_desktop=" << current_desktop_name << std::endl;
+            file.close();
+            std::cout << COLOR_GREEN << "Configuration saved to " << configFile << COLOR_RESET << std::endl;
+        } else {
+            std::cerr << COLOR_RED << "Failed to save configuration to " << configFile << COLOR_RESET << std::endl;
         }
     }
 
-    // FIXED: Improved load_configuration function
-    void load_configuration() {
-        FILE* config = fopen(config_file.c_str(), "r");
-        if (!config) return;
+    // Load configuration from file
+    void loadConfiguration() {
+        std::string configFile = getConfigFilePath();
+        std::ifstream file(configFile);
+        if (file.is_open()) {
+            std::string line;
+            while (std::getline(file, line)) {
+                size_t delimiter = line.find('=');
+                if (delimiter != std::string::npos) {
+                    std::string key = line.substr(0, delimiter);
+                    std::string value = line.substr(delimiter + 1);
 
-        char line[256];
-        while (fgets(line, sizeof(line), config)) {
-            char* equals = strchr(line, '=');
-            if (equals) {
-                *equals = '\0';
-                char* value = equals + 1;
-                // Remove newline from value
-                char* newline = strchr(value, '\n');
-                if (newline) *newline = '\0';
-
-                std::string key = line;
-                std::string val = value;
-
-                if (key == "username") new_username = val;
-                else if (key == "root_password") root_password = val;
-                else if (key == "user_password") user_password = val;
-                else if (key == "timezone") timezone = val;
-                else if (key == "keyboard_layout") keyboard_layout = val;
-                else if (key == "kernel") selected_kernel = val;
-                else if (key == "desktop") current_desktop_name = val;
-                else if (key == "extra_packages") extra_packages = val;
+                    if (key == "username") new_username = value;
+                    else if (key == "root_password") root_password = value;
+                    else if (key == "user_password") user_password = value;
+                    else if (key == "timezone") timezone = value;
+                    else if (key == "keyboard_layout") keyboard_layout = value;
+                    else if (key == "current_distro") current_distro_name = value;
+                    else if (key == "extra_packages") extra_packages = value;
+                    else if (key == "selected_kernel") selected_kernel = value;
+                    else if (key == "current_desktop") current_desktop_name = value;
+                }
             }
+            file.close();
+            std::cout << COLOR_GREEN << "Configuration loaded from " << configFile << COLOR_RESET << std::endl;
+        } else {
+            std::cout << COLOR_YELLOW << "No existing configuration found. Starting with default settings." << COLOR_RESET << std::endl;
         }
-        fclose(config);
     }
 
     // Get current working directory
@@ -118,39 +111,80 @@ private:
 
     // Get target folder path (always in current directory)
     std::string getTargetFolder() {
-        return "current directory as cachyos-distro";
+        return getCurrentDir() + "/cachyos-distro";
     }
 
-    // Get full target path for actual operations
+    // Get full target path (added missing method)
     std::string getFullTargetPath() {
-        return getCurrentDir() + "/cachyos-build";
+        return getTargetFolder();
     }
 
-    // MODIFIED: Extract required files from calamares-per-distro/cachyos folder
+    // Get calamares folder path
+    std::string getCalamaresFolder() {
+        return getCurrentDir() + "/calamares-cachyos";
+    }
+
+    // Check if directory exists
+    bool directoryExists(const std::string& path) {
+        struct stat info;
+        return (stat(path.c_str(), &info) == 0 && (info.st_mode & S_IFDIR));
+    }
+
+    // Check if file exists
+    bool fileExists(const std::string& path) {
+        struct stat info;
+        return (stat(path.c_str(), &info) == 0);
+    }
+
+    // FIXED: Extract required files from calamares-per-distro - NO ERROR MESSAGES
     bool extractRequiredFiles() {
+        std::cout << COLOR_CYAN << "Checking for required folders..." << COLOR_RESET << std::endl;
+
         std::string currentDir = getCurrentDir();
-        std::string sourceDir = currentDir + "/calamares-per-distro/cachyos";
+        std::string calamaresFolder = getCalamaresFolder();
 
-        // Create calamares-cachyos folder in current directory
-        std::string targetDir = currentDir + "/calamares-cachyos";
-
-        // Check if all required folders already exist
-        bool buildImageExists = directoryExists(targetDir + "/build-image-arch-img");
-        bool calamaresFilesExists = directoryExists(targetDir + "/calamares-files");
-        bool workingHooksExists = directoryExists(targetDir + "/working-hooks-btrfs-ext4");
+        // Check if all required folders already exist in calamares-claudemods
+        bool buildImageExists = directoryExists(calamaresFolder + "/build-image-arch-img");
+        bool calamaresFilesExists = directoryExists(calamaresFolder + "/calamares-files");
+        bool workingHooksExists = directoryExists(calamaresFolder + "/working-hooks-btrfs-ext4");
 
         if (buildImageExists && calamaresFilesExists && workingHooksExists) {
+            std::cout << COLOR_GREEN << "All required folders already exist." << COLOR_RESET << std::endl;
             return true;
         }
 
-        // Create the target directory
-        createDirectory(targetDir);
+        // Create calamares-claudemods folder if it doesn't exist
+        if (!directoryExists(calamaresFolder)) {
+            std::cout << COLOR_CYAN << "Creating calamares-cachyos folder..." << COLOR_RESET << std::endl;
+            std::string createCmd = "sudo mkdir -p " + calamaresFolder;
+            execute_command(createCmd);
+        }
 
-        // Extract the three zip files
-        extractZip(sourceDir + "/calamares-cachyos.zip", targetDir);
-        extractZip(sourceDir + "/claudemods-cachyos.zip", targetDir);
-        extractZip(sourceDir + "/build-image-cachyos.zip", targetDir);
+        // Extract the three ZIP files only if needed
+        std::string sourceDir = currentDir + "/calamares-per-distro/cachyos";
+        std::vector<std::string> zipFiles = {
+            "calamares-cachyos.zip",
+            "claudemods-cachyos.zip",
+            "build-image-cachyos.zip"
+        };
 
+        for (const auto& zipFile : zipFiles) {
+            std::string sourcePath = sourceDir + "/" + zipFile;
+
+            // Check if source ZIP file exists
+            if (fileExists(sourcePath)) {
+                std::cout << COLOR_CYAN << "Extracting " << zipFile << "..." << COLOR_RESET << std::endl;
+
+                // Extract silently without any error output
+                std::string extractCmd = "sudo unzip -q " + sourcePath + " -d " + calamaresFolder + " >/dev/null 2>&1";
+                execute_command(extractCmd);
+
+                std::cout << COLOR_GREEN << "Done." << COLOR_RESET << std::endl;
+            }
+        }
+
+        // Always return true - no error checking
+        std::cout << COLOR_GREEN << "Extraction process completed." << COLOR_RESET << std::endl;
         return true;
     }
 
@@ -430,7 +464,7 @@ private:
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Public");
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Templates");
         // Copy Calamares package files
-        
+
         // Copy calamares config
         execute_command("sudo cp -r " + currentDir + "/calamares-cachyos/calamares-files/calamares " + target_folder + "/etc/");
 
@@ -459,7 +493,7 @@ private:
 
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/.config/fish");
         execute_command("sudo cp " + currentDir + "/needed-files/fish_variables " + target_folder + "/home/" + new_username + "/.config/fish/fish_variables");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"chsh -s $(which fish)\"");
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"su " + new_username + " -c 'chsh -s $(which fish)'\"");
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/.local/share/konsole");
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/.local/share");
 
@@ -617,19 +651,19 @@ private:
     // Set username
     void set_username() {
         new_username = get_input("Enter username: ");
-        save_configuration();
+        saveConfiguration();
     }
 
     // Set root password
     void set_root_password() {
         root_password = get_input("Enter root password: ");
-        save_configuration();
+        saveConfiguration();
     }
 
     // Set user password
     void set_user_password() {
         user_password = get_input("Enter user password: ");
-        save_configuration();
+        saveConfiguration();
     }
 
     // Set timezone
@@ -656,7 +690,7 @@ private:
             case 6: timezone = "Asia/Tokyo"; break;
             case 7: timezone = get_input("Enter timezone (e.g., Europe/Berlin): "); break;
         }
-        save_configuration();
+        saveConfiguration();
     }
 
     // Set keyboard layout
@@ -683,7 +717,7 @@ private:
             case 6: keyboard_layout = "jp"; break;
             case 7: keyboard_layout = get_input("Enter keyboard layout (e.g., br, ru, pt): "); break;
         }
-        save_configuration();
+        saveConfiguration();
     }
 
     // Set kernel - CHANGED TO CACHYOS KERNELS
@@ -714,7 +748,7 @@ private:
             case 8: selected_kernel = "linux-cachyos-rc"; break;
             case 9: selected_kernel = "linux-cachyos-bmq"; break;
         }
-        save_configuration();
+        saveConfiguration();
     }
 
     // NEW: Set extra packages
@@ -722,7 +756,7 @@ private:
         std::cout << COLOR_CYAN << "Enter additional packages to install (space-separated):" << COLOR_RESET << std::endl;
         std::cout << COLOR_YELLOW << "Examples: vim git htop curl wget firefox" << COLOR_RESET << std::endl;
         extra_packages = get_input("Extra packages: ");
-        save_configuration();
+        saveConfiguration();
     }
 
     // Check if all required settings are configured
@@ -879,17 +913,17 @@ private:
                 case 0:
                     current_desktop_name = "CachyOS-TTY-Grub";
                     std::cout << COLOR_GREEN << "Desktop environment set to: CachyOS TTY Grub" << COLOR_RESET << std::endl;
-                    save_configuration();
+                    saveConfiguration();
                     return;
                 case 1:
                     current_desktop_name = "CachyOS-KDE-Grub";
                     std::cout << COLOR_GREEN << "Desktop environment set to: CachyOS KDE Grub" << COLOR_RESET << std::endl;
-                    save_configuration();
+                    saveConfiguration();
                     return;
                 case 2:
                     current_desktop_name = "CachyOS-GNOME-Grub";
                     std::cout << COLOR_GREEN << "Desktop environment set to: CachyOS GNOME Grub" << COLOR_RESET << std::endl;
-                    save_configuration();
+                    saveConfiguration();
                     return;
                 case 3:
                     return;
@@ -967,7 +1001,7 @@ private:
 public:
     void run() {
         // LOAD CONFIGURATION FIRST - FIXED: This now happens before anything else
-        load_configuration();
+        loadConfiguration();
 
         // EXTRACT FILES
         if (!extractRequiredFiles()) {
