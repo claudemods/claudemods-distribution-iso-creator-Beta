@@ -2,7 +2,9 @@
 #include <string>
 #include <limits>
 #include "claudemods.h"
+#include "claudemodshandheld.h"  // Added for handheld support
 #include "cachyos.h"
+#include "cachyoshandheld.h"     // Added for handheld support
 #include "arch.h"
 
 // Function to set text color
@@ -28,7 +30,7 @@ void displayHeader() {
 
     // Custom text in cyan below ASCII
     setColor("\033[38;2;0;255;255m");
-    std::cout << "claudemods distribution iso creator v1.01 12-01-2026" << std::endl;
+    std::cout << "claudemods distribution iso creator v1.01 14-01-2026" << std::endl;
     resetColor();
     std::cout << std::endl;
 }
@@ -39,9 +41,9 @@ void displayMenu() {
     setColor("\033[38;2;0;255;255m"); // Your cyan color
     std::cout << "=== DISTRIBUTIONS MENU ===" << std::endl;
     std::cout << "1. claudemods Desktop Distributions" << std::endl;
-    std::cout << "2. claudemods Handheld Distributions" << std::endl;  // New option
+    std::cout << "2. claudemods Handheld Distributions" << std::endl;  // Now implemented
     std::cout << "3. Cachyos Desktop Distributions" << std::endl;
-    std::cout << "4. Cachyos Handheld Distributions" << std::endl;  // New option
+    std::cout << "4. Cachyos Handheld Distributions" << std::endl;  // Now implemented
     std::cout << "5. Arch Distributions" << std::endl;
     std::cout << "6. Exit" << std::endl;
     std::cout << "==========================" << std::endl;
@@ -66,12 +68,18 @@ void handleSelection(int choice) {
         case 2:
             setColor("\033[38;2;0;255;255m");
             std::cout << "You selected: claudemods Handheld Distributions" << std::endl;
-            std::cout << "Option not yet implemented." << std::endl;
+            std::cout << "Starting Claudemods Handheld ISO creation process..." << std::endl;
             resetColor();
+
+            // Launch the Claudemods Handheld installer
+            {
+                ClaudemodsHandheldInstaller installer;
+                installer.run();
+            }
             break;
         case 3:
             setColor("\033[38;2;0;255;255m");
-            std::cout << "You selected: Cachyos Distributions" << std::endl;
+            std::cout << "You selected: Cachyos Desktop Distributions" << std::endl;
             std::cout << "Starting Cachyos ISO creation process..." << std::endl;
             resetColor();
 
@@ -84,8 +92,14 @@ void handleSelection(int choice) {
         case 4:
             setColor("\033[38;2;0;255;255m");
             std::cout << "You selected: Cachyos Handheld Distributions" << std::endl;
-            std::cout << "Option not yet implemented." << std::endl;
+            std::cout << "Starting Cachyos Handheld ISO creation process..." << std::endl;
             resetColor();
+
+            // Launch the Cachyos Handheld installer
+            {
+                CachyosHandheldInstaller installer;
+                installer.run();
+            }
             break;
         case 5:
             setColor("\033[38;2;0;255;255m");
