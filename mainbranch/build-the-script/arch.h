@@ -19,14 +19,15 @@
 #include <unistd.h>
 #include <errno.h>
 
-// Color definitions
-const std::string ARCH_COLOR_CYAN = "\033[38;2;0;255;255m";
-const std::string ARCH_COLOR_RED = "\033[31m";
-const std::string ARCH_COLOR_GREEN = "\033[32m";
-const std::string ARCH_COLOR_YELLOW = "\033[33m";
-const std::string ARCH_COLOR_ORANGE = "\033[38;5;208m";
-const std::string ARCH_COLOR_PURPLE = "\033[38;5;93m";
-const std::string ARCH_COLOR_RESET = "\033[0m";
+// Remove color definitions since they're in claudemods.h
+// Include claudemods.h or declare extern references
+extern const std::string COLOR_CYAN;
+extern const std::string COLOR_RED;
+extern const std::string COLOR_GREEN;
+extern const std::string COLOR_YELLOW;
+extern const std::string COLOR_ORANGE;
+extern const std::string COLOR_PURPLE;
+extern const std::string COLOR_RESET;
 
 class ArchInstaller {
 private:
@@ -35,59 +36,71 @@ private:
     std::string user_password;
     std::string timezone;
     std::string keyboard_layout;
-    std::string current_distro_name;
-    std::string selected_kernel;
-    std::string current_desktop_name;
-    std::string extra_packages;
+    std::string current_distro_name; // Store the current distro name for ISO
+    std::string extra_packages; // Store extra packages to install
+    std::string selected_kernel; // Added missing variable
+    std::string current_desktop_name; // Added missing variable
 
+    // Terminal control for arrow keys
     struct termios oldt, newt;
-    std::string config_file = "configurationarch.txt";
-    std::string calamares_folder = "calamares-arch";
 
-    void save_configuration() {
-        FILE* config = fopen(config_file.c_str(), "w");
-        if (config) {
-            fprintf(config, "username=%s\n", new_username.c_str());
-            fprintf(config, "root_password=%s\n", root_password.c_str());
-            fprintf(config, "user_password=%s\n", user_password.c_str());
-            fprintf(config, "timezone=%s\n", timezone.c_str());
-            fprintf(config, "keyboard_layout=%s\n", keyboard_layout.c_str());
-            fprintf(config, "kernel=%s\n", selected_kernel.c_str());
-            fprintf(config, "desktop=%s\n", current_desktop_name.c_str());
-            fprintf(config, "extra_packages=%s\n", extra_packages.c_str());
-            fclose(config);
+    // Configuration file path
+    std::string getConfigFilePath() {
+        return getCurrentDir() + "/configurationarch.txt";
+    }
+
+    // Save configuration to file
+    void saveConfiguration() {
+        std::string configFile = getConfigFilePath();
+        std::ofstream file(configFile);
+        if (file.is_open()) {
+            file << "username=" << new_username << std::endl;
+            file << "root_password=" << root_password << std::endl;
+            file << "user_password=" << user_password << std::endl;
+            file << "timezone=" << timezone << std::endl;
+            file << "keyboard_layout=" << keyboard_layout << std::endl;
+            file << "current_distro=" << current_distro_name << std::endl;
+            file << "extra_packages=" << extra_packages << std::endl;
+            file << "selected_kernel=" << selected_kernel << std::endl;
+            file << "current_desktop=" << current_desktop_name << std::endl;
+            file.close();
+            std::cout << COLOR_GREEN << "Configuration saved to " << configFile << COLOR_RESET << std::endl;
+        } else {
+            std::cerr << COLOR_RED << "Failed to save configuration to " << configFile << COLOR_RESET << std::endl;
         }
     }
 
-    void load_configuration() {
-        FILE* config = fopen(config_file.c_str(), "r");
-        if (!config) return;
+    // Load configuration from file
+    void loadConfiguration() {
+        std::string configFile = getConfigFilePath();
+        std::ifstream file(configFile);
+        if (file.is_open()) {
+            std::string line;
+            while (std::getline(file, line)) {
+                size_t delimiter = line.find('=');
+                if (delimiter != std::string::npos) {
+                    std::string key = line.substr(0, delimiter);
+                    std::string value = line.substr(delimiter + 1);
 
-        char line[256];
-        while (fgets(line, sizeof(line), config)) {
-            char* equals = strchr(line, '=');
-            if (equals) {
-                *equals = '\0';
-                char* value = equals + 1;
-                char* newline = strchr(value, '\n');
-                if (newline) *newline = '\0';
-
-                std::string key = line;
-                std::string val = value;
-
-                if (key == "username") new_username = val;
-                else if (key == "root_password") root_password = val;
-                else if (key == "user_password") user_password = val;
-                else if (key == "timezone") timezone = val;
-                else if (key == "keyboard_layout") keyboard_layout = val;
-                else if (key == "kernel") selected_kernel = val;
-                else if (key == "desktop") current_desktop_name = val;
-                else if (key == "extra_packages") extra_packages = val;
+                    if (key == "username") new_username = value;
+                    else if (key == "root_password") root_password = value;
+                    else if (key == "user_password") user_password = value;
+                    else if (key == "timezone") timezone = value;
+                    else if (key == "keyboard_layout") keyboard_layout = value;
+                    else if (key == "current_distro") current_distro_name = value;
+                    else if (key == "extra_packages") extra_packages = value;
+                    else if (key == "selected_kernel") selected_kernel = value;
+                    else if (key == "current_desktop") current_desktop_name = value;
+                }
             }
+            file.close();
+            std::cout << COLOR_GREEN << "Configuration loaded from " << configFile << COLOR_RESET << std::endl;
+        } else {
+            std::cout << COLOR_YELLOW << "No existing configuration found. Starting with default settings." << COLOR_RESET << std::endl;
         }
-        fclose(config);
     }
 
+    // Get current working directory
     std::string getCurrentDir() {
         char cwd[1024];
         if (getcwd(cwd, sizeof(cwd)) != nullptr) {
@@ -96,68 +109,94 @@ private:
         return ".";
     }
 
+    // Get target folder path (always in current directory)
     std::string getTargetFolder() {
-        return "current directory as claudemods-distro";
+        return getCurrentDir() + "/arch-distro";
     }
 
+    // Get full target path (added missing method)
     std::string getFullTargetPath() {
-        return getCurrentDir() + "/claudemods-distro";
+        return getTargetFolder();
     }
 
+    // Get calamares folder path
     std::string getCalamaresFolder() {
-        return getCurrentDir() + "/" + calamares_folder;
+        return getCurrentDir() + "/calamares-arch";
     }
 
+    // Check if directory exists
     bool directoryExists(const std::string& path) {
         struct stat info;
         return (stat(path.c_str(), &info) == 0 && (info.st_mode & S_IFDIR));
     }
 
+    // Check if file exists
+    bool fileExists(const std::string& path) {
+        struct stat info;
+        return (stat(path.c_str(), &info) == 0);
+    }
+
+    // FIXED: Extract required files from calamares-per-distro - NO ERROR MESSAGES
     bool extractRequiredFiles() {
-        std::cout << ARCH_COLOR_CYAN << "Checking for required folders..." << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Checking for required folders..." << COLOR_RESET << std::endl;
 
         std::string currentDir = getCurrentDir();
-        std::string sourceDir = currentDir + "/calamares-per-distro/arch";
-        std::string calamaresDir = getCalamaresFolder();
+        std::string calamaresFolder = getCalamaresFolder();
 
-        bool buildImageExists = directoryExists(calamaresDir + "/build-image-arch-img");
-        bool calamaresFilesExists = directoryExists(calamaresDir + "/calamares-files");
-        bool workingHooksExists = directoryExists(calamaresDir + "/working-hooks-btrfs-ext4");
+        // Check if all required folders already exist in calamares-claudemods
+        bool buildImageExists = directoryExists(calamaresFolder + "/build-image-arch-img");
+        bool calamaresFilesExists = directoryExists(calamaresFolder + "/calamares-files");
+        bool workingHooksExists = directoryExists(calamaresFolder + "/working-hooks-btrfs-ext4");
 
         if (buildImageExists && calamaresFilesExists && workingHooksExists) {
-            std::cout << ARCH_COLOR_GREEN << "All required folders already exist in " << calamares_folder << ". Skipping extraction." << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_GREEN << "All required folders already exist." << COLOR_RESET << std::endl;
             return true;
         }
 
-        std::cout << ARCH_COLOR_CYAN << "Extracting required files to " << calamares_folder << "..." << ARCH_COLOR_RESET << std::endl;
-
-        execute_command("mkdir -p " + calamaresDir);
-
-        std::vector<std::pair<std::string, std::string>> zip_files = {
-            {sourceDir + "/build-image-arch.zip", calamaresDir},
-            {sourceDir + "/calamares-arch.zip", calamaresDir},
-            {sourceDir + "/claudemods-arch.zip", calamaresDir}
-        };
-
-        for (const auto& zip_file : zip_files) {
-            std::cout << ARCH_COLOR_CYAN << "Extracting " << zip_file.first << "..." << ARCH_COLOR_RESET << std::endl;
-            std::string cmd = "unzip -q -o \"" + zip_file.first + "\" -d \"" + zip_file.second + "\"";
-            execute_command(cmd);
+        // Create calamares-claudemods folder if it doesn't exist
+        if (!directoryExists(calamaresFolder)) {
+            std::cout << COLOR_CYAN << "Creating calamares-arch folder..." << COLOR_RESET << std::endl;
+            std::string createCmd = "sudo mkdir -p " + calamaresFolder;
+            execute_command(createCmd);
         }
 
-        std::cout << ARCH_COLOR_GREEN << "All required files extracted successfully to " << calamares_folder << "!" << ARCH_COLOR_RESET << std::endl;
+        // Extract the three ZIP files only if needed
+        std::string sourceDir = currentDir + "/calamares-per-distro/arch";
+        std::vector<std::string> zipFiles = {
+            "calamares-arch.zip",
+            "claudemods-arch.zip",
+            "build-image-arch.zip"
+        };
+
+        for (const auto& zipFile : zipFiles) {
+            std::string sourcePath = sourceDir + "/" + zipFile;
+
+            // Check if source ZIP file exists
+            if (fileExists(sourcePath)) {
+                std::cout << COLOR_CYAN << "Extracting " << zipFile << "..." << COLOR_RESET << std::endl;
+
+                // Extract silently without any error output
+                std::string extractCmd = "sudo unzip -q " + sourcePath + " -d " + calamaresFolder + " >/dev/null 2>&1";
+                execute_command(extractCmd);
+
+                std::cout << COLOR_GREEN << "Done." << COLOR_RESET << std::endl;
+            }
+        }
+
+        // Always return true - no error checking
+        std::cout << COLOR_GREEN << "Extraction process completed." << COLOR_RESET << std::endl;
         return true;
     }
 
     void display_header() {
-        std::cout << ARCH_COLOR_RED;
+        std::cout << COLOR_RED;
         std::cout << "░█████╗░██╗░░░░░░█████╗░██║░░░██╗██████╗░███████╗███╗░░░███╗░█████╗░██████╗░██████╗" << std::endl;
         std::cout << "██╔══██╗██║░░░░░██╔══██╗██║░░░██║██╔══██╗██╔════╝████╗░████║██╔══██╗██╔══██╗██╔════╝" << std::endl;
         std::cout << "██║░░╚═╝██║░░░░░███████║██║░░░██║██║░░██║█████╗░░██╔████╔██║██║░░██║██║░░██║╚█████╗░" << std::endl;
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << ARCH_COLOR_CYAN << "claudemods Arch Linux distribution iso creator v1.01 01-12-2025" << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "claudemods Arch Linux distribution iso creator v1.01 14-01-2026" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
 
@@ -193,7 +232,7 @@ private:
             system("clear");
             display_header();
 
-            std::cout << ARCH_COLOR_CYAN;
+            std::cout << COLOR_CYAN;
             std::cout << "╔══════════════════════════════════════════════════════════════╗" << std::endl;
             std::cout << "║ " << std::left << std::setw(60) << title << "║" << std::endl;
             std::cout << "╠══════════════════════════════════════════════════════════════╣" << std::endl;
@@ -201,7 +240,7 @@ private:
             for (int i = 0; i < options.size(); i++) {
                 std::cout << "║ ";
                 if (i == selected) {
-                    std::cout << ARCH_COLOR_GREEN << "> " << ARCH_COLOR_RESET << ARCH_COLOR_CYAN;
+                    std::cout << COLOR_GREEN << "> " << COLOR_RESET << COLOR_CYAN;
                 } else {
                     std::cout << "  ";
                 }
@@ -243,8 +282,8 @@ private:
             }
 
             std::cout << "╚══════════════════════════════════════════════════════════════╝" << std::endl;
-            std::cout << ARCH_COLOR_RESET;
-            std::cout << ARCH_COLOR_YELLOW << "Use ↑↓ arrows to navigate, Enter to select" << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_RESET;
+            std::cout << COLOR_YELLOW << "Use ↑↓ arrows to navigate, Enter to select" << COLOR_RESET << std::endl;
 
             int key = get_arrow_key();
             if (key == 'A') {
@@ -260,38 +299,38 @@ private:
 
     // Function to get text input with prompt
     std::string get_input(const std::string& prompt) {
-        std::cout << ARCH_COLOR_CYAN << prompt << ARCH_COLOR_RESET;
+        std::cout << COLOR_CYAN << prompt << COLOR_RESET;
         std::string input;
         std::getline(std::cin, input);
         return input;
     }
 
     int execute_command(const std::string& cmd) {
-        std::cout << ARCH_COLOR_CYAN << std::flush;
+        std::cout << COLOR_CYAN << std::flush;
         int status = system(cmd.c_str());
-        std::cout << ARCH_COLOR_RESET << std::flush;
+        std::cout << COLOR_RESET << std::flush;
         return status;
     }
 
     // FIXED: Function to display current settings on main menu - now shows ALL values as set
     void display_current_settings() {
-        std::cout << ARCH_COLOR_YELLOW << "\nCurrent Settings:" << ARCH_COLOR_RESET << std::endl;
-        std::cout << ARCH_COLOR_CYAN << "Installation Path: " << ARCH_COLOR_RESET << getTargetFolder() << std::endl;
-        std::cout << ARCH_COLOR_CYAN << "Username: " << ARCH_COLOR_RESET
+        std::cout << COLOR_YELLOW << "\nCurrent Settings:" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installation Path: " << COLOR_RESET << getTargetFolder() << std::endl;
+        std::cout << COLOR_CYAN << "Username: " << COLOR_RESET
         << (new_username.empty() ? "[Not Set]" : new_username) << std::endl;
-        std::cout << ARCH_COLOR_CYAN << "Root Password: " << ARCH_COLOR_RESET
+        std::cout << COLOR_CYAN << "Root Password: " << COLOR_RESET
         << (root_password.empty() ? "[Not Set]" : root_password) << std::endl; // Show actual password
-        std::cout << ARCH_COLOR_CYAN << "User Password: " << ARCH_COLOR_RESET
+        std::cout << COLOR_CYAN << "User Password: " << COLOR_RESET
         << (user_password.empty() ? "[Not Set]" : user_password) << std::endl; // Show actual password
-        std::cout << ARCH_COLOR_CYAN << "Timezone: " << ARCH_COLOR_RESET
+        std::cout << COLOR_CYAN << "Timezone: " << COLOR_RESET
         << (timezone.empty() ? "[Not Set]" : timezone) << std::endl;
-        std::cout << ARCH_COLOR_CYAN << "Keyboard Layout: " << ARCH_COLOR_RESET
+        std::cout << COLOR_CYAN << "Keyboard Layout: " << COLOR_RESET
         << (keyboard_layout.empty() ? "[Not Set]" : keyboard_layout) << std::endl;
-        std::cout << ARCH_COLOR_CYAN << "Kernel: " << ARCH_COLOR_RESET
+        std::cout << COLOR_CYAN << "Kernel: " << COLOR_RESET
         << (selected_kernel.empty() ? "[Not Set]" : selected_kernel) << std::endl;
-        std::cout << ARCH_COLOR_CYAN << "Desktop Environment: " << ARCH_COLOR_RESET
+        std::cout << COLOR_CYAN << "Desktop Environment: " << COLOR_RESET
         << (current_desktop_name.empty() ? "[Not Set]" : current_desktop_name) << std::endl;
-        std::cout << ARCH_COLOR_CYAN << "Extra Packages: " << ARCH_COLOR_RESET
+        std::cout << COLOR_CYAN << "Extra Packages: " << COLOR_RESET
         << (extra_packages.empty() ? "[Not Set]" : extra_packages) << std::endl;
         std::cout << std::endl;
     }
@@ -302,22 +341,22 @@ private:
         std::string currentDir = getCurrentDir();
 
         // CREATE TARGET DIRECTORY
-        std::cout << ARCH_COLOR_CYAN << "Creating target directory: " << target_folder << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Creating target directory: " << target_folder << COLOR_RESET << std::endl;
         execute_command("sudo mkdir -p " + target_folder);
 
         // VERIFY DIRECTORY WAS CREATED
         struct stat info;
         if (stat(target_folder.c_str(), &info) != 0) {
-            std::cerr << ARCH_COLOR_RED << "Failed to create target directory: " << target_folder << ARCH_COLOR_RESET << std::endl;
+            std::cerr << COLOR_RED << "Failed to create target directory: " << target_folder << COLOR_RESET << std::endl;
             return false;
         }
 
         if (!(info.st_mode & S_IFDIR)) {
-            std::cerr << ARCH_COLOR_RED << "Target path is not a directory: " << target_folder << ARCH_COLOR_RESET << std::endl;
+            std::cerr << COLOR_RED << "Target path is not a directory: " << target_folder << COLOR_RESET << std::endl;
             return false;
         }
 
-        std::cout << ARCH_COLOR_GREEN << "Target directory created successfully!" << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_GREEN << "Target directory created successfully!" << COLOR_RESET << std::endl;
 
         // CREATE ESSENTIAL DIRECTORIES
         execute_command("sudo mkdir -p " + target_folder + "/usr/");
@@ -361,8 +400,8 @@ private:
             packages += " " + extra_packages;
         }
 
-        std::cout << ARCH_COLOR_CYAN << "Installing packages with pacstrap..." << ARCH_COLOR_RESET << std::endl;
-        std::cout << ARCH_COLOR_CYAN << "Package list: " << packages << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing packages with pacstrap..." << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Package list: " << packages << COLOR_RESET << std::endl;
 
         execute_command("sudo pacstrap " + target_folder + " " + packages);
 
@@ -370,7 +409,7 @@ private:
         std::string test_bin = target_folder + "/bin/bash";
         struct stat info;
         if (stat(test_bin.c_str(), &info) != 0) {
-            std::cerr << ARCH_COLOR_RED << "pacstrap failed! /bin/bash not found in target." << ARCH_COLOR_RESET << std::endl;
+            std::cerr << COLOR_RED << "pacstrap failed! /bin/bash not found in target." << COLOR_RESET << std::endl;
             return false;
         }
         execute_command("sudo mkdir -p " + target_folder + "/boot");
@@ -383,7 +422,7 @@ private:
         std::string target_folder = getFullTargetPath();
         std::string currentDir = getCurrentDir();
 
-        std::cout << ARCH_COLOR_CYAN << "Installing Calamares installer..." << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing Calamares installer..." << COLOR_RESET << std::endl;
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Desktop");
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Documents");
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Downloads");
@@ -395,12 +434,12 @@ private:
         // Copy Calamares package files
 
         // NEW: Clean pacman cache before creating squashfs
-        std::cout << ARCH_COLOR_CYAN << "Cleaning pacman cache..." << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Cleaning pacman cache..." << COLOR_RESET << std::endl;
         std::string cache_clean_cmd = "sudo rm -rf " + target_folder + "/var/cache/pacman/pkg/*";
         if (execute_command(cache_clean_cmd) == 0) {
-            std::cout << ARCH_COLOR_GREEN << "Pacman cache cleaned successfully!" << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_GREEN << "Pacman cache cleaned successfully!" << COLOR_RESET << std::endl;
         } else {
-            std::cout << ARCH_COLOR_RED << "Failed to clean pacman cache!" << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_RED << "Failed to clean pacman cache!" << COLOR_RESET << std::endl;
         }
 
         // Copy calamares config
@@ -413,7 +452,7 @@ private:
         execute_command("sudo unzip -o -q " + currentDir + "/calamares-arch/calamares-files/extras.zip -d " + target_folder);
 
         // Copy hooks
-        execute_command("sudo cp -r " + currentDir + "calamares-arch/working-hooks-btrfs-ext4/* /etc/initcpio");
+        execute_command("sudo cp -r " + currentDir + "/calamares-arch/working-hooks-btrfs-ext4/* /etc/initcpio");
 
         execute_command("sudo cp " + currentDir + "/calamares-arch/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
 
@@ -428,7 +467,7 @@ private:
         // Remove manjaro branding
         execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
 
-        std::cout << ARCH_COLOR_GREEN << "Calamares installation completed!" << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_GREEN << "Calamares installation completed!" << COLOR_RESET << std::endl;
     }
 
     // NEW: Common service enablement
@@ -456,7 +495,7 @@ private:
         std::string target_folder = getFullTargetPath();
 
         unmount_system_dirs();
-        std::cout << ARCH_COLOR_GREEN << desktop_name << " installation completed!" << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_GREEN << desktop_name << " installation completed!" << COLOR_RESET << std::endl;
 
         // CREATE SQUASHFS IMAGE
         create_squashfs_image(desktop_name);
@@ -464,27 +503,27 @@ private:
 
     // UPDATED: Function to create squashfs image after installation with additional steps
     void create_squashfs_image(const std::string& distro_name) {
-        std::cout << ARCH_COLOR_CYAN << "Creating squashfs image..." << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Creating squashfs image..." << COLOR_RESET << std::endl;
 
         std::string currentDir = getCurrentDir();
         std::string target_folder = getFullTargetPath();
 
         std::string squashfs_cmd = "sudo mksquashfs " + target_folder + " " + currentDir + "/calamares-arch/build-image-arch-img/LiveOS/rootfs.img -noappend -comp xz -b 256K -Xbcj x86 -e etc/udev/rules.d/70-persistent-cd.rules -e etc/udev/rules.d/70-persistent-net.rules -e etc/mtab -e etc/fstab -e dev/* -e proc/* -e sys/* -e tmp/* -e run/* -e mnt/* -e media/* -e lost+found";
 
-        std::cout << ARCH_COLOR_CYAN << "Executing: " << squashfs_cmd << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Executing: " << squashfs_cmd << COLOR_RESET << std::endl;
 
         if (execute_command(squashfs_cmd) == 0) {
-            std::cout << ARCH_COLOR_GREEN << "Squashfs image created successfully!" << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_GREEN << "Squashfs image created successfully!" << COLOR_RESET << std::endl;
 
             // Clean up target folder after successful squashfs creation
-            std::cout << ARCH_COLOR_CYAN << "Cleaning up target folder..." << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_CYAN << "Cleaning up target folder..." << COLOR_RESET << std::endl;
             std::string cleanup_cmd = "sudo rm -rf " + target_folder;
             if (execute_command(cleanup_cmd) == 0) {
-                std::cout << ARCH_COLOR_GREEN << "Target folder deleted successfully: " << target_folder << ARCH_COLOR_RESET << std::endl;
+                std::cout << COLOR_GREEN << "Target folder deleted successfully: " << target_folder << COLOR_RESET << std::endl;
             }
 
             // Copy kernel image with user selection
-            std::cout << ARCH_COLOR_CYAN << "Searching for kernel images..." << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_CYAN << "Searching for kernel images..." << COLOR_RESET << std::endl;
 
             // Get list of vmlinuz files
             std::vector<std::string> kernel_files;
@@ -501,16 +540,16 @@ private:
             }
 
             if (kernel_files.empty()) {
-                std::cout << ARCH_COLOR_RED << "No kernel images found!" << ARCH_COLOR_RESET << std::endl;
+                std::cout << COLOR_RED << "No kernel images found!" << COLOR_RESET << std::endl;
             } else {
                 // Show available kernels
-                std::cout << ARCH_COLOR_CYAN << "Available kernels:" << ARCH_COLOR_RESET << std::endl;
+                std::cout << COLOR_CYAN << "Available kernels:" << COLOR_RESET << std::endl;
                 for (size_t i = 0; i < kernel_files.size(); i++) {
                     std::cout << "[" << i + 1 << "] " << kernel_files[i] << std::endl;
                 }
 
                 // Get selection
-                std::cout << ARCH_COLOR_CYAN << "Select kernel (1-" << kernel_files.size() << "): " << ARCH_COLOR_RESET;
+                std::cout << COLOR_CYAN << "Select kernel (1-" << kernel_files.size() << "): " << COLOR_RESET;
                 std::string input;
                 std::getline(std::cin, input);
 
@@ -519,30 +558,30 @@ private:
                     if (choice >= 1 && choice <= kernel_files.size()) {
                         std::string copy_cmd = "sudo cp " + kernel_files[choice - 1] + " " + currentDir + "/calamares-arch/build-image-arch-img/boot/vmlinuz-x86_64";
                         if (execute_command(copy_cmd) == 0) {
-                            std::cout << ARCH_COLOR_GREEN << "Kernel copied successfully!" << ARCH_COLOR_RESET << std::endl;
+                            std::cout << COLOR_GREEN << "Kernel copied successfully!" << COLOR_RESET << std::endl;
                         } else {
-                            std::cout << ARCH_COLOR_RED << "Failed to copy kernel!" << ARCH_COLOR_RESET << std::endl;
+                            std::cout << COLOR_RED << "Failed to copy kernel!" << COLOR_RESET << std::endl;
                         }
                     }
                 } catch (...) {
-                    std::cout << ARCH_COLOR_RED << "Invalid selection!" << ARCH_COLOR_RESET << std::endl;
+                    std::cout << COLOR_RED << "Invalid selection!" << COLOR_RESET << std::endl;
                 }
             }
 
             // Generate initramfs
-            std::cout << ARCH_COLOR_CYAN << "Generating initramfs..." << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_CYAN << "Generating initramfs..." << COLOR_RESET << std::endl;
             std::string initramfs_cmd = "cd " + currentDir + "/calamares-arch/build-image-arch-img && sudo mkinitcpio -c mkinitcpio.conf -g " + currentDir + "/calamares-arch/build-image-arch-img/boot/initramfs-x86_64.img";
             if (execute_command(initramfs_cmd) == 0) {
-                std::cout << ARCH_COLOR_GREEN << "Initramfs generated successfully!" << ARCH_COLOR_RESET << std::endl;
+                std::cout << COLOR_GREEN << "Initramfs generated successfully!" << COLOR_RESET << std::endl;
                 create_iso_image(distro_name);
             }
         } else {
-            std::cout << ARCH_COLOR_RED << "Failed to create squashfs image!" << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_RED << "Failed to create squashfs image!" << COLOR_RESET << std::endl;
         }
     }
 
     void create_iso_image(const std::string& distro_name) {
-        std::cout << ARCH_COLOR_CYAN << "Creating ISO image with XORRISO..." << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Creating ISO image with XORRISO..." << COLOR_RESET << std::endl;
 
         std::string currentDir = getCurrentDir();
         std::string currentDIR = currentDir;
@@ -571,10 +610,10 @@ private:
         "-o \"" + currentDir + "/" + distro_name + ".iso\" " +
         currentDir + "/calamares-arch/build-image-arch-img/";
 
-        std::cout << ARCH_COLOR_CYAN << "Executing: " << xorriso_cmd << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Executing: " << xorriso_cmd << COLOR_RESET << std::endl;
 
         if (execute_command(xorriso_cmd) == 0) {
-            std::cout << ARCH_COLOR_GREEN << "ISO image created successfully: " << distro_name + ".iso" << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_GREEN << "ISO image created successfully: " << distro_name + ".iso" << COLOR_RESET << std::endl;
 
             // Get username using whoami
             FILE* whoami_pipe = popen("whoami", "r");
@@ -590,26 +629,26 @@ private:
                 pclose(whoami_pipe);
             }
         } else {
-            std::cout << ARCH_COLOR_RED << "Failed to create ISO image!" << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_RED << "Failed to create ISO image!" << COLOR_RESET << std::endl;
         }
     }
 
     // Set username
     void set_username() {
         new_username = get_input("Enter username: ");
-        save_configuration();
+        saveConfiguration();
     }
 
     // Set root password
     void set_root_password() {
         root_password = get_input("Enter root password: ");
-        save_configuration();
+        saveConfiguration();
     }
 
     // Set user password
     void set_user_password() {
         user_password = get_input("Enter user password: ");
-        save_configuration();
+        saveConfiguration();
     }
 
     // Set timezone
@@ -636,7 +675,7 @@ private:
             case 6: timezone = "Asia/Tokyo"; break;
             case 7: timezone = get_input("Enter timezone (e.g., Europe/Berlin): "); break;
         }
-        save_configuration();
+        saveConfiguration();
     }
 
     // Set keyboard layout
@@ -663,7 +702,7 @@ private:
             case 6: keyboard_layout = "jp"; break;
             case 7: keyboard_layout = get_input("Enter keyboard layout (e.g., br, ru, pt): "); break;
         }
-        save_configuration();
+        saveConfiguration();
     }
 
     // Set kernel - CHANGED TO ARCH LINUX KERNELS
@@ -682,45 +721,45 @@ private:
             case 2: selected_kernel = "linux-zen"; break;
             case 3: selected_kernel = "linux-hardened"; break;
         }
-        save_configuration();
+        saveConfiguration();
     }
 
     // NEW: Set extra packages
     void set_extra_packages() {
-        std::cout << ARCH_COLOR_CYAN << "Enter additional packages to install (space-separated):" << ARCH_COLOR_RESET << std::endl;
-        std::cout << ARCH_COLOR_YELLOW << "Examples: vim git htop curl wget firefox" << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Enter additional packages to install (space-separated):" << COLOR_RESET << std::endl;
+        std::cout << COLOR_YELLOW << "Examples: vim git htop curl wget firefox" << COLOR_RESET << std::endl;
         extra_packages = get_input("Extra packages: ");
-        save_configuration();
+        saveConfiguration();
     }
 
     // Check if all required settings are configured
     bool check_settings_configured() {
         if (new_username.empty()) {
-            std::cout << ARCH_COLOR_RED << "Error: Username not set!" << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_RED << "Error: Username not set!" << COLOR_RESET << std::endl;
             return false;
         }
         if (root_password.empty()) {
-            std::cout << ARCH_COLOR_RED << "Error: Root password not set!" << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_RED << "Error: Root password not set!" << COLOR_RESET << std::endl;
             return false;
         }
         if (user_password.empty()) {
-            std::cout << ARCH_COLOR_RED << "Error: User password not set!" << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_RED << "Error: User password not set!" << COLOR_RESET << std::endl;
             return false;
         }
         if (timezone.empty()) {
-            std::cout << ARCH_COLOR_RED << "Error: Timezone not set!" << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_RED << "Error: Timezone not set!" << COLOR_RESET << std::endl;
             return false;
         }
         if (keyboard_layout.empty()) {
-            std::cout << ARCH_COLOR_RED << "Error: Keyboard layout not set!" << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_RED << "Error: Keyboard layout not set!" << COLOR_RESET << std::endl;
             return false;
         }
         if (selected_kernel.empty()) {
-            std::cout << ARCH_COLOR_RED << "Error: Kernel not selected!" << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_RED << "Error: Kernel not selected!" << COLOR_RESET << std::endl;
             return false;
         }
         if (current_desktop_name.empty()) {
-            std::cout << ARCH_COLOR_RED << "Error: Desktop environment not selected!" << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_RED << "Error: Desktop environment not selected!" << COLOR_RESET << std::endl;
             return false;
         }
         return true;
@@ -761,11 +800,11 @@ private:
 
     void apply_timezone_keyboard_settings() {
         std::string target_folder = getFullTargetPath();
-        std::cout << ARCH_COLOR_CYAN << "Setting timezone to: " << timezone << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Setting timezone to: " << timezone << COLOR_RESET << std::endl;
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"ln -sf /usr/share/zoneinfo/" + timezone + " /etc/localtime\"");
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"hwclock --systohc\"");
 
-        std::cout << ARCH_COLOR_CYAN << "Setting keyboard layout to: " << keyboard_layout << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Setting keyboard layout to: " << keyboard_layout << COLOR_RESET << std::endl;
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"echo 'KEYMAP=" + keyboard_layout + "' > /etc/vconsole.conf\"");
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"echo 'LANG=en_US.UTF-8' > /etc/locale.conf\"");
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen\"");
@@ -775,11 +814,11 @@ private:
     // NEW: Start installation function
     void start_installation() {
         if (!check_settings_configured()) {
-            std::cout << ARCH_COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
             return;
         }
 
-        std::cout << ARCH_COLOR_CYAN << "Starting installation with selected desktop: " << current_desktop_name << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Starting installation with selected desktop: " << current_desktop_name << COLOR_RESET << std::endl;
 
         // Call the appropriate installation function based on current_desktop_name
         if (current_desktop_name == "Arch-TTY-Grub") {
@@ -805,14 +844,14 @@ private:
         } else if (current_desktop_name == "Hyprland-WM") {
             install_hyprland_wm();
         } else {
-            std::cout << ARCH_COLOR_RED << "Unknown desktop environment: " << current_desktop_name << ARCH_COLOR_RESET << std::endl;
+            std::cout << COLOR_RED << "Unknown desktop environment: " << current_desktop_name << COLOR_RESET << std::endl;
         }
     }
 
     // UPDATED: Desktop installation functions for Arch Linux
 
     void install_arch_tty_grub() {
-        std::cout << ARCH_COLOR_CYAN << "Installing Arch Linux TTY Grub..." << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing Arch Linux TTY Grub..." << COLOR_RESET << std::endl;
 
         if (!setup_installation_environment()) return;
 
@@ -825,7 +864,7 @@ private:
     }
 
     void install_gnome_desktop() {
-        std::cout << ARCH_COLOR_CYAN << "Installing GNOME Desktop..." << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing GNOME Desktop..." << COLOR_RESET << std::endl;
 
         if (!setup_installation_environment()) return;
 
@@ -836,18 +875,18 @@ private:
     }
 
     void install_kde_plasma() {
-        std::cout << ARCH_COLOR_CYAN << "Installing KDE Plasma..." << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing KDE Plasma..." << COLOR_RESET << std::endl;
 
         if (!setup_installation_environment()) return;
 
-        if (!install_base_packages("plasma dolphin konsole kate", "sddm")) return;
+        if (!install_base_packages("plasma dolphin ark konsole kate gwenview ksystemlog", "sddm")) return;
 
         enable_services("sddm");
         complete_installation("Arch-KDE-Plasma");
     }
 
     void install_xfce_desktop() {
-        std::cout << ARCH_COLOR_CYAN << "Installing XFCE Desktop..." << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing XFCE Desktop..." << COLOR_RESET << std::endl;
 
         if (!setup_installation_environment()) return;
 
@@ -858,7 +897,7 @@ private:
     }
 
     void install_lxqt_desktop() {
-        std::cout << ARCH_COLOR_CYAN << "Installing LXQt Desktop..." << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing LXQt Desktop..." << COLOR_RESET << std::endl;
 
         if (!setup_installation_environment()) return;
 
@@ -869,7 +908,7 @@ private:
     }
 
     void install_cinnamon_desktop() {
-        std::cout << ARCH_COLOR_CYAN << "Installing Cinnamon Desktop..." << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing Cinnamon Desktop..." << COLOR_RESET << std::endl;
 
         if (!setup_installation_environment()) return;
 
@@ -880,7 +919,7 @@ private:
     }
 
     void install_mate_desktop() {
-        std::cout << ARCH_COLOR_CYAN << "Installing MATE Desktop..." << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing MATE Desktop..." << COLOR_RESET << std::endl;
 
         if (!setup_installation_environment()) return;
 
@@ -891,7 +930,7 @@ private:
     }
 
     void install_budgie_desktop() {
-        std::cout << ARCH_COLOR_CYAN << "Installing Budgie Desktop..." << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing Budgie Desktop..." << COLOR_RESET << std::endl;
 
         if (!setup_installation_environment()) return;
 
@@ -902,7 +941,7 @@ private:
     }
 
     void install_i3_wm() {
-        std::cout << ARCH_COLOR_CYAN << "Installing i3 Window Manager..." << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing i3 Window Manager..." << COLOR_RESET << std::endl;
 
         if (!setup_installation_environment()) return;
 
@@ -913,7 +952,7 @@ private:
     }
 
     void install_sway_wm() {
-        std::cout << ARCH_COLOR_CYAN << "Installing Sway Window Manager..." << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing Sway Window Manager..." << COLOR_RESET << std::endl;
 
         if (!setup_installation_environment()) return;
 
@@ -924,7 +963,7 @@ private:
     }
 
     void install_hyprland_wm() {
-        std::cout << ARCH_COLOR_CYAN << "Installing Hyprland Window Manager..." << ARCH_COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing Hyprland Window Manager..." << COLOR_RESET << std::endl;
 
         if (!setup_installation_environment()) return;
 
@@ -958,58 +997,58 @@ private:
             switch(selected) {
                 case 0:
                     current_desktop_name = "Arch-TTY-Grub";
-                    std::cout << ARCH_COLOR_GREEN << "Desktop environment set to: Arch TTY Grub" << ARCH_COLOR_RESET << std::endl;
-                    save_configuration();
+                    std::cout << COLOR_GREEN << "Desktop environment set to: Arch TTY Grub" << COLOR_RESET << std::endl;
+                    saveConfiguration();
                     return;
                 case 1:
                     current_desktop_name = "GNOME-Desktop";
-                    std::cout << ARCH_COLOR_GREEN << "Desktop environment set to: GNOME Desktop" << ARCH_COLOR_RESET << std::endl;
-                    save_configuration();
+                    std::cout << COLOR_GREEN << "Desktop environment set to: GNOME Desktop" << COLOR_RESET << std::endl;
+                    saveConfiguration();
                     return;
                 case 2:
                     current_desktop_name = "KDE-Plasma";
-                    std::cout << ARCH_COLOR_GREEN << "Desktop environment set to: KDE Plasma" << ARCH_COLOR_RESET << std::endl;
-                    save_configuration();
+                    std::cout << COLOR_GREEN << "Desktop environment set to: KDE Plasma" << COLOR_RESET << std::endl;
+                    saveConfiguration();
                     return;
                 case 3:
                     current_desktop_name = "XFCE-Desktop";
-                    std::cout << ARCH_COLOR_GREEN << "Desktop environment set to: XFCE Desktop" << ARCH_COLOR_RESET << std::endl;
-                    save_configuration();
+                    std::cout << COLOR_GREEN << "Desktop environment set to: XFCE Desktop" << COLOR_RESET << std::endl;
+                    saveConfiguration();
                     return;
                 case 4:
                     current_desktop_name = "LXQt-Desktop";
-                    std::cout << ARCH_COLOR_GREEN << "Desktop environment set to: LXQt Desktop" << ARCH_COLOR_RESET << std::endl;
-                    save_configuration();
+                    std::cout << COLOR_GREEN << "Desktop environment set to: LXQt Desktop" << COLOR_RESET << std::endl;
+                    saveConfiguration();
                     return;
                 case 5:
                     current_desktop_name = "Cinnamon-Desktop";
-                    std::cout << ARCH_COLOR_GREEN << "Desktop environment set to: Cinnamon Desktop" << ARCH_COLOR_RESET << std::endl;
-                    save_configuration();
+                    std::cout << COLOR_GREEN << "Desktop environment set to: Cinnamon Desktop" << COLOR_RESET << std::endl;
+                    saveConfiguration();
                     return;
                 case 6:
                     current_desktop_name = "MATE-Desktop";
-                    std::cout << ARCH_COLOR_GREEN << "Desktop environment set to: MATE Desktop" << ARCH_COLOR_RESET << std::endl;
-                    save_configuration();
+                    std::cout << COLOR_GREEN << "Desktop environment set to: MATE Desktop" << COLOR_RESET << std::endl;
+                    saveConfiguration();
                     return;
                 case 7:
                     current_desktop_name = "Budgie-Desktop";
-                    std::cout << ARCH_COLOR_GREEN << "Desktop environment set to: Budgie Desktop" << ARCH_COLOR_RESET << std::endl;
-                    save_configuration();
+                    std::cout << COLOR_GREEN << "Desktop environment set to: Budgie Desktop" << COLOR_RESET << std::endl;
+                    saveConfiguration();
                     return;
                 case 8:
                     current_desktop_name = "i3-WM";
-                    std::cout << ARCH_COLOR_GREEN << "Desktop environment set to: i3 Window Manager" << ARCH_COLOR_RESET << std::endl;
-                    save_configuration();
+                    std::cout << COLOR_GREEN << "Desktop environment set to: i3 Window Manager" << COLOR_RESET << std::endl;
+                    saveConfiguration();
                     return;
                 case 9:
                     current_desktop_name = "Sway-WM";
-                    std::cout << ARCH_COLOR_GREEN << "Desktop environment set to: Sway Window Manager" << ARCH_COLOR_RESET << std::endl;
-                    save_configuration();
+                    std::cout << COLOR_GREEN << "Desktop environment set to: Sway Window Manager" << COLOR_RESET << std::endl;
+                    saveConfiguration();
                     return;
                 case 10:
                     current_desktop_name = "Hyprland-WM";
-                    std::cout << ARCH_COLOR_GREEN << "Desktop environment set to: Hyprland Window Manager" << ARCH_COLOR_RESET << std::endl;
-                    save_configuration();
+                    std::cout << COLOR_GREEN << "Desktop environment set to: Hyprland Window Manager" << COLOR_RESET << std::endl;
+                    saveConfiguration();
                     return;
                 case 11:
                     return;
@@ -1075,11 +1114,11 @@ private:
                     start_installation();
                     break;
                 case 10:
-                    std::cout << ARCH_COLOR_GREEN << "Exiting. Goodbye!" << ARCH_COLOR_RESET << std::endl;
+                    std::cout << COLOR_GREEN << "Exiting. Goodbye!" << COLOR_RESET << std::endl;
                     return;
             }
 
-            std::cout << ARCH_COLOR_CYAN << "Press Enter to continue..." << ARCH_COLOR_RESET;
+            std::cout << COLOR_CYAN << "Press Enter to continue..." << COLOR_RESET;
             std::cin.get();
         }
     }
@@ -1087,11 +1126,11 @@ private:
 public:
     void run() {
         // LOAD CONFIGURATION FIRST - FIXED: This now happens before anything else
-        load_configuration();
+        loadConfiguration();
 
         // EXTRACT FILES
         if (!extractRequiredFiles()) {
-            std::cerr << ARCH_COLOR_RED << "Failed to extract required files. Cannot continue." << ARCH_COLOR_RESET << std::endl;
+            std::cerr << COLOR_RED << "Failed to extract required files. Cannot continue." << COLOR_RESET << std::endl;
             return;
         }
 
