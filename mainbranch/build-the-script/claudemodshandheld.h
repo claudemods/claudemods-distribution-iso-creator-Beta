@@ -19,14 +19,13 @@
 #include <unistd.h>
 #include <errno.h>
 
-// Color definitions
-const std::string COLOR_CYAN = "\033[38;2;0;255;255m";
-const std::string COLOR_RED = "\033[31m";
-const std::string COLOR_GREEN = "\033[32m";
-const std::string COLOR_YELLOW = "\033[33m";
-const std::string COLOR_ORANGE = "\033[38;5;208m";
-const std::string COLOR_PURPLE = "\033[38;5;93m";
-const std::string COLOR_RESET = "\033[0m";
+extern const std::string COLOR_CYAN;
+extern const std::string COLOR_RED;
+extern const std::string COLOR_GREEN;
+extern const std::string COLOR_YELLOW;
+extern const std::string COLOR_ORANGE;
+extern const std::string COLOR_PURPLE;
+extern const std::string COLOR_RESET;
 
 class ClaudemodsHandheldInstaller {
 private:
@@ -166,7 +165,7 @@ private:
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << COLOR_CYAN << "claudemods handheld distribution iso creator Beta v1.01 12-01-2026" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "claudemods handheld distribution iso creator Beta v1.01 14-01-2026" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
 
@@ -501,7 +500,7 @@ private:
 
         std::string currentDir = getCurrentDir();
 
-        // FIXED: Remove GRUB references for systemd-boot ISO
+        // Build the XORRISO command with the distro name as ISO filename
         std::string xorriso_cmd = "sudo xorriso -as mkisofs "
         "--modification-date=\"$(date +%Y%m%d%H%M%S00)\" "
         "--protective-msdos-label "
@@ -512,11 +511,13 @@ private:
         "-r -graft-points -no-pad "
         "--sort-weight 0 / "
         "--sort-weight 1 /boot "
+        "--grub2-mbr " + currentDir + "/calamares-claudemods/build-image-arch-img/boot/grub/i386-pc/boot_hybrid.img "
         "-partition_offset 16 "
-        "-b boot/efi.img "
+        "-b boot/grub/i386-pc/eltorito.img "
         "-c boot.catalog "
-        "-no-emul-boot -boot-load-size 4 -boot-info-table "
+        "-no-emul-boot -boot-load-size 4 -boot-info-table --grub2-boot-info "
         "-eltorito-alt-boot "
+        "-append_partition 2 0xef " + currentDir + "/calamares-claudemods/build-image-arch-img/boot/efi.img "
         "-e --interval:appended_partition_2:all:: "
         "-no-emul-boot "
         "-iso-level 3 "
@@ -704,7 +705,7 @@ private:
 
         std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
         // ADD SYSTEMD-BOOT AND EFIBOOTMGR PACKAGES
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop calamares-fix protonup-qt hhd adjustor hhd-ui openrgb";
+        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-handheld calamares-fix lutris hhd adjustor hhd-ui openrgb";
         if (!extra_packages.empty()) {
             pacstrap_cmd += " " + extra_packages;
         }
@@ -772,10 +773,10 @@ private:
         create_user_home_structure(target_folder);
 
         execute_command("cd " + target_folder);
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-minimal.zip");
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool.zip -d " + target_folder + "/opt");
-        execute_command("sudo unzip -o " + currentDir + "/spitfire-minimal.zip -d " + target_folder + "/home/" + new_username + "/");
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-full-v1.01.zip");
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-v1.01.zip");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-v1.01.zip -d " + target_folder + "/opt");
+        execute_command("sudo unzip -o " + currentDir + "/spitfire-full-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
         execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt/tweaksspitfire.sh");
