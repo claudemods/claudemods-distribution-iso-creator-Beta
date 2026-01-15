@@ -1,6 +1,6 @@
 
 ## to test this script 
-- most of v1.01 built its 7o percent complete
+- most of v1.01 built its 70 percent complete
 - navigate to build-the-script
 - then use command below to compile then copy the file (test) to folder (mainbranch) then execute in konsole (test)
 - command: g++ -std=c++23 main.cpp -o test
