@@ -8,7 +8,7 @@
 - needed build-image-claudemods.zip was broken so i reuploaded with fix
 - installer for v1.01 has been built but needs testing
 - handheld edition packagelists have been uploaded to my repo
-- im working on handheld editiuons before finishing off other editions to my script and other things 
+- im working on handheld editions before finishing off other editions to my script and other things 
 
 ## changlelog claudemods distributions v1.01 14-01-2026 11:10pm GMT (uk time)
 - arch and cachyos scripts updated they now work like before but with improvements
