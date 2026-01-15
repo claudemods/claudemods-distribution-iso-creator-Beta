@@ -1,8 +1,13 @@
 ## to test this script 
-- claudemods options have only been updated 60% as of yet nothing else will work yet
+- most of v1.01 built its 70 percent complete
 - navigate to build-the-script
 - then use command below to compile then copy the file (test) to folder (mainbranch) then execute in konsole (test)
 - command: g++ -std=c++23 main.cpp -o test
+
+## changlelog claudemods distributions v1.01 14-01-2026 11:10pm GMT (uk time)
+- arch and cachyos scripts updated they now work like before but with improvements
+- main menu updated so handheld editions are a thing though they arent working just yet
+
 
 ## changlelog claudemods distributions v1.01 13-01-2026 13:10 GMT (uk time)
 - more calamares fixes since i missed some things yesterday
