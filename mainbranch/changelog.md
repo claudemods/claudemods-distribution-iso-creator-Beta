@@ -4,6 +4,12 @@
 - then use command below to compile then copy the file (test) to folder (mainbranch) then execute in konsole (test)
 - command: g++ -std=c++23 main.cpp -o test
 
+## changlelog claudemods distributions v1.01 15-01-2026 14:24pm GMT (uk time)
+- needed build-image-claudemods.zip was broken so i reuploaded with fix
+- installer for v1.01 has been built but needs testing
+- handheld edition packagelists have been uploaded to my repo
+- im working on handheld editiuons before finishing off other editions to my script and other things 
+
 ## changlelog claudemods distributions v1.01 14-01-2026 11:10pm GMT (uk time)
 - arch and cachyos scripts updated they now work like before but with improvements
 - main menu updated so handheld editions are a thing though they arent working just yet
