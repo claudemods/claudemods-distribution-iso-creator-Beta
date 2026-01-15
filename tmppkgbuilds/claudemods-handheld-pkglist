@@ -169,7 +169,6 @@ depends=(
     'file'
     'filesystem'
     'findutils'
-    'firefox'
     'fish'
     'fish-autopair'
     'fish-pure-prompt'
