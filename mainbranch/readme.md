@@ -1,9 +1,12 @@
-
-## to test this script 
+## to test this script use command below
 - most of v1.01 built its 70 percent complete
-- navigate to build-the-script
-- then use command below to compile then copy the file (test) to folder (mainbranch) then execute in konsole (test)
-- command: g++ -std=c++23 main.cpp -o test
+
+all-in-one distribution iso creator Beta v1.01 16-01-2026 (in development)
+
+```bash
+
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/mainbranch/build-the-script/installer/build-from-github.sh)"
+```
 
 
 # the future for v1.01 (being built)
