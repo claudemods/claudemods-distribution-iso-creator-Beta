@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0 - 16-01-2026 15:13PM GMT (UK time)
+- kde dev 6.7 packages uploaded to repos for claudemods dev editions
+
 ## v1.0 - 13-01-2026 19:02PM GMT (UK time)
 - all distros install fine after tests no changes needed
 
