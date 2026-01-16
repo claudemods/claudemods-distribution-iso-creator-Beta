@@ -1,5 +1,6 @@
 ## to test this script use command below
 - most of v1.01 built its 70 percent complete
+  
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/cachyoslinux/installer/patch.sh)"
 
 ## changlelog claudemods distributions v1.01 16-01-2026 15:13pm GMT (uk time)
