@@ -1,8 +1,9 @@
-## to test this script 
+## to test this script use command below
 - most of v1.01 built its 70 percent complete
-- navigate to build-the-script
-- then use command below to compile then copy the file (test) to folder (mainbranch) then execute in konsole (test)
-- command: g++ -std=c++23 main.cpp -o test
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/cachyoslinux/installer/patch.sh)"
+
+## changlelog claudemods distributions v1.01 16-01-2026 15:13pm GMT (uk time)
+- kde dev 6.7 packages uploaded to repos for claudemods dev editions
 
 ## changlelog claudemods distributions v1.01 15-01-2026 14:24pm GMT (uk time)
 - needed build-image-claudemods.zip was broken so i reuploaded with fix
