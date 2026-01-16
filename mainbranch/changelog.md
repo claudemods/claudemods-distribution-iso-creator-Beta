@@ -1,7 +1,12 @@
 ## to test this script use command below
 - most of v1.01 built its 70 percent complete
-  
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/cachyoslinux/installer/patch.sh)"
+
+all-in-one distribution iso creator Beta v1.01 16-01-2026 (in development)
+
+```bash
+
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/mainbranch/build-the-script/installer/build-from-github.sh)"
+```
 
 ## changlelog claudemods distributions v1.01 16-01-2026 15:13pm GMT (uk time)
 - kde dev 6.7 packages uploaded to repos for claudemods dev editions
