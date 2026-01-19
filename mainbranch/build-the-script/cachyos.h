@@ -196,7 +196,7 @@ private:
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << COLOR_CYAN << "CachyOS distribution iso creator v1.01 14-01-2026" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "CachyOS distribution iso creator v1.01 19-01-2026" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
 
@@ -454,7 +454,7 @@ private:
         std::string target_folder = getFullTargetPath();
         std::string currentDir = getCurrentDir();
 
-        std::cout << COLOR_CYAN << "Installing Calamares installer..." << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing Calamares installer and setting up iso ..." << COLOR_RESET << std::endl;
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Desktop");
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Documents");
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Downloads");
@@ -503,8 +503,17 @@ private:
         execute_command("sudo unzip -o -q " + currentDir + "/needed-files/bootcachyos.zip -d " + target_folder + "/boot");
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/cachyos-iso-initramfs/kernel-latest.img");
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/cachyos-iso-initramfs/initramfs-x86_64.img");
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/cachyos-iso-initramfs/vmlinuz-x86_64.zip");
+        execute_command("sudo unsquashfs -d " + target_folder + "/usr/lib/modules/6.18.6-2-cachyos " + currentDir + "/kernel-latest.img");
+        execute_command("sudo cp initramfs-x86_64.img " + currentDir + "/calamares-cachyos/build-image-arch-img/boot/initramfs-x86_64.img");
+        execute_command("sudo unzip -o " + currentDir + "/vmlinuz-x86_64.zip -d " + currentDir + "/calamares-cachyos/build-image-arch-img/boot");
+        execute_command("sudo rm -rf kernel-latest.img");
+        execute_command("sudo rm -rf initramfs-x86_64.img");
+        execute_command("sudo rm -rf *.zip");
 
-        std::cout << COLOR_GREEN << "Calamares installation completed!" << COLOR_RESET << std::endl;
+        std::cout << COLOR_GREEN << "Calamares installation and iso setup completed!" << COLOR_RESET << std::endl;
     }
 
     // UPDATED: Function to create squashfs image after installation with additional steps
@@ -537,59 +546,7 @@ private:
                 std::cout << COLOR_GREEN << "Target folder deleted successfully: " << target_folder << COLOR_RESET << std::endl;
             }
 
-            // Copy kernel image with user selection
-            std::cout << COLOR_CYAN << "Searching for kernel images..." << COLOR_RESET << std::endl;
-
-            // Get list of vmlinuz files
-            std::vector<std::string> kernel_files;
-            std::string find_cmd = "find /boot -name 'vmlinuz-*' -type f 2>/dev/null | sort";
-            FILE* pipe = popen(find_cmd.c_str(), "r");
-            if (pipe) {
-                char buffer[256];
-                while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-                    std::string file_path = buffer;
-                    file_path.erase(std::remove(file_path.begin(), file_path.end(), '\n'), file_path.end());
-                    if (!file_path.empty()) kernel_files.push_back(file_path);
-                }
-                pclose(pipe);
-            }
-
-            if (kernel_files.empty()) {
-                std::cout << COLOR_RED << "No kernel images found!" << COLOR_RESET << std::endl;
-            } else {
-                // Show available kernels
-                std::cout << COLOR_CYAN << "Available kernels:" << COLOR_RESET << std::endl;
-                for (size_t i = 0; i < kernel_files.size(); i++) {
-                    std::cout << "[" << i + 1 << "] " << kernel_files[i] << std::endl;
-                }
-
-                // Get selection
-                std::cout << COLOR_CYAN << "Select kernel (1-" << kernel_files.size() << "): " << COLOR_RESET;
-                std::string input;
-                std::getline(std::cin, input);
-
-                try {
-                    int choice = std::stoi(input);
-                    if (choice >= 1 && choice <= kernel_files.size()) {
-                        std::string copy_cmd = "sudo cp " + kernel_files[choice - 1] + " " + currentDir + "/calamares-cachyos/build-image-arch-img/boot/vmlinuz-x86_64";
-                        if (execute_command(copy_cmd) == 0) {
-                            std::cout << COLOR_GREEN << "Kernel copied successfully!" << COLOR_RESET << std::endl;
-                        } else {
-                            std::cout << COLOR_RED << "Failed to copy kernel!" << COLOR_RESET << std::endl;
-                        }
-                    }
-                } catch (...) {
-                    std::cout << COLOR_RED << "Invalid selection!" << COLOR_RESET << std::endl;
-                }
-            }
-
-            // Generate initramfs
-            std::cout << COLOR_CYAN << "Generating initramfs..." << COLOR_RESET << std::endl;
-            std::string initramfs_cmd = "cd " + currentDir + "/calamares-cachyos/build-image-arch-img && sudo mkinitcpio -c mkinitcpio.conf -g " + currentDir + "/calamares-cachyos/build-image-arch-img/boot/initramfs-x86_64.img";
-            if (execute_command(initramfs_cmd) == 0) {
-                std::cout << COLOR_GREEN << "Initramfs generated successfully!" << COLOR_RESET << std::endl;
-                create_iso_image(distro_name);
-            }
+            create_iso_image(distro_name);
         } else {
             std::cout << COLOR_RED << "Failed to create squashfs image!" << COLOR_RESET << std::endl;
         }
