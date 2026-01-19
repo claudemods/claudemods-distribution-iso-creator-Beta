@@ -8,6 +8,10 @@ all-in-one distribution iso creator Beta v1.01 16-01-2026 (in development)
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/mainbranch/build-the-script/installer/build-from-github.sh)"
 ```
 
+## changlelog claudemods distributions v1.01 19-01-2026 15:52pm GMT (uk time)
+- new method for initrams and kernel added this needed for the iso to boot
+- fixes to spitfire full .zip filename wasnt updated in last script version
+
 ## changlelog claudemods distributions v1.01 16-01-2026 15:13pm GMT (uk time)
 - kde dev 6.7 packages uploaded to repos for claudemods dev editions
 
