@@ -7,6 +7,9 @@ all-in-one distribution iso creator Beta v1.01 19-01-2026 (in development)
 
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/mainbranch/build-the-script/installer/build-from-github.sh)"
 ```
+## changlelog claudemods distributions v1.01 19-01-2026 20:05pm GMT (uk time)
+- updated kde dev 6.7 packages uploaded to repos for claudemods dev editions
+
 ## changlelog arch distributions v1.01 19-01-2026 19:44pm GMT (uk time)
 - new method for initramfs and kernel added this is needed for the iso to boot
 
