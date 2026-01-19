@@ -1,7 +1,7 @@
 ## to test this script use command below
 - most of v1.01 built its 70 percent complete
 
-all-in-one distribution iso creator Beta v1.01 16-01-2026 (in development)
+all-in-one distribution iso creator Beta v1.01 19-01-2026 (in development)
 
 ```bash
 
