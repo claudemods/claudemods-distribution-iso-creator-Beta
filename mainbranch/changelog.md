@@ -7,6 +7,8 @@ all-in-one distribution iso creator Beta v1.01 16-01-2026 (in development)
 
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/mainbranch/build-the-script/installer/build-from-github.sh)"
 ```
+## changlelog arch distributions v1.01 19-01-2026 19:44pm GMT (uk time)
+- new method for initramfs and kernel added this is needed for the iso to boot
 
 ## changlelog cachyos distributions v1.01 19-01-2026 17:43pm GMT (uk time)
 - new method for initramfs and kernel added this is needed for the iso to boot
