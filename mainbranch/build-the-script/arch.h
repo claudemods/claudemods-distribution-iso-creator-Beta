@@ -196,7 +196,7 @@ private:
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << COLOR_CYAN << "claudemods Arch Linux distribution iso creator v1.01 19-01-2026" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "claudemods Arch Linux distribution iso creator v1.01 20-01-2026" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
 
@@ -517,7 +517,7 @@ private:
         std::string currentDir = getCurrentDir();
         std::string target_folder = getFullTargetPath();
 
-        std::string squashfs_cmd = "sudo mksquashfs " + target_folder + " " + currentDir + "/calamares-arch/build-image-arch-img/LiveOS/rootfs.img -noappend -comp xz -b 256K -Xbcj x86 -e etc/udev/rules.d/70-persistent-cd.rules -e etc/udev/rules.d/70-persistent-net.rules -e etc/mtab -e etc/fstab -e dev/* -e proc/* -e sys/* -e tmp/* -e run/* -e mnt/* -e media/* -e lost+found";
+        std::string squashfs_cmd = "sudo mksquashfs " + target_folder + " " + currentDir + "/calamares-arch/build-image-arch-img/LiveOS/rootfs.img -noappend -comp zstd -Xcompression-level 22 -b 256K -e etc/udev/rules.d/70-persistent-cd.rules -e etc/udev/rules.d/70-persistent-net.rules -e etc/mtab -e etc/fstab -e dev/* -e proc/* -e sys/* -e tmp/* -e run/* -e mnt/* -e media/* -e lost+found";
 
         std::cout << COLOR_CYAN << "Executing: " << squashfs_cmd << COLOR_RESET << std::endl;
 
