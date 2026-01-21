@@ -1122,8 +1122,8 @@ private:
         // DISTRIBUTION-SPECIFIC FILES - USING SAME FILES AS SPITFIRE FULL
         execute_command("cd " + target_folder);
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-full-black-v1.01.zip");
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-v1.01.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-v1.01.zip -d " + target_folder + "/opt");
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-CKGBE-v1.01.zip");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-CKGBE-v1.01.zip -d " + target_folder + "/opt");
         execute_command("sudo unzip -o " + currentDir + "/spitfire-full-black-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
@@ -1134,7 +1134,7 @@ private:
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin " + target_folder + "/usr/share/sddm/themes/SpitFireLogin");
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
-        execute_command("sudo rm -rf " + currentDir + "/Arch-Systemtool-v1.01.zip");
+        execute_command("sudo rm -rf " + currentDir + "/Arch-Systemtool-CKGBE-v1.01.zip");
         execute_command("sudo rm -rf " + currentDir + "/spitfire-full-black-v1.01.zip");
         execute_command("sudo rm -rf " + target_folder + "/opt/tweaksspitfire.sh");
 
@@ -1200,8 +1200,8 @@ private:
         // DISTRIBUTION-SPECIFIC FILES - USING SAME FILES AS SPITFIRE FULL DEV
         execute_command("cd " + target_folder);
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-full-black-v1.01.zip");
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-v1.01.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-v1.01.zip -d " + target_folder + "/opt");
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-CKGBE-v1.01.zip");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-CKGBE-v1.01.zip -d " + target_folder + "/opt");
         execute_command("sudo unzip -o " + currentDir + "/spitfire-full-black-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
         execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
@@ -1212,7 +1212,7 @@ private:
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin " + target_folder + "/usr/share/sddm/themes/SpitFireLogin");
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
         execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
-        execute_command("sudo rm -rf " + currentDir + "/Arch-Systemtool-v1.01.zip");
+        execute_command("sudo rm -rf " + currentDir + "/Arch-Systemtool-CKGBE-v1.01.zip");
         execute_command("sudo rm -rf " + currentDir + "/spitfire-full-black-v1.01.zip");
         execute_command("sudo rm -rf " + target_folder + "/opt/tweaksspitfire.sh");
 
