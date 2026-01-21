@@ -746,6 +746,10 @@ private:
             install_spitfire_ckge_full();
         } else if (current_distro_name == "Spitfire-CKGE-Full-Dev") {
             install_spitfire_ckge_full_dev();
+        } else if (current_distro_name == "Spitfire-CKGE-Black-Full") { // CHANGED
+            install_spitfire_ckge_black_full(); // CHANGED
+        } else if (current_distro_name == "Spitfire-CKGE-Black-Full-Dev") { // CHANGED
+            install_spitfire_ckge_black_full_dev(); // CHANGED
         } else if (current_distro_name == "Apex-CKGE-Minimal") {
             install_apex_ckge_minimal();
         } else if (current_distro_name == "Apex-CKGE-Minimal-Dev") {
@@ -933,7 +937,6 @@ private:
             pacstrap_cmd += " " + extra_packages;
         }
         execute_command(pacstrap_cmd);
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo && flatpak install -y flathub com.usebottles.bottles\"");
 
         // VERIFY PACSTRAP SUCCESS
         if (!verify_pacstrap_success(target_folder)) return;
@@ -1012,7 +1015,6 @@ private:
             pacstrap_cmd += " " + extra_packages;
         }
         execute_command(pacstrap_cmd);
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo && flatpak install -y flathub com.usebottles.bottles\"");
 
         // VERIFY PACSTRAP SUCCESS
         if (!verify_pacstrap_success(target_folder)) return;
@@ -1069,6 +1071,162 @@ private:
 
         // CREATE SQUASHFS IMAGE AFTER INSTALLATION
         create_squashfs_image("Spitfire-CKGE-Full-Dev");
+    }
+
+    // CHANGED: Spitfire CKGE Black Full - renamed from Spitfire Black Full
+    void install_spitfire_ckge_black_full() {
+        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Black Full..." << COLOR_RESET << std::endl;
+        std::string target_folder = getTargetFolder();
+        std::cout << COLOR_CYAN << "Starting Spitfire CKGE Black Full installation in: " << target_folder << COLOR_RESET << std::endl;
+
+        std::string currentDir = getCurrentDir();
+        std::cout << COLOR_CYAN << "Working from directory: " << currentDir << COLOR_RESET << std::endl;
+
+        // USE COMMON SETUP FUNCTIONS
+        if (!setup_target_directory(target_folder)) return;
+        setup_pacman_and_files(target_folder);
+
+        // INSTALL BASE SYSTEM WITH PACSTRAP - INTEGRATE EXTRA PACKAGES
+        std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
+        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-full calamares-fix lutris protonup-qt hhd adjustor hhd-ui openrgb obs-studio";
+        if (!extra_packages.empty()) {
+            pacstrap_cmd += " " + extra_packages;
+        }
+        execute_command(pacstrap_cmd);
+
+        // VERIFY PACSTRAP SUCCESS
+        if (!verify_pacstrap_success(target_folder)) return;
+        setup_boot_directory(target_folder);
+
+        mount_system_dirs();
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable sddm\"");
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable NetworkManager\"");
+
+        apply_timezone_keyboard_settings();
+
+        // DISTRIBUTION-SPECIFIC CONFIGURATION
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub " + target_folder + "/etc/default/grub");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub.cfg " + target_folder + "/boot/grub/grub.cfg");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos " + target_folder + "/usr/share/grub/themes");
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation " + target_folder + "/usr/share/plymouth/themes");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.sh " + target_folder + "/usr/local/bin/termfull.sh");
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"chmod +x /usr/local/bin/termfull.sh\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.service " + target_folder + "/etc/systemd/system/termfull.service");
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable termfull.service >/dev/null 2>&1\"");
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
+
+        create_user();
+        create_user_home_structure(target_folder);
+
+        // DISTRIBUTION-SPECIFIC FILES - USING SAME FILES AS SPITFIRE FULL
+        execute_command("cd " + target_folder);
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-full-black-v1.01.zip");
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-v1.01.zip");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-v1.01.zip -d " + target_folder + "/opt");
+        execute_command("sudo unzip -o " + currentDir + "/spitfire-full-black-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
+        execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
+        execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt/tweaksspitfire.sh");
+        execute_command("sudo chmod +x " + target_folder + "/opt/tweaksspitfire.sh");
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/konsolerc");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin " + target_folder + "/usr/share/sddm/themes/SpitFireLogin");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
+        execute_command("sudo rm -rf " + currentDir + "/Arch-Systemtool-v1.01.zip");
+        execute_command("sudo rm -rf " + currentDir + "/spitfire-full-black-v1.01.zip");
+        execute_command("sudo rm -rf " + target_folder + "/opt/tweaksspitfire.sh");
+
+        // ORIGINAL user-places.xbel FIX
+        fix_user_places_xbel(target_folder);
+
+        // USE COMMON CALAMARES INSTALLATION
+        install_calamares(target_folder);
+
+        unmount_system_dirs();
+        std::cout << COLOR_GREEN << "Spitfire CKGE Black Full installation completed in: " << target_folder << COLOR_RESET << std::endl;
+
+        // CREATE SQUASHFS IMAGE AFTER INSTALLATION
+        create_squashfs_image("Spitfire-CKGE-Black-Full");
+    }
+
+    // CHANGED: Spitfire CKGE Black Full Dev - renamed from Spitfire Black Full Dev
+    void install_spitfire_ckge_black_full_dev() {
+        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Black Full Dev..." << COLOR_RESET << std::endl;
+        std::string target_folder = getTargetFolder();
+        std::cout << COLOR_CYAN << "Starting Spitfire CKGE Black Full Dev installation in: " << target_folder << COLOR_RESET << std::endl;
+
+        std::string currentDir = getCurrentDir();
+        std::cout << COLOR_CYAN << "Working from directory: " << currentDir << COLOR_RESET << std::endl;
+
+        // USE COMMON SETUP FUNCTIONS
+        if (!setup_target_directory(target_folder)) return;
+        setup_pacman_and_files(target_folder);
+
+        // INSTALL BASE SYSTEM WITH PACSTRAP - INTEGRATE EXTRA PACKAGES
+        std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
+        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-fulldev calamares-fix lutris protonup-qt hhd adjustor hhd-ui openrgb";
+        if (!extra_packages.empty()) {
+            pacstrap_cmd += " " + extra_packages;
+        }
+        execute_command(pacstrap_cmd);
+
+        // VERIFY PACSTRAP SUCCESS
+        if (!verify_pacstrap_success(target_folder)) return;
+        setup_boot_directory(target_folder);
+
+        mount_system_dirs();
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable sddm\"");
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable NetworkManager\"");
+
+        apply_timezone_keyboard_settings();
+
+        // DISTRIBUTION-SPECIFIC CONFIGURATION
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub " + target_folder + "/etc/default/grub");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub.cfg " + target_folder + "/boot/grub/grub.cfg");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos " + target_folder + "/usr/share/grub/themes");
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation " + target_folder + "/usr/share/plymouth/themes");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.sh " + target_folder + "/usr/local/bin/termfull.sh");
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"chmod +x /usr/local/bin/termfull.sh\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.service " + target_folder + "/etc/systemd/system/termfull.service");
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable termfull.service >/dev/null 2>&1\"");
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
+
+        create_user();
+        create_user_home_structure(target_folder);
+
+        // DISTRIBUTION-SPECIFIC FILES - USING SAME FILES AS SPITFIRE FULL DEV
+        execute_command("cd " + target_folder);
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-full-black-v1.01.zip");
+        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-v1.01.zip");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-v1.01.zip -d " + target_folder + "/opt");
+        execute_command("sudo unzip -o " + currentDir + "/spitfire-full-black-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
+        execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
+        execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt/tweaksspitfire.sh");
+        execute_command("sudo chmod +x " + target_folder + "/opt/tweaksspitfire.sh");
+        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/konsolerc");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin " + target_folder + "/usr/share/sddm/themes/SpitFireLogin");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
+        execute_command("sudo rm -rf " + currentDir + "/Arch-Systemtool-v1.01.zip");
+        execute_command("sudo rm -rf " + currentDir + "/spitfire-full-black-v1.01.zip");
+        execute_command("sudo rm -rf " + target_folder + "/opt/tweaksspitfire.sh");
+
+        // ORIGINAL user-places.xbel FIX
+        fix_user_places_xbel(target_folder);
+
+        // USE COMMON CALAMARES INSTALLATION
+        install_calamares(target_folder);
+
+        unmount_system_dirs();
+        std::cout << COLOR_GREEN << "Spitfire CKGE Black Full Dev installation completed in: " << target_folder << COLOR_RESET << std::endl;
+
+        // CREATE SQUASHFS IMAGE AFTER INSTALLATION
+        create_squashfs_image("Spitfire-CKGE-Black-Full-Dev");
     }
 
     // UPDATED: Apex CKGE Minimal - using common functions with extra packages integration
@@ -1242,12 +1400,11 @@ private:
 
         // INSTALL BASE SYSTEM WITH PACSTRAP - INTEGRATE EXTRA PACKAGES
         std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-full calamares-fix lutris protonup-qt hhd adjustor hhd-ui openrgb";
+        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-full calamares-fix lutris protonup-qt hhd adjustor hhd-ui openrgb obs-studio";
         if (!extra_packages.empty()) {
             pacstrap_cmd += " " + extra_packages;
         }
         execute_command(pacstrap_cmd);
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo && flatpak install -y flathub com.usebottles.bottles\"");
 
         // VERIFY PACSTRAP SUCCESS
         if (!verify_pacstrap_success(target_folder)) return;
@@ -1326,7 +1483,6 @@ private:
             pacstrap_cmd += " " + extra_packages;
         }
         execute_command(pacstrap_cmd);
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo && flatpak install -y flathub com.usebottles.bottles\"");
 
         // VERIFY PACSTRAP SUCCESS
         if (!verify_pacstrap_success(target_folder)) return;
@@ -1385,13 +1541,15 @@ private:
         create_squashfs_image("Apex-CKGE-Full-Dev");
     }
 
-    // NEW: Show distro selection menu
+    // CHANGED: Show distro selection menu - UPDATED with renamed options
     void show_distro_selection() {
         std::vector<std::string> distro_options = {
             "Install Spitfire CKGE Minimal",
             "Install Spitfire CKGE Minimal Dev",
             "Install Spitfire CKGE Full",
             "Install Spitfire CKGE Full Dev",
+            "Install Spitfire CKGE Black Full", // CHANGED
+            "Install Spitfire CKGE Black Full Dev", // CHANGED
             "Install Apex CKGE Minimal",
             "Install Apex CKGE Minimal Dev",
             "Install Apex CKGE Full",
@@ -1425,26 +1583,36 @@ private:
                     std::cout << COLOR_GREEN << "Spitfire CKGE Full Dev selected. Use 'Start Installation' to begin." << COLOR_RESET << std::endl;
                     return; // ADDED THIS LINE
                 case 4:
+                    current_distro_name = "Spitfire-CKGE-Black-Full"; // CHANGED
+                    saveConfiguration();
+                    std::cout << COLOR_GREEN << "Spitfire CKGE Black Full selected. Use 'Start Installation' to begin." << COLOR_RESET << std::endl;
+                    return; // ADDED THIS LINE
+                case 5:
+                    current_distro_name = "Spitfire-CKGE-Black-Full-Dev"; // CHANGED
+                    saveConfiguration();
+                    std::cout << COLOR_GREEN << "Spitfire CKGE Black Full Dev selected. Use 'Start Installation' to begin." << COLOR_RESET << std::endl;
+                    return; // ADDED THIS LINE
+                case 6:
                     current_distro_name = "Apex-CKGE-Minimal";
                     saveConfiguration();
                     std::cout << COLOR_GREEN << "Apex CKGE Minimal selected. Use 'Start Installation' to begin." << COLOR_RESET << std::endl;
                     return; // ADDED THIS LINE
-                case 5:
+                case 7:
                     current_distro_name = "Apex-CKGE-Minimal-Dev";
                     saveConfiguration();
                     std::cout << COLOR_GREEN << "Apex CKGE Minimal Dev selected. Use 'Start Installation' to begin." << COLOR_RESET << std::endl;
                     return; // ADDED THIS LINE
-                case 6:
+                case 8:
                     current_distro_name = "Apex-CKGE-Full";
                     saveConfiguration();
                     std::cout << COLOR_GREEN << "Apex CKGE Full selected. Use 'Start Installation' to begin." << COLOR_RESET << std::endl;
                     return; // ADDED THIS LINE
-                case 7:
+                case 9:
                     current_distro_name = "Apex-CKGE-Full-Dev";
                     saveConfiguration();
                     std::cout << COLOR_GREEN << "Apex CKGE Full Dev selected. Use 'Start Installation' to begin." << COLOR_RESET << std::endl;
                     return; // ADDED THIS LINE
-                case 8:
+                case 10:
                     return;
             }
 
