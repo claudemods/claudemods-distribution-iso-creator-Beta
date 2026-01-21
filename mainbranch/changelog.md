@@ -8,6 +8,11 @@ all-in-one distribution iso creator Beta v1.01 19-01-2026 (in development)
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/mainbranch/build-the-script/installer/build-from-github.sh)"
 ```
 ## changlelog claudemods distributions v1.01 21-01-2026 12:15pm GMT (uk time)
+- claudemods spitfire black edition full and full dev added
+- obs-studio added to apex full
+- flatpak command for all distros removed
+
+## changlelog claudemods distributions v1.01 21-01-2026 12:15pm GMT (uk time)
 - obs-studio added to spitfire full
 
 ## changlelog all distributions v1.01 20-01-2026 18:05pm GMT (uk time)
