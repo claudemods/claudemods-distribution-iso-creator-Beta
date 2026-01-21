@@ -42,9 +42,6 @@ C++ tool for building custom Arch Linux distribution ISOs with multiple desktop 
 - 🟡 **linux-zen** (Tuned for desktop performance)
 - 🛡️ **linux-hardened** (Security-focused)
 
-## 💡 Kernel Information
-ℹ️ Please note: the kernel you select you will need to be currently running for this to work
-
 ## 🌍 Supported Timezones
 
 - 🇺🇸 America/New_York (US English)
