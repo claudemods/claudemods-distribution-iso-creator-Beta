@@ -48,7 +48,7 @@ arch distribution iso creator Beta v1.0 01-12-2025 (working fine)
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/archlinux/installer/patch.sh)"
 ```
 
-all-in-one distribution iso creator Beta v1.01 16-01-2026 (in development)
+all-in-one distribution iso creator Beta v1.01 21-01-2026 (in development)
 
 ```bash
 
