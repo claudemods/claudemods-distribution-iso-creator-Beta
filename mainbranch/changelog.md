@@ -7,6 +7,9 @@ all-in-one distribution iso creator Beta v1.01 19-01-2026 (in development)
 
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/mainbranch/build-the-script/installer/build-from-github.sh)"
 ```
+## changlelog all distributions v1.01 20-01-2026 18:05pm GMT (uk time)
+- new squashfs command proven to be better for compression and timing
+
 ## changlelog claudemods distributions v1.01 19-01-2026 20:05pm GMT (uk time)
 - updated kde dev 6.7 packages uploaded to repos for claudemods dev editions
 
