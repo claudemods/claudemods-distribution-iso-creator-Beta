@@ -1,10 +1,13 @@
-![slide1](https://github.com/user-attachments/assets/bc1b3047-70b1-4f77-adb4-a5b6ddb0848e)
+# Project Slides
 
-![slide2](https://github.com/user-attachments/assets/fc1d2c2c-22a5-401f-aa4c-c34f3e4052ca)
+![Slide 1](https://github.com/user-attachments/assets/bc1b3047-70b1-4f77-adb4-a5b6ddb0848e)
 
-![slide3](https://github.com/user-attachments/assets/e8cf88cc-ed33-41fd-954c-fc84478c2b2e)
+![Slide 2](https://github.com/user-attachments/assets/fc1d2c2c-22a5-401f-aa4c-c34f3e4052ca)
 
-![slide4](https://github.com/user-attachments/assets/a4879da6-bd0c-42d1-90fe-0510996eadce)
+![Slide 3](https://github.com/user-attachments/assets/e8cf88cc-ed33-41fd-954c-fc84478c2b2e)
 
+![Slide 4](https://github.com/user-attachments/assets/a4879da6-bd0c-42d1-90fe-0510996eadce)
 
+![Slide 5](https://github.com/user-attachments/assets/fd86933f-44c8-41e5-b3cc-191415f1f71d)
 
+![Slide 6](https://github.com/user-attachments/assets/9ffe981d-cb8b-4681-81a6-f7a60b381e3f)
