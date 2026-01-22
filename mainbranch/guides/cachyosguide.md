@@ -11,6 +11,7 @@ C++ tool for building custom CachyOS Linux distribution ISOs. 🛠️
 - 🌍 **Set Timezone**
 - ⌨️ **Set Keyboard Layout**
 - 🐧 **Set Kernel**
+- 🌐 **Set Wireless Regdom**
 - 🖥️ **Select Desktop Environment**
 - 📦 **Install Extra Packages**
 - 🚀 **Start Installation**
@@ -88,6 +89,7 @@ C++ tool for building custom CachyOS Linux distribution ISOs. 🛠️
 - 🔒 **Passwords are displayed in plaintext** for verification
 - 💻 **Requires sudo privileges** for system operations
 - 🌐 **Needs internet connection** for package downloads
+- 🌐 **Set your wireless regdom for better internet speeds [default is GB]**
 - 💾 **Approximately 10-15GB disk space** required depending on what you choose
 - ⏱️ **Process takes 15-60 minutes** depending on selection and internet speed
 
