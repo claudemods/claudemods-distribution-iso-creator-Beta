@@ -467,6 +467,7 @@ private:
         execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
         execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
         execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/wireless-regdom " + target_folder + "/etc/conf.d/wireless-regdom");
         execute_command("sudo tar xzf " + currentDir + "/needed-files/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-iso-initramfs/kernel-latest.img");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-iso-initramfs/initramfs-x86_64.img");
