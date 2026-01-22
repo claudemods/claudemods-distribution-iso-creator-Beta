@@ -185,7 +185,7 @@ private:
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << COLOR_CYAN << "claudemods distribution iso creator Beta v1.01 21-01-2026" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "claudemods distribution iso creator Beta v1.01 22-01-2026" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
 
@@ -240,13 +240,13 @@ private:
                     switch(i) {
                         case 0: setting_value = "current directory as claudemods-distro"; break;
                         case 1: setting_value = new_username.empty() ? "[Not Set]" : new_username; break;
-                        // CHANGED: Show actual passwords instead of ******
                         case 2: setting_value = root_password.empty() ? "[Not Set]" : root_password; break;
                         case 3: setting_value = user_password.empty() ? "[Not Set]" : user_password; break;
                         case 4: setting_value = timezone.empty() ? "[Not Set]" : timezone; break;
                         case 5: setting_value = keyboard_layout.empty() ? "[Not Set]" : keyboard_layout; break;
-                        case 6: setting_value = current_distro_name.empty() ? "[Not Set]" : current_distro_name; break;
-                        case 7: setting_value = extra_packages.empty() ? "[Not Set]" : extra_packages; break;
+                        case 6: setting_value = "[Default GB]"; break; // Wireless Regdom - no status display
+                        case 7: setting_value = current_distro_name.empty() ? "[Not Set]" : current_distro_name; break;
+                        case 8: setting_value = extra_packages.empty() ? "[Not Set]" : extra_packages; break;
                         default: setting_value = ""; break;
                     }
 
@@ -647,6 +647,22 @@ private:
             case 7: keyboard_layout = get_input("Enter keyboard layout (e.g., br, ru, pt): "); break;
         }
         saveConfiguration(); // Save after setting
+    }
+
+    // NEW: Set wireless regulatory domain
+    void set_wireless_regdom() {
+        std::string currentDir = getCurrentDir();
+        std::string wireless_regdom_file = currentDir + "/needed-files/wireless-regdom";
+
+        std::cout << COLOR_CYAN << "Opening wireless regulatory domain file for editing..." << COLOR_RESET << std::endl;
+        std::cout << COLOR_YELLOW << "File: " << wireless_regdom_file << COLOR_RESET << std::endl;
+        std::cout << COLOR_YELLOW << "Use Ctrl+X to exit nano after editing" << COLOR_RESET << std::endl;
+
+        // Execute nano command to edit the file
+        std::string nano_cmd = "nano " + wireless_regdom_file;
+        execute_command(nano_cmd);
+
+        std::cout << COLOR_GREEN << "Wireless regulatory domain file updated." << COLOR_RESET << std::endl;
     }
 
     // NEW: Set extra packages
@@ -1622,6 +1638,7 @@ private:
     }
 
     void show_main_menu() {
+        // UPDATED: Added "Set Wireless Regdom" option at position 6
         std::vector<std::string> main_options = {
             "Installation Path: ",
             "Set Username",
@@ -1629,6 +1646,7 @@ private:
             "Set User Password",
             "Set Timezone",
             "Set Keyboard Layout",
+            "Set Wireless Regdom", // NEW OPTION ADDED HERE
             "Select Distro to Install",
             "Install Extra Packages",
             "Start Installation",
@@ -1663,15 +1681,18 @@ private:
                     set_keyboard_layout();
                     break;
                 case 6:
-                    show_distro_selection();
+                    set_wireless_regdom(); // NEW: Call the wireless regulatory domain function
                     break;
                 case 7:
-                    set_extra_packages();
+                    show_distro_selection();
                     break;
                 case 8:
-                    start_installation();
+                    set_extra_packages();
                     break;
                 case 9:
+                    start_installation();
+                    break;
+                case 10:
                     std::cout << COLOR_GREEN << "Exiting. Goodbye!" << COLOR_RESET << std::endl;
                     return;
             }
