@@ -11,6 +11,7 @@ C++ tool for building custom Arch Linux distribution ISOs with multiple desktop 
 - 🌍 **Set Timezone**
 - ⌨️ **Set Keyboard Layout**
 - 🐧 **Set Kernel**
+- 🌐 **Set Wireless Regdom**
 - 🖥️ **Select Desktop Environment**
 - 📦 **Install Extra Packages**
 - 🚀 **Start Installation**
@@ -87,6 +88,7 @@ C++ tool for building custom Arch Linux distribution ISOs with multiple desktop 
 - 🛠️ **Calamares integration** - includes graphical installer with custom branding
 
   ## ⚠️ Important Notes
+  - 🌐 **Set your wireless regdom for better internet speeds [default is GB]**
 
 - 🔒 **Passwords are displayed in plaintext** for verification
 - 💻 **Requires sudo privileges** for system operations
