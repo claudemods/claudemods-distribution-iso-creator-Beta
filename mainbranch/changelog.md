@@ -7,6 +7,9 @@ all-in-one distribution iso creator Beta v1.01 21-01-2026 (in development)
 
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/mainbranch/build-the-script/installer/build-from-github.sh)"
 ```
+## changlelog all distributions v1.01 22-01-2026 21:07pm GMT (uk time)
+- new option for setting wireless regdom with nano this is for better internet speeds [default is GB]
+
 ## changlelog claudemods distributions v1.01 21-01-2026 20:05pm GMT (uk time)
 - system icon fixes to spitfire black edition full and full dev
 
