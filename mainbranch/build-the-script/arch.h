@@ -196,7 +196,7 @@ private:
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << COLOR_CYAN << "claudemods Arch Linux distribution iso creator v1.01 20-01-2026" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "claudemods Arch Linux distribution iso creator v1.01 22-01-2026" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
 
@@ -257,14 +257,17 @@ private:
                         case 4: setting_value = timezone.empty() ? "[Not Set]" : timezone; break;
                         case 5: setting_value = keyboard_layout.empty() ? "[Not Set]" : keyboard_layout; break;
                         case 6: setting_value = selected_kernel.empty() ? "[Not Set]" : selected_kernel; break;
-                        case 7: setting_value = current_desktop_name.empty() ? "[Not Set]" : current_desktop_name; break;
-                        case 8: setting_value = extra_packages.empty() ? "[Not Set]" : extra_packages; break;
+                        case 7: setting_value = " [Default GB]"; break;
+                        case 8: setting_value = current_desktop_name.empty() ? "[Not Set]" : current_desktop_name; break;
+                        case 9: setting_value = extra_packages.empty() ? "[Not Set]" : extra_packages; break;
                         default: setting_value = ""; break;
                     }
 
                     // For installation path (i=0), don't add setting_value to avoid duplication
                     if (i == 0) {
                         menu_line = options[i];
+                    } else if (i == 7) { // For wireless regdom option, don't add value
+                        menu_line = options[i] + " " + setting_value;
                     } else {
                         menu_line = options[i] + " " + setting_value;
                     }
@@ -328,6 +331,8 @@ private:
         << (keyboard_layout.empty() ? "[Not Set]" : keyboard_layout) << std::endl;
         std::cout << COLOR_CYAN << "Kernel: " << COLOR_RESET
         << (selected_kernel.empty() ? "[Not Set]" : selected_kernel) << std::endl;
+        std::cout << COLOR_CYAN << "Wireless Regulatory Domain: " << COLOR_RESET
+        << "[Configure in needed-files/wireless-regdom]" << std::endl;
         std::cout << COLOR_CYAN << "Desktop Environment: " << COLOR_RESET
         << (current_desktop_name.empty() ? "[Not Set]" : current_desktop_name) << std::endl;
         std::cout << COLOR_CYAN << "Extra Packages: " << COLOR_RESET
@@ -525,7 +530,7 @@ private:
             std::cout << COLOR_GREEN << "Squashfs image created successfully!" << COLOR_RESET << std::endl;
 
             // Clean up target folder after successful squashfs creation
-            std::cout << COLOR_CYAN << "Cleaning up target folder..." << COLOR_RESET << std::endl;
+            std::cout << COLOR_CYAN << "Cleanup target folder..." << COLOR_RESET << std::endl;
             std::string cleanup_cmd = "sudo rm -rf " + target_folder;
             if (execute_command(cleanup_cmd) == 0) {
                 std::cout << COLOR_GREEN << "Target folder deleted successfully: " << target_folder << COLOR_RESET << std::endl;
@@ -679,6 +684,32 @@ private:
             case 3: selected_kernel = "linux-hardened"; break;
         }
         saveConfiguration();
+    }
+
+    // NEW: Set Wireless Regulatory Domain
+    void set_wireless_regdom() {
+        std::string currentDir = getCurrentDir();
+        std::string wireless_regdom_file = currentDir + "/needed-files/wireless-regdom";
+
+        std::cout << COLOR_CYAN << "Opening wireless regulatory domain configuration file..." << COLOR_RESET << std::endl;
+        std::cout << COLOR_YELLOW << "File location: " << wireless_regdom_file << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Press Enter to open the file in nano editor..." << COLOR_RESET << std::endl;
+
+        // Wait for user to press Enter
+        std::cin.get();
+
+        // Open the file with nano editor
+        std::string nano_cmd = "nano " + wireless_regdom_file;
+        int result = execute_command(nano_cmd);
+
+        if (result == 0) {
+            std::cout << COLOR_GREEN << "Wireless regulatory domain configuration saved." << COLOR_RESET << std::endl;
+        } else {
+            std::cout << COLOR_RED << "Failed to edit wireless regulatory domain file." << COLOR_RESET << std::endl;
+            std::cout << COLOR_YELLOW << "You can manually edit the file at: " << wireless_regdom_file << COLOR_RESET << std::endl;
+        }
+
+        // Note: We don't save this in configuration since it's a file edit, not a variable
     }
 
     // NEW: Set extra packages
@@ -1022,6 +1053,7 @@ private:
             "Set Timezone",
             "Set Keyboard Layout",
             "Set Kernel",
+            "Set Wireless Regdom",
             "Select Desktop Environment",
             "Install Extra Packages",
             "Start Installation",
@@ -1062,15 +1094,18 @@ private:
                     set_kernel();
                     break;
                 case 7:
-                    show_desktop_selection();
+                    set_wireless_regdom();
                     break;
                 case 8:
-                    set_extra_packages();
+                    show_desktop_selection();
                     break;
                 case 9:
-                    start_installation();
+                    set_extra_packages();
                     break;
                 case 10:
+                    start_installation();
+                    break;
+                case 11:
                     std::cout << COLOR_GREEN << "Exiting. Goodbye!" << COLOR_RESET << std::endl;
                     return;
             }
