@@ -196,7 +196,7 @@ private:
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << COLOR_CYAN << "CachyOS distribution iso creator v1.01 20-01-2026" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "CachyOS distribution iso creator v1.01 22-01-2026" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
 
@@ -257,14 +257,17 @@ private:
                         case 4: setting_value = timezone.empty() ? "[Not Set]" : timezone; break;
                         case 5: setting_value = keyboard_layout.empty() ? "[Not Set]" : keyboard_layout; break;
                         case 6: setting_value = selected_kernel.empty() ? "[Not Set]" : selected_kernel; break;
-                        case 7: setting_value = current_desktop_name.empty() ? "[Not Set]" : current_desktop_name; break;
-                        case 8: setting_value = extra_packages.empty() ? "[Not Set]" : extra_packages; break;
+                        case 7: setting_value = ""; break; // Wireless Regdom - no value displayed in main menu
+                        case 8: setting_value = current_desktop_name.empty() ? "[Not Set]" : current_desktop_name; break;
+                        case 9: setting_value = extra_packages.empty() ? "[Not Set]" : extra_packages; break;
                         default: setting_value = ""; break;
                     }
 
                     // For installation path (i=0), don't add setting_value to avoid duplication
                     if (i == 0) {
                         menu_line = options[i];
+                    } else if (i == 7) {
+                        menu_line = options[i] + " [Default GB]" + setting_value; // Wireless Regdom - just show the option text
                     } else {
                         menu_line = options[i] + " " + setting_value;
                     }
@@ -328,6 +331,8 @@ private:
         << (keyboard_layout.empty() ? "[Not Set]" : keyboard_layout) << std::endl;
         std::cout << COLOR_CYAN << "Kernel: " << COLOR_RESET
         << (selected_kernel.empty() ? "[Not Set]" : selected_kernel) << std::endl;
+        std::cout << COLOR_CYAN << "Wireless Regdom: " << COLOR_RESET
+        << "[Edit with nano]" << std::endl;
         std::cout << COLOR_CYAN << "Desktop Environment: " << COLOR_RESET
         << (current_desktop_name.empty() ? "[Not Set]" : current_desktop_name) << std::endl;
         std::cout << COLOR_CYAN << "Extra Packages: " << COLOR_RESET
@@ -485,6 +490,7 @@ private:
         execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
         execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
         execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/wireless-regdom " + target_folder + "/etc/conf.d/wireless-regdom");
         execute_command("sudo tar xzf " + currentDir + "/needed-files/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
 
         // Remove manjaro branding
@@ -708,6 +714,28 @@ private:
         saveConfiguration();
     }
 
+    // NEW: Set Wireless Regdom - opens nano editor
+    void set_wireless_regdom() {
+        std::cout << COLOR_CYAN << "Press Enter to continue to nano..." << COLOR_RESET;
+        std::cin.get();
+
+        std::string currentDir = getCurrentDir();
+        std::string filePath = currentDir + "/needed-files/wireless-regdom";
+
+        // Open nano editor
+        std::string nanoCmd = "nano " + filePath;
+        int result = execute_command(nanoCmd);
+
+        if (result == 0) {
+            std::cout << COLOR_GREEN << "Wireless regdom file updated successfully!" << COLOR_RESET << std::endl;
+        } else {
+            std::cout << COLOR_RED << "Failed to edit wireless regdom file!" << COLOR_RESET << std::endl;
+        }
+
+        std::cout << COLOR_CYAN << "Press Enter to continue..." << COLOR_RESET;
+        std::cin.get();
+    }
+
     // NEW: Set extra packages
     void set_extra_packages() {
         std::cout << COLOR_CYAN << "Enter additional packages to install (space-separated):" << COLOR_RESET << std::endl;
@@ -897,6 +925,7 @@ private:
             "Set Timezone",
             "Set Keyboard Layout",
             "Set Kernel",
+            "Set Wireless Regdom",
             "Select Desktop Environment",
             "Install Extra Packages",
             "Start Installation",
@@ -937,15 +966,18 @@ private:
                     set_kernel();
                     break;
                 case 7:
-                    show_desktop_selection();
+                    set_wireless_regdom();
                     break;
                 case 8:
-                    set_extra_packages();
+                    show_desktop_selection();
                     break;
                 case 9:
-                    start_installation();
+                    set_extra_packages();
                     break;
                 case 10:
+                    start_installation();
+                    break;
+                case 11:
                     std::cout << COLOR_GREEN << "Exiting. Goodbye!" << COLOR_RESET << std::endl;
                     return;
             }
