@@ -7,8 +7,8 @@ all-in-one distribution iso creator Beta v1.01 23-01-2026 (in development)
 
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/mainbranch/build-the-script/installer/build-from-github.sh)"
 ```
-## changlelog claudemods distributions v1.01 23-01-2026 20:12pm GMT (uk time)
-- updates to 2 .zips used in installer i have 2 others todo whilst i figure out how to sort handheld editions
+## changlelog claudemods distributions v1.01 23-01-2026 20:26pm GMT (uk time)
+- updates to 2 .zips used in installer this fixes apex music i have others todo to fix my menu app order whilst i figure out how to sort handheld editions
 
 ## changlelog all distributions v1.01 22-01-2026 21:10pm GMT (uk time)
 - new option for setting wireless regdom with nano this is for better internet speeds [default is GB]
