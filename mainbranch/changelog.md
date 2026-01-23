@@ -1,12 +1,15 @@
 ## to test this script use command below
 - most of v1.01 built its 70 percent complete
 
-all-in-one distribution iso creator Beta v1.01 21-01-2026 (in development)
+all-in-one distribution iso creator Beta v1.01 23-01-2026 (in development)
 
 ```bash
 
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/mainbranch/build-the-script/installer/build-from-github.sh)"
 ```
+## changlelog claudemods distributions v1.01 23-01-2026 20:12pm GMT (uk time)
+- updates to 2 .zips used in installer i have 2 others todo whilst i figure out how to sort handheld editions
+
 ## changlelog all distributions v1.01 22-01-2026 21:10pm GMT (uk time)
 - new option for setting wireless regdom with nano this is for better internet speeds [default is GB]
 - updated guides for this option
