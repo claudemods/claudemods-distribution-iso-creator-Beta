@@ -13,7 +13,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-di
 - fixes to delete .zips for spitfire minimal during installation
 
 currently im talking to some kde devs to help resolve show hidden files since i want to save this manually with a command or config file as it currently doesnt work evan with saved user files in my .zips
-im also testing a cloned handheld .img method since manually downloading packages isnt work
+im also testing a cloned handheld .img method since manually downloading packages isnt working
 
 ## changlelog claudemods distributions v1.01 25-01-2026 17:15pm GMT (uk time)
 - updated kde dev 6.7 packages uploaded to repos for claudemods dev editions
