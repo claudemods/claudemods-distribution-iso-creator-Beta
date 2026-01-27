@@ -30,7 +30,7 @@ void displayHeader() {
 
     // Custom text in cyan below ASCII
     setColor("\033[38;2;0;255;255m");
-    std::cout << "claudemods distribution iso creator v1.01 21-01-2026" << std::endl;
+    std::cout << "claudemods distribution iso creator v1.01 27-01-2026" << std::endl;
     resetColor();
     std::cout << std::endl;
 }
