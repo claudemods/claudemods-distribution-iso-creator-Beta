@@ -1,12 +1,22 @@
 ## to test this script use command below
 - most of v1.01 built its 70 percent complete
 
-all-in-one distribution iso creator Beta v1.01 23-01-2026 (in development)
+all-in-one distribution iso creator Beta v1.01 27-01-2026 (in development)
 
 ```bash
 
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/mainbranch/build-the-script/installer/build-from-github.sh)"
 ```
+
+## changlelog claudemods distributions v1.01 27-01-2026 22:39pm GMT (uk time)
+- new fixes to all .zips needed for minimal and full distros this will fix appimages in my menu
+- fixes to delete .zips for spitfire minimal during installation
+currently im talking to some kde devs to help resolve show hidden files since i want to save this manually with a command or config file as it currently doesnt work evan with saved user files in my .zips
+im also testing a cloned handheld .img method since manually downloading packages isnt work
+
+## changlelog claudemods distributions v1.01 25-01-2026 17:15pm GMT (uk time)
+- updated kde dev 6.7 packages uploaded to repos for claudemods dev editions
+
 ## changlelog claudemods distributions v1.01 23-01-2026 20:26pm GMT (uk time)
 - updates to 2 .zips used in installer this fixes apex music i have others todo to fix my menu app order whilst i figure out how to sort handheld editions
 
