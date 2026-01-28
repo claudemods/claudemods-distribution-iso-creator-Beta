@@ -54,7 +54,7 @@ void* execute_update_thread(void* /*arg*/) {
     
     // 2. CURRENT VERSION
     try {
-        std::string version_output = run_command("cat /home/$USER/claudemods-distribution-iso-creator-Beta/mainbranch/build-the-script/versionclaudemods.txt");
+        std::string version_output = run_command("cat /home/$USER/claudemods-distribution-iso-creator-Beta/mainbranch/build-the-script/version/mainbranch.txt");
         strncpy(current_version, version_output.empty() ? "not installed" : version_output.c_str(), 
                 sizeof(current_version) - 1);
     } catch (...) {
@@ -80,7 +80,7 @@ void* execute_update_thread(void* /*arg*/) {
     if (strcmp(detected_distro, "arch") == 0 || strcmp(detected_distro, "cachyos") == 0) {
         try {
             std::string version_output = run_command(
-                "cat /home/$USER/claudemods-distribution-iso-creator-Beta/mainbranch/build-the-script/mainbranch.txt");
+                "cat /home/$USER/claudemods-distribution-iso-creator-Beta/mainbranch/build-the-script/version/mainbranch.txt");
             strncpy(downloaded_version, version_output.c_str(), sizeof(downloaded_version) - 1);
         } catch (...) {
             strcpy(downloaded_version, "unknown");
@@ -98,7 +98,7 @@ void* execute_update_thread(void* /*arg*/) {
         
     // GET INSTALLED VERSION
     try {
-        std::string installed_version_output = run_command("cat /home/$USER/claudemods-distribution-iso-creator-Beta/mainbranch/build-the-script/mainbranch.txt");
+        std::string installed_version_output = run_command("cat /home/$USER/claudemods-distribution-iso-creator-Beta/mainbranch/build-the-script/version/mainbranch.txt");
         strncpy(installed_version, installed_version_output.c_str(), sizeof(installed_version) - 1);
     } catch (...) {
         strcpy(installed_version, "unknown");
