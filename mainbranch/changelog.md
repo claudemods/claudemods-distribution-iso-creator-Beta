@@ -99,7 +99,7 @@ im also testing a cloned handheld .img method since manually downloading package
 
 ==============================================================================================================
 
-# v1.0 Changelog
+# old v1.0 Changelog
 
 ## v1.0 - 19-01-2026 20:07PM GMT (UK time)
 - updated kde dev 6.7 packages uploaded to repos for claudemods dev editions
