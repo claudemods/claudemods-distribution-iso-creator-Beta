@@ -97,7 +97,7 @@ im also testing a cloned handheld .img method since manually downloading package
 - im now going to update apex full .zip before polishing script and adding more
 
 
-==========================================================================================================================================================================
+==============================================================================================================
 
 # v1.0 Changelog
 
