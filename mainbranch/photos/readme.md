@@ -1,12 +1,10 @@
 <div align="center">
 
-## main menu v1.01 28-01-2026
+## main menu v1.01 28-01-2026 ## (handheld options dont currently work)
 
 <img width="1280" height="800" alt="mainmenu" src="https://github.com/user-attachments/assets/10889454-6cc9-4ee3-bc97-47ddc85d63db" />
 
 ## all distributions have same main setup menu options 
-
-## (handheld options dont currently work)
 
 <img width="1280" height="800" alt="same" src="https://github.com/user-attachments/assets/ac2abc9f-0827-4423-a5a5-4d71a4382e15" />
 
