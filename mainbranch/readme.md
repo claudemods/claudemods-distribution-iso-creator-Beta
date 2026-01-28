@@ -1,33 +1,23 @@
-## to test this script use command below
-- most of v1.01 built its 70 percent complete
-
-all-in-one distribution iso creator Beta v1.01 27-01-2026 (in development)
+all-in-one distribution iso creator Beta v1.01 28-01-2026 (in development)
 
 ```bash
 
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/mainbranch/build-the-script/installer/build-from-github.sh)"
 ```
 
-
-# the future for v1.01 (being built)
+# the future for v1.01 (still being updated daily/weekly)
 
 ## v1.01 focuses on improving the needed file layout for the scripts and adding additional improvements and features
-- the main app will have the 3 distribution options to use and build isos from
-- the main app will also have the guide built in
-- the main app will also include the changelogs
-
-## claudemods distribution v1.01
-- the method for installing calamares has been changed
-- claudemods distributions will now include hhd adjustor and hdd-ui for gamepad support (works on lenovo legion go devices)
-- claudemods distributions apps are being updated so all appimages provided work and also their will be some new apps included such as protonup-qt
-- i wish to include SpitFire CachyOS Kde Gamer's Black Edition
-- also wish to include my handheld editions i create from cachyos
-
-## cachyos distribution v1.01
-- the method for installing calamares has been changed
-- i wish to include cachyos handheld edition in the installer
-- also i wish to have more desktop options
-
-## arch distribution v1.01
-- i wish to include hyprlands config for hotkeys into the script
-- i will look to see if any other desktops can be added i will also look to see if anything else can be improved
+- the main app has the 3 distributions as options to use and build isos from
+- the main app also has the guide built in
+- the main app also includes the changelogs
+- the method for installing calamares has been changed for all distributions it now uses my repos
+- claudemods distributions now includes hhd adjustor and hdd-ui for gamepad support (works on lenovo legion go devices)
+- claudemods distributions apps are updated so all appimages provided work and also their is new apps for full editios included protonup-qt hydra filezilla and lutris
+- claudemods distribution option includes SpitFire CachyOS Kde Gamer's Black Edition (full only for now)
+- fixes to claudemods distributions so that my saved dolphin setting to show hidden files works
+- new method to include kernels needed to boot the iso you can build your isos from any arch system/kernel
+- all distribution options now include a option to set wireless regdom this is to get better internet performance
+- i have removed my flatpak command for bottle for claudemods distributions bottle will no longer be included
+- claudemods distribution option now includes 80-gamecompatibility.conf during setting this is for better application performance
+- all distributions iso artwork/calamares artwork has been changed to look better
