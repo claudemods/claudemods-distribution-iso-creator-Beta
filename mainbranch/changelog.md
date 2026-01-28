@@ -1,3 +1,12 @@
+## changlelog claudemods distributions v1.01 28-01-2026 20:39pm GMT (uk time)
+- all v1.0 files removed and v1.01 rolling release released
+- photos updated 
+- claudemods guide updated to include spitfire black edition
+- information about the script updated to release page but can be found with below link
+  
+  https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/tree/main/mainbranch
+
+ more coming soon im also still working on handheld editions 
 
 ## changlelog claudemods distributions v1.01 28-01-2026 18:31pm GMT (uk time)
 - setting for showing dolphin hidden files now fixed and saved correctly
