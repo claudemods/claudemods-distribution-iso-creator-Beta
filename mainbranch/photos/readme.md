@@ -1,6 +1,6 @@
 <div align="center">
 
-## main menu v1.01 28-01-2026 ## (handheld options dont currently work)
+## main menu v1.01 28-01-2026 (handheld options dont currently work)
 
 <img width="1280" height="800" alt="mainmenu" src="https://github.com/user-attachments/assets/10889454-6cc9-4ee3-bc97-47ddc85d63db" />
 
