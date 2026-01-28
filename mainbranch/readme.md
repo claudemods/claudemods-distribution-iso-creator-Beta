@@ -7,7 +7,7 @@
 - the main app also includes the changelogs
 - the method for installing calamares has been changed for all distributions it now uses my repos
 - claudemods distributions now includes hhd adjustor and hdd-ui for gamepad support (works on lenovo legion go devices)
-- claudemods distributions apps are updated so all appimages provided work and also their is new apps for full editios included protonup-qt hydra filezilla and lutris
+- claudemods distributions apps are updated so all appimages provided work and also their is new apps for full editions included protonup-qt hydra filezilla and lutris
 - claudemods distribution option includes SpitFire CachyOS Kde Gamer's Black Edition (full only for now)
 - fixes to claudemods distributions so that my saved dolphin setting to show hidden files works
 - new method to include kernels needed to boot the iso you can build your isos from any arch system/kernel
