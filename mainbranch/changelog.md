@@ -8,7 +8,7 @@ all-in-one distribution iso creator Beta v1.01 28-01-2026 (in development)
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/mainbranch/build-the-script/installer/build-from-github.sh)"
 ```
 ## changlelog claudemods distributions v1.01 28-01-2026 18:31pm GMT (uk time)
-- setting for showing dolphin hidden files now fixed and saves correctly
+- setting for showing dolphin hidden files now fixed and saved correctly
 
 more coming soon im also still working on handheld editions
 
