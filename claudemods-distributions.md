@@ -1,6 +1,4 @@
-### claudemods distribution iso creator Beta
-
-##  [Click Here For Changelog](https://github.com/claudemods/build-apex-or-spitfire-isos-from-packages/blob/main/changelog.md)
+### claudemods distribution iso creator Beta (needs updating)
 
 ## SpitFire CachyOS Kde Gamer's Edition! 🎮
 
