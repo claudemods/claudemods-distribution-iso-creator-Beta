@@ -2,8 +2,8 @@
 
 ## v1.01 focuses on improving the needed file layout for the scripts and adding additional improvements and features
 
-- the main app has the 3 distributions as options to use and build isos from
-- the main app also has the guide built in
+- the main app has the 3 distributions as options to use and build isos from (claudemods, cachyos, arch)
+- the main app also has the guides built in
 - the main app also includes the changelogs
 - the method for installing calamares has been changed for all distributions it now uses my repos
 - claudemods distributions now includes hhd adjustor and hdd-ui for gamepad support (works on lenovo legion go devices)
