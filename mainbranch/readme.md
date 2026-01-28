@@ -1,13 +1,7 @@
-all-in-one distribution iso creator Beta v1.01 28-01-2026 (in development)
-
-```bash
-
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/mainbranch/build-the-script/installer/build-from-github.sh)"
-```
-
-# the future for v1.01 (still being updated daily/weekly)
+# all-in-one distribution iso creator Beta rolling v1.01 28-01-2026 (still being updated daily/weekly)
 
 ## v1.01 focuses on improving the needed file layout for the scripts and adding additional improvements and features
+
 - the main app has the 3 distributions as options to use and build isos from
 - the main app also has the guide built in
 - the main app also includes the changelogs
