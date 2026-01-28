@@ -6,19 +6,19 @@
 <a href="https://cachyos.org/" target="_blank"><img src="https://img.shields.io/badge/DISTRO-CachyOS-00FFFF?style=for-the-badge&logo=CachyOS" /></a>
 <div align="center">
 
-##  [Click Here For Changelog](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/changelog.md)
+##  [Click Here For Changelog](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/mainbranch/changelog.md)
 
 <div align="center">
 
-##  [Click Here For claudemods guide](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/claudemodsguide.md)
+##  [Click Here For claudemods options guide](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/mainbranch/guides/claudemodsguide.md)
 
 <div align="center">
 
-##  [Click Here For cachyos linux guide](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/cachyoslinux/cachyosguide.md)
+##  [Click Here For cachyos linux guide](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/mainbranch/guides/cachyosguide.md)
 
 <div align="center">
 
-##  [Click Here For arch linux guide](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/archlinux/archguide.md)
+##  [Click Here For arch linux guide](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/mainbranch/guides/archguide.md)
 
 
 
@@ -29,26 +29,7 @@
 
 ## Iso Creation Methods
 
-claudemods distributions iso creator Beta v1.0 01-12-2025 (working fine)
-
-```bash
-
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/installer/patch.sh)"
-```
-cachyos distribution iso creator Beta v1.0 01-12-2025 (working fine)
-
-```bash
-
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/cachyoslinux/installer/patch.sh)"
-```
-arch distribution iso creator Beta v1.0 01-12-2025 (working fine)
-
-```bash
-
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/claudemods/claudemods-distribution-iso-creator-Beta/refs/heads/main/archlinux/installer/patch.sh)"
-```
-
-all-in-one distribution iso creator Beta v1.01 28-01-2026 (in development)
+all-in-one distribution iso creator Beta v1.01 28-01-2026 (rolling release)
 
 ```bash
 
