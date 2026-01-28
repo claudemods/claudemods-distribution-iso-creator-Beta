@@ -30,6 +30,8 @@ C++ tool for building custom Arch Linux-based distribution ISOs with KDE desktop
 - 🛠️ **Spitfire CKGE Minimal Dev** - Kde Dev included
 - 🎯 **Spitfire CKGE Full** - Extra applications for gamers e.g steam
 - 🔧 **Spitfire CKGE Full Dev** - Kde Dev included
+- 🚀 **Spitfire CKGBE Full** - Black Edition Of Spitfire
+- 📁 **Spitfire CKGBE Full Dev** - Kde Dev included
 
 ### 🟣 Apex Series (Blue Theme)
 - ⚡ **Apex CKGE Minimal** - Lightweight edition  
