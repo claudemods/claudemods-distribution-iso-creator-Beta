@@ -4,7 +4,7 @@ C++ tool for building custom CachyOS Linux distribution ISOs. 🛠️
 
 ## 📋 Menu Options
 
-- 📁 **Installation Path**: current directory as claudemods-distro
+- 📁 **Installation Path**: current directory as cachyos-distro
 - 👤 **Set Username**
 - 🔑 **Set Root Password**  
 - 🔒 **Set User Password**
