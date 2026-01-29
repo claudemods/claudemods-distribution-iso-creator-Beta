@@ -4,7 +4,7 @@ C++ tool for building custom Arch Linux distribution ISOs with multiple desktop 
 
 ## 📋 Menu Options
 
-- 📁 **Installation Path**: current directory as claudemods-distro
+- 📁 **Installation Path**: current directory as arch-distro
 - 👤 **Set Username**
 - 🔑 **Set Root Password**  
 - 🔒 **Set User Password**
