@@ -1,3 +1,6 @@
+## changlelog all distributions v1.01 29-01-2026 19:5pm GMT (uk time)
+- guides updated
+
 ## changlelog claudemods distributions v1.01 28-01-2026 20:39pm GMT (uk time)
 - all v1.0 files removed and v1.01 rolling release released
 - photos updated 
