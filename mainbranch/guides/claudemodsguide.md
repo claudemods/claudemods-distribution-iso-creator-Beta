@@ -77,7 +77,6 @@ C++ tool for building custom Arch Linux-based distribution ISOs with KDE desktop
 - 💾 **Configuration persistence** - saves and loads your settings automatically
 - 🔧 **Automatic resource extraction** - extracts required files on first run
 - 📦 **Custom package selection** - add extra packages to your ISO
-- 🖥️ **Multiple display managers** - GDM, SDDM, LightDM support
 - 🛠️ **Calamares integration** - includes graphical installer with custom branding
 
 ## ⚠️ Important Notes
