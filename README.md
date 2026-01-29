@@ -8,6 +8,8 @@
 
 ##  [Click Here For Photos](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/tree/main/mainbranch/photos)
 
+##  [Tutorial In A Video](https://www.youtube.com/watch?v=05XCM-OgzTk)
+
 ##  [Click Here For Changelog](https://github.com/claudemods/claudemods-distribution-iso-creator-Beta/blob/main/mainbranch/changelog.md)
 
 <div align="center">
