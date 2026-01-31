@@ -1,3 +1,6 @@
+## changlelog claudemods distributions v1.01 31-01-2026 21:04pm GMT (uk time)
+- apex music v1.03.1 updated for all claudemods options
+
 ## changlelog all distributions v1.01 29-01-2026 19:56pm GMT (uk time)
 - guides updated
 
