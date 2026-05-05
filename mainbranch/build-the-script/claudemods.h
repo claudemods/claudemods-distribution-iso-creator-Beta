@@ -185,7 +185,7 @@ private:
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << COLOR_CYAN << "claudemods distribution iso creator Beta v1.01 28-01-2026" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "claudemods distribution iso creator Beta v1.01 06-05-2026" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
 
@@ -476,6 +476,8 @@ private:
         // Copy desktop shortcuts
         execute_command("sudo cp " + currentDir + "/needed-files/Calamares " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
         execute_command("sudo cp " + currentDir + "/needed-files/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
+        execute_command("sudo cp " + currentDir + "/needed-files/kwalletrc " + target_folder + "/home/" + new_username + "/.config/kwalletrc");
+        execute_command("sudo rm -rf " + target_folder + "/home/" + new_username + "/.local/share/kwalletd/*");
         execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
         execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
         execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
