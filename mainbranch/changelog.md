@@ -1,4 +1,4 @@
-## changlelog claudemods distributions v1.01 06-05-2026 21:04pm GMT (uk time)
+## changlelog claudemods distributions v1.01 06-05-2026 20:15pm GMT (uk time)
 - after some months away i have begun updates again
 - packagelists for claudemods/cachyos updated all should install fine now
 - added method to disable kwallet added to claudemods options
