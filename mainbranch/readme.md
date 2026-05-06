@@ -1,4 +1,4 @@
-# all-in-one distribution iso creator Beta rolling v1.01 06-05-2026 (still being updated daily/weekly)
+# all-in-one distribution iso creator Beta rolling v1.01 06-05-2026 (still being updated daily/weekly/monthly)
 
 ## v1.01 focuses on improving the needed file layout for the scripts and adding additional improvements and features
 
