@@ -1,3 +1,9 @@
+## changlelog claudemods distributions v1.01 06-05-2026 21:04pm GMT (uk time)
+- after some months away i have begun updates again
+- packagelists for claudemods/cachyos updated all should install fine now
+- added method to disable kwallet added to claudemods options
+- all is being tested/fixed i will update here with fixes and updates
+
 ## changlelog claudemods distributions v1.01 31-01-2026 21:04pm GMT (uk time)
 - apex music v1.03.1 updated for all claudemods options
 
