@@ -1,3 +1,7 @@
+## changlelog claudemods distributions v1.01 17-05-2026 17:05pm GMT (uk time)
+- claudemods and cachyos kde grub packagelists updated again to newer lists all installs fine now
+- claudemods dev build packagelists need update this will be coming next
+
 ## changlelog claudemods distributions v1.01 06-05-2026 20:16pm GMT (uk time)
 - after some months away i have begun updates again
 - packagelists for claudemods/cachyos updated all should install fine now
