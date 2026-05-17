@@ -866,7 +866,7 @@ private:
 
         if (!install_base_packages("", "")) return;
 
-        enable_services("sddm");
+        enable_services("plasma-login");
         complete_installation("CachyOS-KDE-Grub");
     }
 
