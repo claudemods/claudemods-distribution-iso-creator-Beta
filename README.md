@@ -33,7 +33,7 @@
 
 ## Iso Creation Methods
 
-all-in-one distribution iso creator Beta v1.01 28-01-2026 (rolling release)
+all-in-one distribution iso creator Beta v1.01 17-05-2026 (rolling release)
 
 ```bash
 
