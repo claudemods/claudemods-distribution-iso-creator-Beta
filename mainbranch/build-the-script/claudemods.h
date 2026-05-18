@@ -185,7 +185,7 @@ private:
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << COLOR_CYAN << "claudemods distribution iso creator Beta v1.01 17-05-2026" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "claudemods distribution iso creator Beta v1.01 18-05-2026" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
 
