@@ -1,5 +1,5 @@
 ## changlelog claudemods distributions v1.01 18-05-2026 17:07pm GMT (uk time)
-- claudemods minimal and full dev package lists updated all installs fine soon (dev builds are only for testing latest kde features)
+- claudemods minimal and full dev package lists updated all installs fine (dev builds are only for testing latest kde features)
 
 ## changlelog claudemods distributions v1.01 18-05-2026 01:41pm GMT (uk time)
 - claudemods minimal and full dev package lists being updated all will install fine soon (dev builds are only for testing latest kde features)
