@@ -1,13 +1,14 @@
-## changlelog claudemods distributions v1.01 18-05-2026 17:05pm GMT (uk time)
+## changlelog claudemods distributions v1.01 18-05-2026 01:41pm GMT (uk time)
 - claudemods minimal and full dev package lists updated all installs fine
 - i need to update menu app shortcuts in claudemods distribution options because items have moved this will be something i do soon
-## changlelog claudemods distributions v1.01 17-05-2026 17:05pm GMT (uk time)
+
+## changlelog claudemods/cachyos distributions v1.01 17-05-2026 17:05pm GMT (uk time)
 - claudemods and cachyos kde grub packagelists updated again to newer lists all installs fine now
 - cachyos kde option now enables plasma-login.service and not sddm.service
 - calamares package updated to latest build
 - claudemods dev build packagelists need update this will be coming next
 
-## changlelog claudemods distributions v1.01 06-05-2026 20:16pm GMT (uk time)
+## changlelog claudemods/cachyos distributions v1.01 06-05-2026 20:16pm GMT (uk time)
 - after some months away i have begun updates again
 - packagelists for claudemods/cachyos updated all should install fine now
 - method to disable kwallet added to claudemods options
