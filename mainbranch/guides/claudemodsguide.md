@@ -1,4 +1,4 @@
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/1f9f92d5-119c-4fb5-8440-2b4ee8598fa2" /># 🚀 Claudemods Distribution ISO Creator
+# 🚀 Claudemods Distribution ISO Creator
 
 C++ tool for building custom Arch Linux-based distribution ISOs with KDE desktop environment. 🛠️
 
