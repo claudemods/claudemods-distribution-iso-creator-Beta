@@ -1,4 +1,4 @@
-# 🚀 Claudemods Distribution ISO Creator
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/1f9f92d5-119c-4fb5-8440-2b4ee8598fa2" /># 🚀 Claudemods Distribution ISO Creator
 
 C++ tool for building custom Arch Linux-based distribution ISOs with KDE desktop environment. 🛠️
 
@@ -69,7 +69,7 @@ C++ tool for building custom Arch Linux-based distribution ISOs with KDE desktop
 4. 📦 **Add extra packages** (optional)
 5. 🚀 **Choose "Start Installation"**
 6. ⏳ **Wait for automated build process**
-7. 📁 **Find your ISO file** in the current directory
+
 
 ## 🛠️ Features
 
@@ -78,6 +78,8 @@ C++ tool for building custom Arch Linux-based distribution ISOs with KDE desktop
 - 🔧 **Automatic resource extraction** - extracts required files on first run
 - 📦 **Custom package selection** - add extra packages to your ISO
 - 🛠️ **Calamares integration** - includes graphical installer with custom branding
+- 📁 **No Aur Packages Installed* - i do not advice or install any aur packages in my distributions
+
 
 ## ⚠️ Important Notes
 
