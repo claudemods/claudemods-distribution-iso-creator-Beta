@@ -78,7 +78,7 @@ C++ tool for building custom Arch Linux-based distribution ISOs with KDE desktop
 - 🔧 **Automatic resource extraction** - extracts required files on first run
 - 📦 **Custom package selection** - add extra packages to your ISO
 - 🛠️ **Calamares integration** - includes graphical installer with custom branding
-- 📁 **No Aur Packages Installed* - i do not advice or install any aur packages in my distributions
+- 📁 **No Aur Packages Installed** - i do not advice or install any aur packages in my distributions
 
 
 ## ⚠️ Important Notes
