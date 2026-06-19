@@ -1,5 +1,5 @@
 pkgname=claudemods-desktop-dev
-pkgver=1.0.3
+pkgver=1.0.4
 pkgrel=2
 pkgdesc="claudemods desktop packages"
 arch=('x86_64')
@@ -122,7 +122,6 @@ depends=(
 'cifs-utils'
 'ckbcomp'
 'clang'
-'claudemods-desktop'
 'clinfo'
 'cmake'
 'compiler-rt'
@@ -450,9 +449,6 @@ depends=(
 'kde-banana-kunifiedpush-git'
 'kde-banana-kunitconversion-git'
 'kde-banana-kuserfeedback-git'
-'kde-banana-kwallet-git'
-'kde-banana-kwallet-pam-git'
-'kde-banana-kwalletmanager-git'
 'kde-banana-kwayland-git'
 'kde-banana-kwidgetsaddons-git'
 'kde-banana-kwin-git'
@@ -1354,7 +1350,6 @@ depends=(
 'vlc-plugin-journal'
 'vlc-plugin-jpeg'
 'vlc-plugin-kate'
-'vlc-plugin-kwallet'
 'vlc-plugin-libsecret'
 'vlc-plugin-lirc'
 'vlc-plugin-live555'
@@ -1373,7 +1368,6 @@ depends=(
 'vlc-plugin-opus'
 'vlc-plugin-png'
 'vlc-plugin-pulse'
-'vlc-plugin-quicksync'
 'vlc-plugin-samplerate'
 'vlc-plugin-sdl'
 'vlc-plugin-sftp'
