@@ -1,3 +1,6 @@
+## changlelog all distributions v1.01 19-06-2026 17:07pm GMT (uk time)
+- all package lists updated allowing distributions to install fine now
+
 ## changlelog claudemods distributions v1.01 18-05-2026 17:07pm GMT (uk time)
 - claudemods minimal and full dev package lists updated all installs fine (dev builds are only for testing latest kde features)
 
