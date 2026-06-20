@@ -1,5 +1,6 @@
 ## changlelog all distributions v1.01 20-06-2026 07:59pm GMT (uk time)
-- repositories seem to work fine now and once again claudemods full and full dev versions download and install fine 
+- repositories seem to work fine now and once again claudemods minimal dev, full and full dev download and install fine
+  sorry for the delay in updates 
 
 ## changlelog all distributions v1.01 19-06-2026 9:30pm GMT (uk time)
 - cachyos repos are current causing issues with my script since packages in their repos are corrupt
