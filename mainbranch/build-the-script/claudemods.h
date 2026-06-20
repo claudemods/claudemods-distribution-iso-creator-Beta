@@ -798,7 +798,7 @@ private:
 
         // INSTALL BASE SYSTEM WITH PACSTRAP - INTEGRATE EXTRA PACKAGES
         std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop calamares-fix protonup-qt hhd adjustor hhd-ui";
+        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop calamares-fix protonup-qt hhd adjustor hhd-ui sddm";
         if (!extra_packages.empty()) {
             pacstrap_cmd += " " + extra_packages;
         }
@@ -876,7 +876,7 @@ private:
 
         // INSTALL BASE SYSTEM WITH PACSTRAP - INTEGRATE EXTRA PACKAGES
         std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-dev calamares-fix lutris protonup-qt hhd adjustor hhd-ui";
+        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-dev calamares-fix lutris protonup-qt hhd adjustor hhd-ui sddm";
         if (!extra_packages.empty()) {
             pacstrap_cmd += " " + extra_packages;
         }
@@ -1266,7 +1266,7 @@ private:
 
         // INSTALL BASE SYSTEM WITH PACSTRAP - INTEGRATE EXTRA PACKAGES
         std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop calamares-fix protonup-qt hhd adjustor hhd-ui";
+        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop calamares-fix protonup-qt hhd adjustor hhd-ui sddm";
         if (!extra_packages.empty()) {
             pacstrap_cmd += " " + extra_packages;
         }
@@ -1344,7 +1344,7 @@ private:
 
         // INSTALL BASE SYSTEM WITH PACSTRAP - INTEGRATE EXTRA PACKAGES
         std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-dev calamares-fix lutris protonup-qt hhd adjustor hhd-ui";
+        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-dev calamares-fix lutris protonup-qt hhd adjustor hhd-ui sddm";
         if (!extra_packages.empty()) {
             pacstrap_cmd += " " + extra_packages;
         }
