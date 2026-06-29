@@ -6,7 +6,6 @@ arch=('x86_64')
 url="https://www.claudemodsreloaded.co.uk"
 license=('GPL')
 depends=(
-depends=(
   'a52dec'
   'aalib'
   'abseil-cpp'
