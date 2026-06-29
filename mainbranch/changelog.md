@@ -1,6 +1,6 @@
 ## changlelog all distributions v1.01 29-06-2026 16:03pm GMT (uk time)
 - repositories updated with cachyos kde june package list cachyos kde and claudemods kde options install fine
-
+- latest kde dev packages uploaded for claudemods dev options
 ## changlelog all distributions v1.01 20-06-2026 07:59pm GMT (uk time)
 - repositories seem to work fine now and once again claudemods minimal dev, full and full dev download and install fine
   sorry for the delay in updates 
