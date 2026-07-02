@@ -1,3 +1,6 @@
+## changelog claudemods distributions v1.01 03-07-2026 (00:20)
+- claudemods dev option package lists updated (all installs fine)
+
 ## changlelog all distributions v1.01 29-06-2026 16:03pm GMT (uk time)
 - repositories updated with cachyos kde june package list cachyos kde and claudemods kde options install fine
 - latest kde dev packages uploaded for claudemods dev options
