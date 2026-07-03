@@ -18,6 +18,7 @@
 #include <sys/uio.h>
 #include <unistd.h>
 #include <errno.h>
+#include <limits>
 
 // Color definitions
 const std::string COLOR_CYAN = "\033[38;2;0;255;255m";
@@ -500,10 +501,6 @@ private:
             std::cout << COLOR_RED << "WARNING: ALL DATA ON " << target_drive << " WILL BE DESTROYED!" << COLOR_RESET << std::endl;
         }
         saveConfiguration();
-        std::cout << std::endl;
-        std::cout << COLOR_CYAN << "Press Enter to continue..." << COLOR_RESET;
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cin.get();
     }
 
     void prepare_target_partitions() {
