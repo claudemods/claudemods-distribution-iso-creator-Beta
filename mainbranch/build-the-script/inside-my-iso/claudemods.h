@@ -181,7 +181,7 @@ private:
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << COLOR_CYAN << "claudemods distribution iso creator Beta v1.01 29-06-2026" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "claudemods distribution iso creator Beta v1.01 03-06-2026" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
 
@@ -346,9 +346,6 @@ private:
         execute_command("sudo cp -r " + currentDir + "/needed-files/pacman.conf " + target_folder + "/etc/pacman.conf");
         execute_command("sudo cp -r " + currentDir + "/needed-files/pacman.conf /etc/pacman.conf");
         execute_command("sudo pacman -Sy");
-        execute_command("sudo pacman -S archlinux-keyring");
-        execute_command("sudo pacman-key --populate");
-        execute_command("sudo pacman-key --init");
     }
 
     bool verify_pacstrap_success(const std::string& target_folder) {
@@ -416,32 +413,11 @@ private:
     void install_calamares(const std::string& target_folder) {
         std::string currentDir = getCurrentDir();
         std::cout << COLOR_CYAN << "Installing Calamares installer and setting up iso ..." << COLOR_RESET << std::endl;
-        execute_command("sudo cp -r " + currentDir + "/calamares-claudemods/calamares-files/calamares " + target_folder + "/etc/");
-        execute_command("sudo cp -r " + currentDir + "/calamares-claudemods/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
-        execute_command("sudo cp -r " + currentDir + "/calamares-claudemods/calamares-files/extras/* " + target_folder + "/");
-        execute_command("sudo cp -r " + currentDir + "/calamares-claudemods/working-hooks-btrfs-ext4/* /etc/initcpio");
-        execute_command("sudo cp " + currentDir + "/calamares-claudemods/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
-        execute_command("sudo cp " + currentDir + "/needed-files/Calamares " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
-        execute_command("sudo cp " + currentDir + "/needed-files/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
         execute_command("sudo cp " + currentDir + "/needed-files/kwalletrc " + target_folder + "/home/" + new_username + "/.config/kwalletrc");
         execute_command("sudo rm -rf " + target_folder + "/home/" + new_username + "/.local/share/kwalletd/*");
-        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
-        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
-        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
-        execute_command("sudo tar xzf " + currentDir + "/needed-files/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
         execute_command("sudo cp -r " + currentDir + "/needed-files/wireless-regdom " + target_folder + "/etc/conf.d/wireless-regdom");
         execute_command("setfattr -n user.kde.fm.viewproperties#1 -v '[Dolphin]\\012Timestamp=2026,1,20,17,27,36.341\\012Version=4\\012\\012[Settings]\\012HiddenFilesShown=true' " + target_folder + "/home/" + new_username + "/.local/share/dolphin/view_properties/global");
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/cachyos-iso-initramfs/kernel-latest.img");
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/cachyos-iso-initramfs/initramfs-x86_64.img");
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/cachyos-iso-initramfs/vmlinuz-x86_64.zip");
-        execute_command("sudo unsquashfs -d " + target_folder + "/usr/lib/modules/6.18.6-2-cachyos " + currentDir + "/kernel-latest.img");
-        execute_command("sudo cp initramfs-x86_64.img " + currentDir + "/calamares-claudemods/build-image-arch-img/boot/initramfs-x86_64.img");
-        execute_command("sudo unzip -o " + currentDir + "/vmlinuz-x86_64.zip -d " + currentDir + "/calamares-claudemods/build-image-arch-img/boot");
-        execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
-        execute_command("sudo rm -rf kernel-latest.img");
-        execute_command("sudo rm -rf initramfs-x86_64.img");
-        execute_command("sudo rm -rf *.zip");
-        std::cout << COLOR_GREEN << "Calamares installation and iso setup completed!" << COLOR_RESET << std::endl;
+        std::cout << COLOR_GREEN << "installation completed!" << COLOR_RESET << std::endl;
     }
 
     void setup_bootloader_and_drive() {
@@ -695,16 +671,7 @@ private:
             return;
         }
         
-        std::cout << COLOR_RED << "WARNING: ALL DATA ON " << target_drive << " WILL BE PERMANENTLY ERASED!" << COLOR_RESET << std::endl;
-        std::cout << COLOR_CYAN << "Type 'YES' to confirm: " << COLOR_RESET;
-        std::string confirm;
-        std::getline(std::cin, confirm);
-        if (confirm != "YES") {
-            std::cout << COLOR_CYAN << "Installation cancelled." << COLOR_RESET << std::endl;
-            return;
-        }
-        
-        // Prepare partitions and mount filesystem
+        // Prepare partitions and mount filesystem directly
         prepare_target_partitions();
         if (filesystem_type == "btrfs") {
             setup_btrfs_subvolumes();
@@ -736,8 +703,6 @@ private:
             std::cout << COLOR_RED << "No valid distribution selected!" << COLOR_RESET << std::endl;
         }
     }
-
-    // ===== ALL 10 INSTALL FUNCTIONS - INSTALLING DIRECTLY TO /mnt =====
 
     void install_spitfire_ckge_minimal() {
         std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Minimal to " << target_drive << "..." << COLOR_RESET << std::endl;
