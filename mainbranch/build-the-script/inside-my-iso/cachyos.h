@@ -36,20 +36,19 @@ private:
     std::string user_password;
     std::string timezone;
     std::string keyboard_layout;
-    std::string current_distro_name; // Store the current distro name for ISO
-    std::string extra_packages; // Store extra packages to install
-    std::string selected_kernel; // Added missing variable
-    std::string current_desktop_name; // Added missing variable
+    std::string current_distro_name;
+    std::string extra_packages;
+    std::string selected_kernel;
+    std::string current_desktop_name;
+    std::string target_drive;
+    std::string filesystem_type;
 
-    // Terminal control for arrow keys
     struct termios oldt, newt;
 
-    // Configuration file path
     std::string getConfigFilePath() {
         return getCurrentDir() + "/configurationcachyos.txt";
     }
 
-    // Save configuration to file
     void saveConfiguration() {
         std::string configFile = getConfigFilePath();
         std::ofstream file(configFile);
@@ -63,6 +62,8 @@ private:
             file << "extra_packages=" << extra_packages << std::endl;
             file << "selected_kernel=" << selected_kernel << std::endl;
             file << "current_desktop=" << current_desktop_name << std::endl;
+            file << "target_drive=" << target_drive << std::endl;
+            file << "filesystem_type=" << filesystem_type << std::endl;
             file.close();
             std::cout << COLOR_GREEN << "Configuration saved to " << configFile << COLOR_RESET << std::endl;
         } else {
@@ -70,7 +71,6 @@ private:
         }
     }
 
-    // Load configuration from file
     void loadConfiguration() {
         std::string configFile = getConfigFilePath();
         std::ifstream file(configFile);
@@ -91,6 +91,8 @@ private:
                     else if (key == "extra_packages") extra_packages = value;
                     else if (key == "selected_kernel") selected_kernel = value;
                     else if (key == "current_desktop") current_desktop_name = value;
+                    else if (key == "target_drive") target_drive = value;
+                    else if (key == "filesystem_type") filesystem_type = value;
                 }
             }
             file.close();
@@ -100,7 +102,6 @@ private:
         }
     }
 
-    // Get current working directory
     std::string getCurrentDir() {
         char cwd[1024];
         if (getcwd(cwd, sizeof(cwd)) != nullptr) {
@@ -109,41 +110,52 @@ private:
         return ".";
     }
 
-    // Get target folder path (always in current directory)
     std::string getTargetFolder() {
-        return getCurrentDir() + "/cachyos-distro";
+        return "/mnt";
     }
 
-    // Get full target path (added missing method)
     std::string getFullTargetPath() {
         return getTargetFolder();
     }
 
-    // Get calamares folder path
     std::string getCalamaresFolder() {
         return getCurrentDir() + "/calamares-cachyos";
     }
 
-    // Check if directory exists
     bool directoryExists(const std::string& path) {
         struct stat info;
         return (stat(path.c_str(), &info) == 0 && (info.st_mode & S_IFDIR));
     }
 
-    // Check if file exists
     bool fileExists(const std::string& path) {
         struct stat info;
         return (stat(path.c_str(), &info) == 0);
     }
 
-    // FIXED: Extract required files from calamares-per-distro - NO ERROR MESSAGES
+    bool is_block_device(const std::string& path) {
+        struct stat statbuf;
+        if (stat(path.c_str(), &statbuf) != 0) return false;
+        return S_ISBLK(statbuf.st_mode);
+    }
+
+    std::string exec_cmd(const char* cmd) {
+        char buffer[128];
+        std::string result = "";
+        FILE* pipe = popen(cmd, "r");
+        if (!pipe) return "";
+        while (fgets(buffer, sizeof(buffer), pipe) != NULL) {
+            result += buffer;
+        }
+        pclose(pipe);
+        return result;
+    }
+
     bool extractRequiredFiles() {
         std::cout << COLOR_CYAN << "Checking for required folders..." << COLOR_RESET << std::endl;
 
         std::string currentDir = getCurrentDir();
         std::string calamaresFolder = getCalamaresFolder();
 
-        // Check if all required folders already exist in calamares-claudemods
         bool buildImageExists = directoryExists(calamaresFolder + "/build-image-arch-img");
         bool calamaresFilesExists = directoryExists(calamaresFolder + "/calamares-files");
         bool workingHooksExists = directoryExists(calamaresFolder + "/working-hooks-btrfs-ext4");
@@ -153,14 +165,12 @@ private:
             return true;
         }
 
-        // Create calamares-claudemods folder if it doesn't exist
         if (!directoryExists(calamaresFolder)) {
             std::cout << COLOR_CYAN << "Creating calamares-cachyos folder..." << COLOR_RESET << std::endl;
             std::string createCmd = "sudo mkdir -p " + calamaresFolder;
             execute_command(createCmd);
         }
 
-        // Extract the three ZIP files only if needed
         std::string sourceDir = currentDir + "/calamares-per-distro/cachyos";
         std::vector<std::string> zipFiles = {
             "calamares-cachyos.zip",
@@ -171,19 +181,14 @@ private:
         for (const auto& zipFile : zipFiles) {
             std::string sourcePath = sourceDir + "/" + zipFile;
 
-            // Check if source ZIP file exists
             if (fileExists(sourcePath)) {
                 std::cout << COLOR_CYAN << "Extracting " << zipFile << "..." << COLOR_RESET << std::endl;
-
-                // Extract silently without any error output
                 std::string extractCmd = "sudo unzip -q " + sourcePath + " -d " + calamaresFolder + " >/dev/null 2>&1";
                 execute_command(extractCmd);
-
                 std::cout << COLOR_GREEN << "Done." << COLOR_RESET << std::endl;
             }
         }
 
-        // Always return true - no error checking
         std::cout << COLOR_GREEN << "Extraction process completed." << COLOR_RESET << std::endl;
         return true;
     }
@@ -196,11 +201,10 @@ private:
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << COLOR_CYAN << "CachyOS distribution iso creator v1.01 29-06-2026" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "CachyOS distribution installer iso method v1.01 03-07-2026" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
 
-    // Function to setup terminal for arrow key reading
     void setup_terminal() {
         tcgetattr(STDIN_FILENO, &oldt);
         newt = oldt;
@@ -208,23 +212,20 @@ private:
         tcsetattr(STDIN_FILENO, TCSANOW, &newt);
     }
 
-    // Function to restore terminal
     void restore_terminal() {
         tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
     }
 
-    // Function to get arrow key input
     int get_arrow_key() {
         int ch = getchar();
-        if (ch == 27) { // ESC
-            getchar(); // Skip [
-            ch = getchar(); // Actual key
+        if (ch == 27) {
+            getchar();
+            ch = getchar();
             return ch;
         }
         return ch;
     }
 
-    // FIXED: Updated show_menu to show ALL values exactly as set (including passwords)
     int show_menu(const std::vector<std::string>& options, const std::string& title, int selected = 0) {
         setup_terminal();
 
@@ -245,29 +246,28 @@ private:
                     std::cout << "  ";
                 }
 
-                // Create the menu line with proper formatting - SHOW ALL VALUES AS SET
                 std::string menu_line;
-                if (title == "CachyOS distribution iso creator") {
+                if (title == "CachyOS distribution installer") {
                     std::string setting_value;
                     switch(i) {
-                        case 0: setting_value = getTargetFolder(); break;
-                        case 1: setting_value = new_username.empty() ? "[Not Set]" : new_username; break;
-                        case 2: setting_value = root_password.empty() ? "[Not Set]" : root_password; break; // Show actual password
-                        case 3: setting_value = user_password.empty() ? "[Not Set]" : user_password; break; // Show actual password
-                        case 4: setting_value = timezone.empty() ? "[Not Set]" : timezone; break;
-                        case 5: setting_value = keyboard_layout.empty() ? "[Not Set]" : keyboard_layout; break;
-                        case 6: setting_value = selected_kernel.empty() ? "[Not Set]" : selected_kernel; break;
-                        case 7: setting_value = ""; break; // Wireless Regdom - no value displayed in main menu
-                        case 8: setting_value = current_desktop_name.empty() ? "[Not Set]" : current_desktop_name; break;
-                        case 9: setting_value = extra_packages.empty() ? "[Not Set]" : extra_packages; break;
+                        case 0: setting_value = target_drive.empty() ? "[Not Set]" : target_drive; break;
+                        case 1: setting_value = "current directory as cachyos-distro"; break;
+                        case 2: setting_value = new_username.empty() ? "[Not Set]" : new_username; break;
+                        case 3: setting_value = root_password.empty() ? "[Not Set]" : root_password; break;
+                        case 4: setting_value = user_password.empty() ? "[Not Set]" : user_password; break;
+                        case 5: setting_value = timezone.empty() ? "[Not Set]" : timezone; break;
+                        case 6: setting_value = keyboard_layout.empty() ? "[Not Set]" : keyboard_layout; break;
+                        case 7: setting_value = selected_kernel.empty() ? "[Not Set]" : selected_kernel; break;
+                        case 8: setting_value = ""; break;
+                        case 9: setting_value = current_desktop_name.empty() ? "[Not Set]" : current_desktop_name; break;
+                        case 10: setting_value = extra_packages.empty() ? "[Not Set]" : extra_packages; break;
                         default: setting_value = ""; break;
                     }
 
-                    // For installation path (i=0), don't add setting_value to avoid duplication
                     if (i == 0) {
                         menu_line = options[i];
-                    } else if (i == 7) {
-                        menu_line = options[i] + " [Default GB]" + setting_value; // Wireless Regdom - just show the option text
+                    } else if (i == 8) {
+                        menu_line = options[i] + " [Default GB]" + setting_value;
                     } else {
                         menu_line = options[i] + " " + setting_value;
                     }
@@ -275,7 +275,6 @@ private:
                     menu_line = options[i];
                 }
 
-                // Truncate if too long to fit in the box
                 if (menu_line.length() > 56) {
                     menu_line = menu_line.substr(0, 53) + "...";
                 }
@@ -300,7 +299,6 @@ private:
         }
     }
 
-    // Function to get text input with prompt
     std::string get_input(const std::string& prompt) {
         std::cout << COLOR_CYAN << prompt << COLOR_RESET;
         std::string input;
@@ -315,16 +313,19 @@ private:
         return status;
     }
 
-    // FIXED: Function to display current settings on main menu - now shows ALL values as set
     void display_current_settings() {
         std::cout << COLOR_YELLOW << "\nCurrent Settings:" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Target Drive: " << COLOR_RESET
+                  << (target_drive.empty() ? "[Not Set]" : target_drive) << std::endl;
+        std::cout << COLOR_CYAN << "Filesystem: " << COLOR_RESET
+                  << (filesystem_type.empty() ? "[Not Set]" : filesystem_type) << std::endl;
         std::cout << COLOR_CYAN << "Installation Path: " << COLOR_RESET << getTargetFolder() << std::endl;
         std::cout << COLOR_CYAN << "Username: " << COLOR_RESET
         << (new_username.empty() ? "[Not Set]" : new_username) << std::endl;
         std::cout << COLOR_CYAN << "Root Password: " << COLOR_RESET
-        << (root_password.empty() ? "[Not Set]" : root_password) << std::endl; // Show actual password
+        << (root_password.empty() ? "[Not Set]" : root_password) << std::endl;
         std::cout << COLOR_CYAN << "User Password: " << COLOR_RESET
-        << (user_password.empty() ? "[Not Set]" : user_password) << std::endl; // Show actual password
+        << (user_password.empty() ? "[Not Set]" : user_password) << std::endl;
         std::cout << COLOR_CYAN << "Timezone: " << COLOR_RESET
         << (timezone.empty() ? "[Not Set]" : timezone) << std::endl;
         std::cout << COLOR_CYAN << "Keyboard Layout: " << COLOR_RESET
@@ -340,16 +341,218 @@ private:
         std::cout << std::endl;
     }
 
-    // NEW: Common installation setup (shared by all desktop environments)
+    void setup_bootloader_and_drive() {
+        system("clear");
+        display_header();
+        std::cout << COLOR_CYAN << "╔══════════════════════════════════════════════════════════════╗" << std::endl;
+        std::cout << "║ " << std::left << std::setw(60) << "Setup Bootloader and Drive" << "║" << std::endl;
+        std::cout << "╚══════════════════════════════════════════════════════════════╝" << std::endl;
+        std::cout << COLOR_RESET << std::endl;
+        std::cout << COLOR_YELLOW << "Current Drive Settings:" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Target Drive: " << COLOR_RESET << (target_drive.empty() ? "[Not Set]" : target_drive) << std::endl;
+        std::cout << COLOR_CYAN << "Filesystem: " << COLOR_RESET << (filesystem_type.empty() ? "[Not Set]" : filesystem_type) << std::endl;
+        std::cout << std::endl;
+        std::cout << COLOR_CYAN << "Available drives:" << COLOR_RESET << std::endl;
+        std::cout << COLOR_YELLOW;
+        std::string cmd = "lsblk -d -o NAME,SIZE,MODEL | grep -v 'loop\\|sr0\\|zram'";
+        std::string result = exec_cmd(cmd.c_str());
+        std::cout << "NAME        SIZE    MODEL" << std::endl;
+        std::cout << "----------------------------------------" << std::endl;
+        std::istringstream stream(result);
+        std::string line;
+        while (std::getline(stream, line)) {
+            if (!line.empty()) {
+                std::istringstream line_stream(line);
+                std::string name, size, model;
+                line_stream >> name;
+                std::string size_str;
+                if (line_stream >> size) { size_str = size; }
+                getline(line_stream, model);
+                size_t start = model.find_first_not_of(" \t");
+                if (start != std::string::npos) { model = model.substr(start); }
+                std::cout << "/dev/" << std::left << std::setw(10) << name << " " << std::setw(8) << size_str << model << std::endl;
+            }
+        }
+        std::cout << COLOR_RESET << std::endl;
+        std::cout << COLOR_YELLOW << "WARNING: The selected drive will be COMPLETELY ERASED!" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Enter target drive (e.g., /dev/sda): " << COLOR_RESET;
+        std::string drive_input;
+        std::getline(std::cin, drive_input);
+        if (drive_input.empty()) {
+            std::cout << COLOR_YELLOW << "No drive selected. Keeping current setting." << COLOR_RESET << std::endl;
+        } else if (!is_block_device(drive_input)) {
+            std::cout << COLOR_RED << "Error: " << drive_input << " is not a valid block device!" << COLOR_RESET << std::endl;
+        } else {
+            target_drive = drive_input;
+            std::cout << COLOR_GREEN << "Target drive set to: " << target_drive << COLOR_RESET << std::endl;
+        }
+        if (!target_drive.empty()) {
+            std::cout << std::endl;
+            std::cout << COLOR_CYAN << "Select filesystem type:" << COLOR_RESET << std::endl;
+            std::vector<std::string> fs_options = {
+                "Btrfs (with subvolumes, compression, snapshots support)",
+                "Ext4 (standard filesystem)"
+            };
+            int fs_choice = show_menu(fs_options, "Select Filesystem Type");
+            if (fs_choice == 0) {
+                filesystem_type = "btrfs";
+                std::cout << COLOR_GREEN << "Filesystem set to: Btrfs" << COLOR_RESET << std::endl;
+                std::cout << COLOR_CYAN << "Btrfs subvolumes will be created: @, @home, @root, @srv, @cache, @tmp, @log" << COLOR_RESET << std::endl;
+                std::cout << COLOR_CYAN << "Compression: zstd level 22" << COLOR_RESET << std::endl;
+            } else {
+                filesystem_type = "ext4";
+                std::cout << COLOR_GREEN << "Filesystem set to: Ext4" << COLOR_RESET << std::endl;
+            }
+        }
+        if (!target_drive.empty() && !filesystem_type.empty()) {
+            std::cout << std::endl;
+            std::cout << COLOR_ORANGE << "═══════════════════════════════════════" << COLOR_RESET << std::endl;
+            std::cout << COLOR_ORANGE << "  Drive Configuration Summary:" << COLOR_RESET << std::endl;
+            std::cout << COLOR_ORANGE << "  Drive: " << target_drive << COLOR_RESET << std::endl;
+            std::cout << COLOR_ORANGE << "  Partition 1: " << target_drive << "1 (EFI - FAT32, 550MB)" << COLOR_RESET << std::endl;
+            std::cout << COLOR_ORANGE << "  Partition 2: " << target_drive << "2 (Root - " << (filesystem_type == "btrfs" ? "Btrfs" : "Ext4") << ")" << COLOR_RESET << std::endl;
+            std::cout << COLOR_ORANGE << "  Bootloader: GRUB (UEFI)" << COLOR_RESET << std::endl;
+            std::cout << COLOR_ORANGE << "═══════════════════════════════════════" << COLOR_RESET << std::endl;
+            std::cout << std::endl;
+            std::cout << COLOR_RED << "WARNING: ALL DATA ON " << target_drive << " WILL BE DESTROYED!" << COLOR_RESET << std::endl;
+        }
+        saveConfiguration();
+        std::cout << std::endl;
+        std::cout << COLOR_CYAN << "Press Enter to continue..." << COLOR_RESET;
+        std::cin.get();
+    }
+
+    void prepare_target_partitions() {
+        std::cout << COLOR_CYAN << "Preparing target partitions on " << target_drive << "..." << COLOR_RESET << std::endl;
+        execute_command("sudo umount -f " + target_drive + "* 2>/dev/null || true");
+        execute_command("sudo wipefs -a " + target_drive);
+        execute_command("sudo parted -s " + target_drive + " mklabel gpt");
+        execute_command("sudo parted -s " + target_drive + " mkpart primary fat32 1MiB 551MiB");
+        execute_command("sudo parted -s " + target_drive + " mkpart primary " + filesystem_type + " 551MiB 100%");
+        execute_command("sudo parted -s " + target_drive + " set 1 esp on");
+        execute_command("sudo partprobe " + target_drive);
+        sleep(2);
+        std::string efi_part = target_drive + "1";
+        std::string root_part = target_drive + "2";
+        if (!is_block_device(efi_part) || !is_block_device(root_part)) {
+            std::cerr << COLOR_RED << "Error: Failed to create partitions" << COLOR_RESET << std::endl;
+            exit(1);
+        }
+        execute_command("sudo mkfs.vfat -F32 " + efi_part);
+        if (filesystem_type == "btrfs") {
+            execute_command("sudo mkfs.btrfs -f -L ROOT " + root_part);
+        } else {
+            execute_command("sudo mkfs.ext4 -F -L ROOT " + root_part);
+        }
+    }
+
+    void setup_btrfs_subvolumes() {
+        std::string root_part = target_drive + "2";
+        std::cout << COLOR_CYAN << "Setting up Btrfs subvolumes with zstd:22 compression..." << COLOR_RESET << std::endl;
+        execute_command("sudo mount " + root_part + " /mnt");
+        execute_command("sudo btrfs subvolume create /mnt/@");
+        execute_command("sudo btrfs subvolume create /mnt/@home");
+        execute_command("sudo btrfs subvolume create /mnt/@root");
+        execute_command("sudo btrfs subvolume create /mnt/@srv");
+        execute_command("sudo btrfs subvolume create /mnt/@cache");
+        execute_command("sudo btrfs subvolume create /mnt/@tmp");
+        execute_command("sudo btrfs subvolume create /mnt/@log");
+        execute_command("sudo mkdir -p /mnt/@/var/lib");
+        execute_command("sudo btrfs subvolume create /mnt/@/var/lib/portables");
+        execute_command("sudo btrfs subvolume create /mnt/@/var/lib/machines");
+        execute_command("sudo umount /mnt");
+        execute_command("sudo mount -o subvol=@,compress=zstd:22,compress-force=zstd:22 " + root_part + " /mnt");
+        execute_command("sudo mkdir -p /mnt/{home,root,srv,tmp,var/{cache,log},var/lib/{portables,machines},boot/efi}");
+        execute_command("sudo mount -o subvol=@home,compress=zstd:22,compress-force=zstd:22 " + root_part + " /mnt/home");
+        execute_command("sudo mount -o subvol=@root,compress=zstd:22,compress-force=zstd:22 " + root_part + " /mnt/root");
+        execute_command("sudo mount -o subvol=@srv,compress=zstd:22,compress-force=zstd:22 " + root_part + " /mnt/srv");
+        execute_command("sudo mount -o subvol=@cache,compress=zstd:22,compress-force=zstd:22 " + root_part + " /mnt/var/cache");
+        execute_command("sudo mount -o subvol=@tmp,compress=zstd:22,compress-force=zstd:22 " + root_part + " /mnt/tmp");
+        execute_command("sudo mount -o subvol=@log,compress=zstd:22,compress-force=zstd:22 " + root_part + " /mnt/var/log");
+        execute_command("sudo mount -o subvol=@/var/lib/portables,compress=zstd:22,compress-force=zstd:22 " + root_part + " /mnt/var/lib/portables");
+        execute_command("sudo mount -o subvol=@/var/lib/machines,compress=zstd:22,compress-force=zstd:22 " + root_part + " /mnt/var/lib/machines");
+    }
+
+    void setup_ext4_filesystem() {
+        std::string root_part = target_drive + "2";
+        std::cout << COLOR_CYAN << "Setting up Ext4 filesystem..." << COLOR_RESET << std::endl;
+        execute_command("sudo mount " + root_part + " /mnt");
+        execute_command("sudo mkdir -p /mnt/{home,boot/efi,etc,usr,var,proc,sys,dev,tmp,run}");
+    }
+
+    void install_grub() {
+        std::cout << COLOR_CYAN << "Installing GRUB bootloader..." << COLOR_RESET << std::endl;
+        std::string efi_part = target_drive + "1";
+        execute_command("sudo mount " + efi_part + " /mnt/boot/efi");
+        execute_command("sudo mount --bind /sys/firmware/efi/efivars /mnt/sys/firmware/efi/efivars 2>/dev/null || true");
+        execute_command("sudo mount --bind /dev /mnt/dev");
+        execute_command("sudo mount --bind /dev/pts /mnt/dev/pts");
+        execute_command("sudo mount --bind /proc /mnt/proc");
+        execute_command("sudo mount --bind /sys /mnt/sys");
+        execute_command("sudo mount --bind /run /mnt/run");
+        if (filesystem_type == "btrfs") {
+            execute_command("sudo touch /mnt/etc/fstab");
+            execute_command("sudo chroot /mnt /bin/bash -c \""
+                "modprobe efivarfs 2>/dev/null || true; "
+                "mount -t efivarfs efivarfs /sys/firmware/efi/efivars 2>/dev/null || true; "
+                "grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --recheck; "
+                "grub-mkconfig -o /boot/grub/grub.cfg; "
+                "./opt/btrfsfstabcompressed.sh 2>/dev/null || genfstab -U / >> /etc/fstab; "
+                "rm -rf /opt/btrfsfstabcompressed.sh 2>/dev/null; "
+                "mkinitcpio -P\"");
+        } else {
+            execute_command("sudo chroot /mnt /bin/bash -c \""
+                "modprobe efivarfs 2>/dev/null || true; "
+                "mount -t efivarfs efivarfs /sys/firmware/efi/efivars 2>/dev/null || true; "
+                "genfstab -U / >> /etc/fstab; "
+                "grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --recheck; "
+                "grub-mkconfig -o /boot/grub/grub.cfg; "
+                "mkinitcpio -P\"");
+        }
+    }
+
+    void unmount_target() {
+        std::cout << COLOR_CYAN << "Unmounting target filesystems..." << COLOR_RESET << std::endl;
+        execute_command("sudo umount -R /mnt 2>/dev/null || true");
+    }
+
+    void post_install_menu() {
+        bool menu_running = true;
+        while (menu_running) {
+            std::cout << "\n" << COLOR_CYAN;
+            std::cout << "╔══════════════════════════════════════════════╗" << std::endl;
+            std::cout << "║           INSTALLATION COMPLETE              ║" << std::endl;
+            std::cout << "╠══════════════════════════════════════════════╣" << std::endl;
+            std::cout << "║  1. Reboot now                              ║" << std::endl;
+            std::cout << "║  2. Exit to shell                           ║" << std::endl;
+            std::cout << "╚══════════════════════════════════════════════╝" << std::endl;
+            std::cout << COLOR_RESET;
+            std::cout << COLOR_CYAN << "Choose an option (1-2): " << COLOR_RESET;
+            std::string choice;
+            std::getline(std::cin, choice);
+            if (choice == "1") {
+                std::cout << COLOR_CYAN << "Unmounting and rebooting..." << COLOR_RESET << std::endl;
+                unmount_target();
+                execute_command("sudo reboot");
+                menu_running = false;
+            }
+            else if (choice == "2") {
+                std::cout << COLOR_CYAN << "Exiting to shell. System is still mounted at /mnt" << COLOR_RESET << std::endl;
+                menu_running = false;
+            }
+            else {
+                std::cout << COLOR_RED << "Invalid option. Please choose 1 or 2." << COLOR_RESET << std::endl;
+            }
+        }
+    }
+
     bool setup_installation_environment() {
         std::string target_folder = getFullTargetPath();
         std::string currentDir = getCurrentDir();
 
-        // CREATE TARGET DIRECTORY
         std::cout << COLOR_CYAN << "Creating target directory: " << target_folder << COLOR_RESET << std::endl;
         execute_command("sudo mkdir -p " + target_folder);
 
-        // VERIFY DIRECTORY WAS CREATED
         struct stat info;
         if (stat(target_folder.c_str(), &info) != 0) {
             std::cerr << COLOR_RED << "Failed to create target directory: " << target_folder << COLOR_RESET << std::endl;
@@ -363,7 +566,6 @@ private:
 
         std::cout << COLOR_GREEN << "Target directory created successfully!" << COLOR_RESET << std::endl;
 
-        // CREATE ESSENTIAL DIRECTORIES
         execute_command("sudo mkdir -p " + target_folder + "/etc/pacman.d");
         execute_command("sudo mkdir -p " + target_folder + "/boot/grub");
         execute_command("sudo mkdir -p " + target_folder + "/usr/");
@@ -371,7 +573,6 @@ private:
         execute_command("sudo mkdir -p " + target_folder + "/usr/lib/initcpio/");
         execute_command("sudo mkdir -p " + target_folder + "/usr/lib/initcpio/udev/");
 
-        // COPY CONFIGURATION FILES
         execute_command("sudo cp -r " + currentDir + "/needed-files/vconsole.conf " + target_folder + "/etc/vconsole.conf");
         execute_command("sudo cp -r /etc/resolv.conf " + target_folder + "/etc/resolv.conf");
         execute_command("sudo unzip -o " + currentDir + "/needed-files/pacman.d.zip -d " + target_folder + "/etc/pacman.d");
@@ -382,18 +583,18 @@ private:
         execute_command("sudo cp -r " + currentDir + "/needed-files/11-dm-initramfs.rules /usr/lib/initcpio/udev/11-dm-initramfs.rules");
 
         execute_command("sudo pacman -Sy");
+        execute_command("sudo pacman -S archlinux-keyring");
+        execute_command("sudo pacman-key --populate");
+        execute_command("sudo pacman-key --init");
         return true;
     }
 
-    // NEW: Common package installation function
     bool install_base_packages(const std::string& desktop_packages, const std::string& display_manager = "") {
         std::string target_folder = getFullTargetPath();
-        std::string currentDir = getCurrentDir();  // ADD THIS LINE
+        std::string currentDir = getCurrentDir();
 
-        // BUILD COMPLETE PACKAGE LIST - USING CACHYOS PACKAGES
         std::string packages;
 
-        // Set package based on desktop selection
         if (current_desktop_name == "CachyOS-TTY-Grub") {
             packages = "cachyosttygrub calamares-fix";
         } else if (current_desktop_name == "CachyOS-KDE-Grub") {
@@ -402,7 +603,6 @@ private:
             packages = "cachyosgnomegrub calamares-fix";
         }
 
-        // Add extra packages if specified
         if (!extra_packages.empty()) {
             packages += " " + extra_packages;
         }
@@ -410,7 +610,6 @@ private:
         std::cout << COLOR_CYAN << "Installing packages with pacstrap..." << COLOR_RESET << std::endl;
         execute_command("sudo pacstrap " + target_folder + " " + packages);
 
-        // VERIFY PACSTRAP SUCCESS
         std::string test_bin = target_folder + "/bin/bash";
         struct stat info;
         if (stat(test_bin.c_str(), &info) != 0) {
@@ -422,16 +621,13 @@ private:
         return true;
     }
 
-    // NEW: Common service enablement
     void enable_services(const std::string& display_manager_service) {
         std::string target_folder = getFullTargetPath();
 
         mount_system_dirs();
 
-        // Always enable NetworkManager
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable NetworkManager\"");
 
-        // Enable display manager if specified
         if (!display_manager_service.empty()) {
             execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable " + display_manager_service + "\"");
         }
@@ -440,26 +636,11 @@ private:
         create_user();
     }
 
-    // NEW: Common post-installation steps
-    void complete_installation(const std::string& desktop_name) {
-        std::string target_folder = getFullTargetPath();
-
-        // Install Calamares
-        install_calamares();
-
-        unmount_system_dirs();
-        std::cout << COLOR_GREEN << desktop_name << " installation completed!" << COLOR_RESET << std::endl;
-
-        // CREATE SQUASHFS IMAGE
-        create_squashfs_image(desktop_name);
-    }
-
-    // NEW: Dedicated function to install Calamares (eliminates code duplication)
     void install_calamares() {
         std::string target_folder = getFullTargetPath();
         std::string currentDir = getCurrentDir();
 
-        std::cout << COLOR_CYAN << "Installing Calamares installer and setting up iso ..." << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing Calamares installer..." << COLOR_RESET << std::endl;
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Desktop");
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Documents");
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Downloads");
@@ -468,34 +649,8 @@ private:
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Videos");
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Public");
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/Templates");
-        // Copy Calamares package files
 
-        // Copy calamares config
-        execute_command("sudo cp -r " + currentDir + "/calamares-cachyos/calamares-files/calamares " + target_folder + "/etc/");
-
-        // Copy custom branding
-        execute_command("sudo cp -r " + currentDir + "/calamares-cachyos/calamares-files/claudemods " + target_folder + "/usr/share/calamares/branding/");
-
-        // Extract extra files
-        execute_command("sudo unzip -o -q " + currentDir + "/calamares-cachyos/calamares-files/extras.zip -d " + target_folder);
-
-        // Copy hooks
-        execute_command("sudo cp -r " + currentDir + "/calamares-cachyos/working-hooks-btrfs-ext4/* /etc/initcpio");
-
-        execute_command("sudo cp " + currentDir + "/calamares-cachyos/calamares-files/mount.conf " + target_folder + "/usr/share/calamares/modules");
-
-        // Copy desktop shortcuts
-        execute_command("sudo cp " + currentDir + "/needed-files/Calamares " + target_folder + "/home/" + new_username + "/Desktop");
-        execute_command("sudo cp " + currentDir + "/needed-files/rsync-installer " + target_folder + "/home/" + new_username + "/Desktop");
-        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/Calamares");
-        execute_command("sudo chmod +x " + target_folder + "/home/" + new_username + "/Desktop/rsync-installer");
-        execute_command("sudo mkdir -p " + target_folder + "/opt/rsync-installer");
         execute_command("sudo cp -r " + currentDir + "/needed-files/wireless-regdom " + target_folder + "/etc/conf.d/wireless-regdom");
-        execute_command("sudo tar xzf " + currentDir + "/needed-files/rsync-installer.tar.gz -C " + target_folder + "/opt/rsync-installer");
-
-        // Remove manjaro branding
-        execute_command("sudo rm -rf " + target_folder + "/usr/share/calamares/branding/manjaro");
-
 
         execute_command("sudo mkdir -p " + target_folder + "/home/" + new_username + "/.config/fish");
         execute_command("sudo cp " + currentDir + "/needed-files/fish_variables " + target_folder + "/home/" + new_username + "/.config/fish/fish_variables");
@@ -509,127 +664,24 @@ private:
         execute_command("sudo unzip -o -q " + currentDir + "/needed-files/bootcachyos.zip -d " + target_folder + "/boot");
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
         execute_command("sudo chroot " + target_folder + " /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/cachyos-iso-initramfs/kernel-latest.img");
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/cachyos-iso-initramfs/initramfs-x86_64.img");
-        execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/cachyos-iso-initramfs/vmlinuz-x86_64.zip");
-        execute_command("sudo unsquashfs -d " + target_folder + "/usr/lib/modules/6.18.6-2-cachyos " + currentDir + "/kernel-latest.img");
-        execute_command("sudo cp initramfs-x86_64.img " + currentDir + "/calamares-cachyos/build-image-arch-img/boot/initramfs-x86_64.img");
-        execute_command("sudo unzip -o " + currentDir + "/vmlinuz-x86_64.zip -d " + currentDir + "/calamares-cachyos/build-image-arch-img/boot");
-        execute_command("sudo rm -rf kernel-latest.img");
-        execute_command("sudo rm -rf initramfs-x86_64.img");
-        execute_command("sudo rm -rf *.zip");
-
-        std::cout << COLOR_GREEN << "Calamares installation and iso setup completed!" << COLOR_RESET << std::endl;
+        std::cout << COLOR_GREEN << "Calamares installation completed!" << COLOR_RESET << std::endl;
     }
 
-    // UPDATED: Function to create squashfs image after installation with additional steps
-    void create_squashfs_image(const std::string& distro_name) {
-        std::cout << COLOR_CYAN << "Creating squashfs image..." << COLOR_RESET << std::endl;
-
-        std::string currentDir = getCurrentDir();
-        std::string target_folder = getFullTargetPath();
-
-        // NEW: Clean pacman cache before creating squashfs
-        std::cout << COLOR_CYAN << "Cleaning pacman cache..." << COLOR_RESET << std::endl;
-        std::string cache_clean_cmd = "sudo rm -rf " + target_folder + "/var/cache/pacman/pkg/*";
-        if (execute_command(cache_clean_cmd) == 0) {
-            std::cout << COLOR_GREEN << "Pacman cache cleaned successfully!" << COLOR_RESET << std::endl;
-        } else {
-            std::cout << COLOR_RED << "Failed to clean pacman cache!" << COLOR_RESET << std::endl;
-        }
-
-        std::string squashfs_cmd = "sudo mksquashfs " + target_folder + " " + currentDir + "/calamares-cachyos/build-image-arch-img/LiveOS/rootfs.img -noappend -comp zstd -Xcompression-level 22 -b 256K -e etc/udev/rules.d/70-persistent-cd.rules -e etc/udev/rules.d/70-persistent-net.rules -e etc/mtab -e etc/fstab -e dev/* -e proc/* -e sys/* -e tmp/* -e run/* -e mnt/* -e media/* -e lost+found";
-
-        std::cout << COLOR_CYAN << "Executing: " << squashfs_cmd << COLOR_RESET << std::endl;
-
-        if (execute_command(squashfs_cmd) == 0) {
-            std::cout << COLOR_GREEN << "Squashfs image created successfully!" << COLOR_RESET << std::endl;
-
-            // Clean up target folder after successful squashfs creation
-            std::cout << COLOR_CYAN << "Cleaning up target folder..." << COLOR_RESET << std::endl;
-            std::string cleanup_cmd = "sudo rm -rf " + target_folder;
-            if (execute_command(cleanup_cmd) == 0) {
-                std::cout << COLOR_GREEN << "Target folder deleted successfully: " << target_folder << COLOR_RESET << std::endl;
-            }
-
-            create_iso_image(distro_name);
-        } else {
-            std::cout << COLOR_RED << "Failed to create squashfs image!" << COLOR_RESET << std::endl;
-        }
-    }
-
-    void create_iso_image(const std::string& distro_name) {
-        std::cout << COLOR_CYAN << "Creating ISO image with XORRISO..." << COLOR_RESET << std::endl;
-
-        std::string currentDir = getCurrentDir();
-        std::string currentDIR = currentDir;
-
-        // Build the XORRISO command with the distro name as ISO filename
-        std::string xorriso_cmd = "sudo xorriso -as mkisofs "
-        "--modification-date=\"$(date +%Y%m%d%H%M%S00)\" "
-        "--protective-msdos-label "
-        "-volid \"2025\" "
-        "-appid \"CachyOS Linux Live/Rescue CD\" "
-        "-publisher \"CachyOS >\" "
-        "-preparer \"Prepared by user\" "
-        "-r -graft-points -no-pad "
-        "--sort-weight 0 / "
-        "--sort-weight 1 /boot "
-        "--grub2-mbr " + currentDir + "/calamares-cachyos/build-image-arch-img/boot/grub/i386-pc/boot_hybrid.img "
-        "-partition_offset 16 "
-        "-b boot/grub/i386-pc/eltorito.img "
-        "-c boot.catalog "
-        "-no-emul-boot -boot-load-size 4 -boot-info-table --grub2-boot-info "
-        "-eltorito-alt-boot "
-        "-append_partition 2 0xef " + currentDir + "/calamares-cachyos/build-image-arch-img/boot/efi.img "
-        "-e --interval:appended_partition_2:all:: "
-        "-no-emul-boot "
-        "-iso-level 3 "
-        "-o \"" + currentDir + "/" + distro_name + ".iso\" " +
-        currentDir + "/calamares-cachyos/build-image-arch-img/";
-
-        std::cout << COLOR_CYAN << "Executing: " << xorriso_cmd << COLOR_RESET << std::endl;
-
-        if (execute_command(xorriso_cmd) == 0) {
-            std::cout << COLOR_GREEN << "ISO image created successfully: " << distro_name + ".iso" << COLOR_RESET << std::endl;
-
-            // Get username using whoami
-            FILE* whoami_pipe = popen("whoami", "r");
-            if (whoami_pipe) {
-                char username[256];
-                if (fgets(username, sizeof(username), whoami_pipe)) {
-                    // Remove newline
-                    username[strcspn(username, "\n")] = 0;
-                    // Change ownership to current user
-                    std::string chown_cmd = "sudo chown " + std::string(username) + ":" + std::string(username) + " \"" + currentDir + "/" + distro_name + ".iso\"";
-                    execute_command(chown_cmd);
-                }
-                pclose(whoami_pipe);
-            }
-        } else {
-            std::cout << COLOR_RED << "Failed to create ISO image!" << COLOR_RESET << std::endl;
-        }
-    }
-
-    // Set username
     void set_username() {
         new_username = get_input("Enter username: ");
         saveConfiguration();
     }
 
-    // Set root password
     void set_root_password() {
         root_password = get_input("Enter root password: ");
         saveConfiguration();
     }
 
-    // Set user password
     void set_user_password() {
         user_password = get_input("Enter user password: ");
         saveConfiguration();
     }
 
-    // Set timezone
     void set_timezone() {
         std::vector<std::string> timezone_options = {
             "America/New_York (US English)",
@@ -656,7 +708,6 @@ private:
         saveConfiguration();
     }
 
-    // Set keyboard layout
     void set_keyboard_layout() {
         std::vector<std::string> keyboard_options = {
             "us (US English)",
@@ -683,7 +734,6 @@ private:
         saveConfiguration();
     }
 
-    // Set kernel - CHANGED TO CACHYOS KERNELS
     void set_kernel() {
         std::vector<std::string> kernel_options = {
             "linux-cachyos (Default, Recommended)",
@@ -714,7 +764,6 @@ private:
         saveConfiguration();
     }
 
-    // NEW: Set Wireless Regdom - opens nano editor
     void set_wireless_regdom() {
         std::cout << COLOR_CYAN << "Press Enter to continue to nano..." << COLOR_RESET;
         std::cin.get();
@@ -722,7 +771,6 @@ private:
         std::string currentDir = getCurrentDir();
         std::string filePath = currentDir + "/needed-files/wireless-regdom";
 
-        // Open nano editor
         std::string nanoCmd = "nano " + filePath;
         int result = execute_command(nanoCmd);
 
@@ -736,7 +784,6 @@ private:
         std::cin.get();
     }
 
-    // NEW: Set extra packages
     void set_extra_packages() {
         std::cout << COLOR_CYAN << "Enter additional packages to install (space-separated):" << COLOR_RESET << std::endl;
         std::cout << COLOR_YELLOW << "Examples: vim git htop curl wget firefox" << COLOR_RESET << std::endl;
@@ -744,8 +791,15 @@ private:
         saveConfiguration();
     }
 
-    // Check if all required settings are configured
     bool check_settings_configured() {
+        if (target_drive.empty()) {
+            std::cout << COLOR_RED << "Error: Target drive not set! Use 'Setup Bootloader and Drive' first." << COLOR_RESET << std::endl;
+            return false;
+        }
+        if (filesystem_type.empty()) {
+            std::cout << COLOR_RED << "Error: Filesystem type not set! Use 'Setup Bootloader and Drive' first." << COLOR_RESET << std::endl;
+            return false;
+        }
         if (new_username.empty()) {
             std::cout << COLOR_RED << "Error: Username not set!" << COLOR_RESET << std::endl;
             return false;
@@ -778,61 +832,62 @@ private:
     }
 
     void mount_system_dirs() {
-        std::string target_folder = getFullTargetPath();
-        execute_command("sudo mkdir -p " + target_folder + "/dev");
-        execute_command("sudo mkdir -p " + target_folder + "/dev/pts");
-        execute_command("sudo mkdir -p " + target_folder + "/proc");
-        execute_command("sudo mkdir -p " + target_folder + "/sys");
-        execute_command("sudo mkdir -p " + target_folder + "/run");
-        execute_command("sudo mkdir -p " + target_folder + "/etc");
-
-        execute_command("sudo mount --bind /dev " + target_folder + "/dev");
-        execute_command("sudo mount --bind /dev/pts " + target_folder + "/dev/pts");
-        execute_command("sudo mount --bind /proc " + target_folder + "/proc");
-        execute_command("sudo mount --bind /sys " + target_folder + "/sys");
-        execute_command("sudo mount --bind /run " + target_folder + "/run");
+        execute_command("sudo mkdir -p /mnt/dev");
+        execute_command("sudo mkdir -p /mnt/dev/pts");
+        execute_command("sudo mkdir -p /mnt/proc");
+        execute_command("sudo mkdir -p /mnt/sys");
+        execute_command("sudo mkdir -p /mnt/run");
+        execute_command("sudo mkdir -p /mnt/etc");
+        execute_command("sudo mount --bind /dev /mnt/dev");
+        execute_command("sudo mount --bind /dev/pts /mnt/dev/pts");
+        execute_command("sudo mount --bind /proc /mnt/proc");
+        execute_command("sudo mount --bind /sys /mnt/sys");
+        execute_command("sudo mount --bind /run /mnt/run");
     }
 
     void unmount_system_dirs() {
-        std::string target_folder = getFullTargetPath();
-        execute_command("sudo umount " + target_folder + "/dev/pts");
-        execute_command("sudo umount " + target_folder + "/dev");
-        execute_command("sudo umount " + target_folder + "/proc");
-        execute_command("sudo umount " + target_folder + "/sys");
-        execute_command("sudo umount " + target_folder + "/run");
+        execute_command("sudo umount /mnt/dev/pts");
+        execute_command("sudo umount /mnt/dev");
+        execute_command("sudo umount /mnt/proc");
+        execute_command("sudo umount /mnt/sys");
+        execute_command("sudo umount /mnt/run");
     }
 
     void create_user() {
-        std::string target_folder = getFullTargetPath();
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"useradd -m -G wheel -s /bin/bash " + new_username + "\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"echo 'root:" + root_password + "' | chpasswd\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"echo '" + new_username + ":" + user_password + "' | chpasswd\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"echo '%wheel ALL=(ALL:ALL) ALL' | tee -a /etc/sudoers\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"useradd -m -G wheel -s /bin/bash " + new_username + "\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"echo 'root:" + root_password + "' | chpasswd\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"echo '" + new_username + ":" + user_password + "' | chpasswd\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"echo '%wheel ALL=(ALL:ALL) ALL' | tee -a /etc/sudoers\"");
     }
 
     void apply_timezone_keyboard_settings() {
-        std::string target_folder = getFullTargetPath();
         std::cout << COLOR_CYAN << "Setting timezone to: " << timezone << COLOR_RESET << std::endl;
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"ln -sf /usr/share/zoneinfo/" + timezone + " /etc/localtime\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"hwclock --systohc\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"ln -sf /usr/share/zoneinfo/" + timezone + " /etc/localtime\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"hwclock --systohc\"");
 
         std::cout << COLOR_CYAN << "Setting keyboard layout to: " << keyboard_layout << COLOR_RESET << std::endl;
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"echo 'KEYMAP=" + keyboard_layout + "' > /etc/vconsole.conf\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"echo 'LANG=en_US.UTF-8' > /etc/locale.conf\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"locale-gen\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"echo 'KEYMAP=" + keyboard_layout + "' > /etc/vconsole.conf\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"echo 'LANG=en_US.UTF-8' > /etc/locale.conf\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"locale-gen\"");
     }
 
-    // NEW: Start installation function
     void start_installation() {
         if (!check_settings_configured()) {
             std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
             return;
         }
 
+        // Prepare partitions and mount filesystem directly
+        prepare_target_partitions();
+        if (filesystem_type == "btrfs") {
+            setup_btrfs_subvolumes();
+        } else {
+            setup_ext4_filesystem();
+        }
+
         std::cout << COLOR_CYAN << "Starting installation with selected desktop: " << current_desktop_name << COLOR_RESET << std::endl;
 
-        // Call the appropriate installation function based on current_desktop_name
         if (current_desktop_name == "CachyOS-TTY-Grub") {
             install_cachyos_tty_grub();
         } else if (current_desktop_name == "CachyOS-KDE-Grub") {
@@ -844,44 +899,45 @@ private:
         }
     }
 
-    // UPDATED: Simplified desktop installation functions using common helpers
-
     void install_cachyos_tty_grub() {
-        std::cout << COLOR_CYAN << "Installing CachyOS TTY Grub..." << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing CachyOS TTY Grub to " << target_drive << "..." << COLOR_RESET << std::endl;
 
         if (!setup_installation_environment()) return;
-
         if (!install_base_packages("", "")) return;
-
-        // Enable services (no display manager for TTY)
         enable_services("");
-
-        complete_installation("CachyOS-TTY-Grub");
+        install_calamares();
+        unmount_system_dirs();
+        install_grub();
+        std::cout << COLOR_GREEN << "CachyOS-TTY-Grub installation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
+        post_install_menu();
     }
 
     void install_cachyos_kde_grub() {
-        std::cout << COLOR_CYAN << "Installing CachyOS KDE Grub..." << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing CachyOS KDE Grub to " << target_drive << "..." << COLOR_RESET << std::endl;
 
         if (!setup_installation_environment()) return;
-
         if (!install_base_packages("", "")) return;
-
         enable_services("plasmalogin");
-        complete_installation("CachyOS-KDE-Grub");
+        install_calamares();
+        unmount_system_dirs();
+        install_grub();
+        std::cout << COLOR_GREEN << "CachyOS-KDE-Grub installation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
+        post_install_menu();
     }
 
     void install_cachyos_gnome_grub() {
-        std::cout << COLOR_CYAN << "Installing CachyOS GNOME Grub..." << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Installing CachyOS GNOME Grub to " << target_drive << "..." << COLOR_RESET << std::endl;
 
         if (!setup_installation_environment()) return;
-
         if (!install_base_packages("", "")) return;
-
         enable_services("gdm");
-        complete_installation("CachyOS-GNOME-Grub");
+        install_calamares();
+        unmount_system_dirs();
+        install_grub();
+        std::cout << COLOR_GREEN << "CachyOS-GNOME-Grub installation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
+        post_install_menu();
     }
 
-    // Show desktop selection menu with ONLY 3 CACHYOS OPTIONS
     void show_desktop_selection() {
         std::vector<std::string> desktop_options = {
             "CachyOS TTY Grub (Terminal Only)",
@@ -918,7 +974,8 @@ private:
 
     void show_main_menu() {
         std::vector<std::string> main_options = {
-            "Installation Path: " + getTargetFolder(),
+            "Setup Bootloader and Drive: ",
+            "Installation Path: ",
             "Set Username",
             "Set Root Password",
             "Set User Password",
@@ -933,51 +990,50 @@ private:
         };
 
         int selected = 0;
-        while ( true) {
+        while (true) {
             system("clear");
             display_header();
             display_current_settings();
 
-            // Update the first option to always show current path
-            main_options[0] = "Installation Path: " + getTargetFolder();
-
-            selected = show_menu(main_options, "CachyOS distribution iso creator", selected);
+            selected = show_menu(main_options, "CachyOS distribution installer", selected);
 
             switch(selected) {
                 case 0:
-                    // Installation path is fixed, no action needed
+                    setup_bootloader_and_drive();
                     break;
                 case 1:
-                    set_username();
                     break;
                 case 2:
-                    set_root_password();
+                    set_username();
                     break;
                 case 3:
-                    set_user_password();
+                    set_root_password();
                     break;
                 case 4:
-                    set_timezone();
+                    set_user_password();
                     break;
                 case 5:
-                    set_keyboard_layout();
+                    set_timezone();
                     break;
                 case 6:
-                    set_kernel();
+                    set_keyboard_layout();
                     break;
                 case 7:
-                    set_wireless_regdom();
+                    set_kernel();
                     break;
                 case 8:
-                    show_desktop_selection();
+                    set_wireless_regdom();
                     break;
                 case 9:
-                    set_extra_packages();
+                    show_desktop_selection();
                     break;
                 case 10:
-                    start_installation();
+                    set_extra_packages();
                     break;
                 case 11:
+                    start_installation();
+                    break;
+                case 12:
                     std::cout << COLOR_GREEN << "Exiting. Goodbye!" << COLOR_RESET << std::endl;
                     return;
             }
@@ -989,10 +1045,8 @@ private:
 
 public:
     void run() {
-        // LOAD CONFIGURATION FIRST - FIXED: This now happens before anything else
         loadConfiguration();
 
-        // EXTRACT FILES
         if (!extractRequiredFiles()) {
             std::cerr << COLOR_RED << "Failed to extract required files. Cannot continue." << COLOR_RESET << std::endl;
             return;
