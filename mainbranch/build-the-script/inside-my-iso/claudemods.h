@@ -103,7 +103,7 @@ private:
     }
 
     std::string getTargetFolder() {
-        return getCurrentDir() + "/claudemods-distro";
+        return "/mnt";
     }
 
     std::string getCalamaresFolder() {
@@ -580,17 +580,10 @@ private:
         execute_command("sudo mkdir -p /mnt/{home,boot/efi,etc,usr,var,proc,sys,dev,tmp,run}");
     }
 
-    void copy_system_to_drive() {
-        std::string target_folder = getTargetFolder();
-        std::string efi_part = target_drive + "1";
-        std::cout << COLOR_CYAN << "Copying system files to " << target_drive << "..." << COLOR_RESET << std::endl;
-        execute_command("sudo cp -a " + target_folder + "/* /mnt/");
-        execute_command("sudo mount " + efi_part + " /mnt/boot/efi");
-        execute_command("sudo mkdir -p /mnt/{proc,sys,dev,run,tmp}");
-    }
-
     void install_grub() {
         std::cout << COLOR_CYAN << "Installing GRUB bootloader..." << COLOR_RESET << std::endl;
+        std::string efi_part = target_drive + "1";
+        execute_command("sudo mount " + efi_part + " /mnt/boot/efi");
         execute_command("sudo mount --bind /sys/firmware/efi/efivars /mnt/sys/firmware/efi/efivars 2>/dev/null || true");
         execute_command("sudo mount --bind /dev /mnt/dev");
         execute_command("sudo mount --bind /dev/pts /mnt/dev/pts");
@@ -654,47 +647,43 @@ private:
     }
 
     void mount_system_dirs() {
-        std::string target_folder = getTargetFolder();
-        execute_command("sudo mkdir -p " + target_folder + "/dev");
-        execute_command("sudo mkdir -p " + target_folder + "/dev/pts");
-        execute_command("sudo mkdir -p " + target_folder + "/proc");
-        execute_command("sudo mkdir -p " + target_folder + "/sys");
-        execute_command("sudo mkdir -p " + target_folder + "/run");
-        execute_command("sudo mkdir -p " + target_folder + "/etc");
-        execute_command("sudo mount --bind /dev " + target_folder + "/dev");
-        execute_command("sudo mount --bind /dev/pts " + target_folder + "/dev/pts");
-        execute_command("sudo mount --bind /proc " + target_folder + "/proc");
-        execute_command("sudo mount --bind /sys " + target_folder + "/sys");
-        execute_command("sudo mount --bind /run " + target_folder + "/run");
+        execute_command("sudo mkdir -p /mnt/dev");
+        execute_command("sudo mkdir -p /mnt/dev/pts");
+        execute_command("sudo mkdir -p /mnt/proc");
+        execute_command("sudo mkdir -p /mnt/sys");
+        execute_command("sudo mkdir -p /mnt/run");
+        execute_command("sudo mkdir -p /mnt/etc");
+        execute_command("sudo mount --bind /dev /mnt/dev");
+        execute_command("sudo mount --bind /dev/pts /mnt/dev/pts");
+        execute_command("sudo mount --bind /proc /mnt/proc");
+        execute_command("sudo mount --bind /sys /mnt/sys");
+        execute_command("sudo mount --bind /run /mnt/run");
     }
 
     void unmount_system_dirs() {
-        std::string target_folder = getTargetFolder();
-        execute_command("sudo umount " + target_folder + "/dev/pts");
-        execute_command("sudo umount " + target_folder + "/dev");
-        execute_command("sudo umount " + target_folder + "/proc");
-        execute_command("sudo umount " + target_folder + "/sys");
-        execute_command("sudo umount " + target_folder + "/run");
+        execute_command("sudo umount /mnt/dev/pts");
+        execute_command("sudo umount /mnt/dev");
+        execute_command("sudo umount /mnt/proc");
+        execute_command("sudo umount /mnt/sys");
+        execute_command("sudo umount /mnt/run");
     }
 
     void create_user() {
-        std::string target_folder = getTargetFolder();
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"useradd -m -G wheel -s /bin/bash " + new_username + "\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"echo 'root:" + root_password + "' | chpasswd\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"echo '" + new_username + ":" + user_password + "' | chpasswd\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"echo '%wheel ALL=(ALL:ALL) ALL' | tee -a /etc/sudoers\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"useradd -m -G wheel -s /bin/bash " + new_username + "\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"echo 'root:" + root_password + "' | chpasswd\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"echo '" + new_username + ":" + user_password + "' | chpasswd\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"echo '%wheel ALL=(ALL:ALL) ALL' | tee -a /etc/sudoers\"");
     }
 
     void apply_timezone_keyboard_settings() {
-        std::string target_folder = getTargetFolder();
         std::cout << COLOR_CYAN << "Setting timezone to: " << timezone << COLOR_RESET << std::endl;
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"ln -sf /usr/share/zoneinfo/" + timezone + " /etc/localtime\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"hwclock --systohc\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"ln -sf /usr/share/zoneinfo/" + timezone + " /etc/localtime\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"hwclock --systohc\"");
         std::cout << COLOR_CYAN << "Setting keyboard layout to: " << keyboard_layout << COLOR_RESET << std::endl;
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"echo 'KEYMAP=" + keyboard_layout + "' > /etc/vconsole.conf\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"echo 'LANG=en_US.UTF-8' > /etc/locale.conf\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"locale-gen\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"echo 'KEYMAP=" + keyboard_layout + "' > /etc/vconsole.conf\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"echo 'LANG=en_US.UTF-8' > /etc/locale.conf\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"locale-gen\"");
     }
 
     void start_installation() {
@@ -702,6 +691,24 @@ private:
             std::cout << COLOR_RED << "Cannot proceed with installation. Please configure all settings first." << COLOR_RESET << std::endl;
             return;
         }
+        
+        std::cout << COLOR_RED << "WARNING: ALL DATA ON " << target_drive << " WILL BE PERMANENTLY ERASED!" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "Type 'YES' to confirm: " << COLOR_RESET;
+        std::string confirm;
+        std::getline(std::cin, confirm);
+        if (confirm != "YES") {
+            std::cout << COLOR_CYAN << "Installation cancelled." << COLOR_RESET << std::endl;
+            return;
+        }
+        
+        // Prepare partitions and mount filesystem
+        prepare_target_partitions();
+        if (filesystem_type == "btrfs") {
+            setup_btrfs_subvolumes();
+        } else {
+            setup_ext4_filesystem();
+        }
+        
         if (current_distro_name == "Spitfire-CKGE-Minimal") {
             install_spitfire_ckge_minimal();
         } else if (current_distro_name == "Spitfire-CKGE-Minimal-Dev") {
@@ -727,720 +734,528 @@ private:
         }
     }
 
+    // ===== ALL 10 INSTALL FUNCTIONS - INSTALLING DIRECTLY TO /mnt =====
+
     void install_spitfire_ckge_minimal() {
-        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Minimal..." << COLOR_RESET << std::endl;
-        std::string target_folder = getTargetFolder();
-        std::cout << COLOR_CYAN << "Starting Spitfire CKGE Minimal installation in: " << target_folder << COLOR_RESET << std::endl;
+        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Minimal to " << target_drive << "..." << COLOR_RESET << std::endl;
+        std::string target_folder = "/mnt";
         std::string currentDir = getCurrentDir();
-        std::cout << COLOR_CYAN << "Working from directory: " << currentDir << COLOR_RESET << std::endl;
         if (!setup_target_directory(target_folder)) return;
         setup_pacman_and_files(target_folder);
         std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop calamares-fix protonup-qt hhd adjustor hhd-ui sddm piper";
+        std::string pacstrap_cmd = "sudo pacstrap /mnt claudemods-desktop calamares-fix protonup-qt hhd adjustor hhd-ui sddm piper";
         if (!extra_packages.empty()) { pacstrap_cmd += " " + extra_packages; }
         execute_command(pacstrap_cmd);
         if (!verify_pacstrap_success(target_folder)) return;
         setup_boot_directory(target_folder);
         mount_system_dirs();
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable sddm\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable NetworkManager\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable sddm\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable NetworkManager\"");
         apply_timezone_keyboard_settings();
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub " + target_folder + "/etc/default/grub");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub.cfg " + target_folder + "/boot/grub/grub.cfg");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos " + target_folder + "/usr/share/grub/themes");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation " + target_folder + "/usr/share/plymouth/themes");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/term.sh " + target_folder + "/usr/local/bin/term.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"chmod +x /usr/local/bin/term.sh\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/term.service " + target_folder + "/etc/systemd/system/term.service");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable term.service >/dev/null 2>&1\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub /mnt/etc/default/grub");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub.cfg /mnt/boot/grub/grub.cfg");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos /mnt/usr/share/grub/themes");
+        execute_command("sudo chroot /mnt /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation /mnt/usr/share/plymouth/themes");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/term.sh /mnt/usr/local/bin/term.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"chmod +x /usr/local/bin/term.sh\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/term.service /mnt/etc/systemd/system/term.service");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable term.service >/dev/null 2>&1\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
         create_user();
         create_user_home_structure(target_folder);
-        execute_command("cd " + target_folder);
+        execute_command("cd /mnt");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-minimal-v1.01.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-minimal.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-minimal.zip -d " + target_folder + "/opt");
-        execute_command("sudo unzip -o " + currentDir + "/spitfire-minimal-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
-        execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
-        execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt/tweaksspitfire.sh");
-        execute_command("sudo chmod +x " + target_folder + "/opt/tweaksspitfire.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/konsolerc");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin " + target_folder + "/usr/share/sddm/themes/SpitFireLogin");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
-        execute_command("sudo rm -rf " + target_folder + "/opt/tweaksspitfire.sh");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-minimal.zip -d /mnt/opt");
+        execute_command("sudo unzip -o " + currentDir + "/spitfire-minimal-v1.01.zip -d /mnt/home/" + new_username + "/");
+        execute_command("sudo mkdir -p /mnt/etc/sddm.conf.d");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf /mnt/etc/sddm.conf.d/kde_settings.conf");
+        execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh /mnt/opt/tweaksspitfire.sh");
+        execute_command("sudo chmod +x /mnt/opt/tweaksspitfire.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/konsolerc /mnt/home/" + new_username + "/.config/konsolerc");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin /mnt/usr/share/sddm/themes/SpitFireLogin");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
+        execute_command("sudo rm -rf /mnt/opt/tweaksspitfire.sh");
         execute_command("sudo rm -rf " + currentDir + "/Arch-Systemtool-minimal.zip");
         execute_command("sudo rm -rf " + currentDir + "/spitfire-minimal-v1.01.zip");
         fix_user_places_xbel(target_folder);
         install_calamares(target_folder);
         unmount_system_dirs();
-        std::cout << COLOR_GREEN << "Spitfire CKGE Minimal installation completed in: " << target_folder << COLOR_RESET << std::endl;
-        std::cout << COLOR_YELLOW << "\n╔══════════════════════════════════════════════════════════════╗" << std::endl;
-        std::cout << "║  READY TO INSTALL TO PHYSICAL DRIVE                         ║" << std::endl;
-        std::cout << "╠══════════════════════════════════════════════════════════════╣" << std::endl;
-        std::cout << "║ Target Drive: " << std::left << std::setw(46) << target_drive << "║" << std::endl;
-        std::cout << "║ Filesystem:   " << std::left << std::setw(46) << filesystem_type << "║" << std::endl;
-        std::cout << "╚══════════════════════════════════════════════════════════════╝" << std::endl;
-        std::cout << COLOR_RESET << std::endl;
-        std::cout << COLOR_RED << "WARNING: ALL DATA ON " << target_drive << " WILL BE PERMANENTLY ERASED!" << COLOR_RESET << std::endl;
-        std::cout << COLOR_CYAN << "Type 'YES' to confirm: " << COLOR_RESET;
-        std::string confirm;
-        std::getline(std::cin, confirm);
-        if (confirm == "YES") {
-            prepare_target_partitions();
-            if (filesystem_type == "btrfs") { setup_btrfs_subvolumes(); } else { setup_ext4_filesystem(); }
-            copy_system_to_drive();
-            install_grub();
-            std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
-            post_install_menu();
-        } else {
-            std::cout << COLOR_CYAN << "Drive installation skipped. System built in: " << target_folder << COLOR_RESET << std::endl;
-        }
+        install_grub();
+        std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
+        post_install_menu();
     }
 
     void install_spitfire_ckge_minimal_dev() {
-        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Minimal Dev..." << COLOR_RESET << std::endl;
-        std::string target_folder = getTargetFolder();
-        std::cout << COLOR_CYAN << "Starting Spitfire CKGE Minimal Dev installation in: " << target_folder << COLOR_RESET << std::endl;
+        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Minimal Dev to " << target_drive << "..." << COLOR_RESET << std::endl;
+        std::string target_folder = "/mnt";
         std::string currentDir = getCurrentDir();
-        std::cout << COLOR_CYAN << "Working from directory: " << currentDir << COLOR_RESET << std::endl;
         if (!setup_target_directory(target_folder)) return;
         setup_pacman_and_files(target_folder);
         std::cout << COLOR_CYAN << "Installing base system with pacstrap..." << COLOR_RESET << std::endl;
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-dev calamares-fix lutris protonup-qt hhd adjustor hhd-ui sddm";
+        std::string pacstrap_cmd = "sudo pacstrap /mnt claudemods-desktop-dev calamares-fix lutris protonup-qt hhd adjustor hhd-ui sddm";
         if (!extra_packages.empty()) { pacstrap_cmd += " " + extra_packages; }
         execute_command(pacstrap_cmd);
         if (!verify_pacstrap_success(target_folder)) return;
         setup_boot_directory(target_folder);
         mount_system_dirs();
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable sddm\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable NetworkManager\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable sddm\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable NetworkManager\"");
         apply_timezone_keyboard_settings();
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub " + target_folder + "/etc/default/grub");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub.cfg " + target_folder + "/boot/grub/grub.cfg");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos " + target_folder + "/usr/share/grub/themes");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation " + target_folder + "/usr/share/plymouth/themes");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/term.sh " + target_folder + "/usr/local/bin/term.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"chmod +x /usr/local/bin/term.sh\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/term.service " + target_folder + "/etc/systemd/system/term.service");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable term.service >/dev/null 2>&1\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub /mnt/etc/default/grub");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub.cfg /mnt/boot/grub/grub.cfg");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos /mnt/usr/share/grub/themes");
+        execute_command("sudo chroot /mnt /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation /mnt/usr/share/plymouth/themes");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/term.sh /mnt/usr/local/bin/term.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"chmod +x /usr/local/bin/term.sh\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/term.service /mnt/etc/systemd/system/term.service");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable term.service >/dev/null 2>&1\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
         create_user();
         create_user_home_structure(target_folder);
-        execute_command("cd " + target_folder);
+        execute_command("cd /mnt");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-minimal-v1.01.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-minimal.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-minimal.zip -d " + target_folder + "/opt");
-        execute_command("sudo unzip -o " + currentDir + "/spitfire-minimal-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
-        execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
-        execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt/tweaksspitfire.sh");
-        execute_command("sudo chmod +x " + target_folder + "/opt/tweaksspitfire.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/konsolerc");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin " + target_folder + "/usr/share/sddm/themes/SpitFireLogin");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-minimal.zip -d /mnt/opt");
+        execute_command("sudo unzip -o " + currentDir + "/spitfire-minimal-v1.01.zip -d /mnt/home/" + new_username + "/");
+        execute_command("sudo mkdir -p /mnt/etc/sddm.conf.d");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf /mnt/etc/sddm.conf.d/kde_settings.conf");
+        execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh /mnt/opt/tweaksspitfire.sh");
+        execute_command("sudo chmod +x /mnt/opt/tweaksspitfire.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/konsolerc /mnt/home/" + new_username + "/.config/konsolerc");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin /mnt/usr/share/sddm/themes/SpitFireLogin");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
         execute_command("sudo rm -rf " + currentDir + "/Arch-Systemtool-minimal.zip");
         execute_command("sudo rm -rf " + currentDir + "/spitfire-minimal-v1.01.zip");
-        execute_command("sudo rm -rf " + target_folder + "/opt/tweaksspitfire.sh");
+        execute_command("sudo rm -rf /mnt/opt/tweaksspitfire.sh");
         fix_user_places_xbel(target_folder);
         install_calamares(target_folder);
         unmount_system_dirs();
-        std::cout << COLOR_GREEN << "Spitfire CKGE Minimal Dev installation completed in: " << target_folder << COLOR_RESET << std::endl;
-        std::cout << COLOR_YELLOW << "\n╔══════════════════════════════════════════════════════════════╗" << std::endl;
-        std::cout << "║  READY TO INSTALL TO PHYSICAL DRIVE                         ║" << std::endl;
-        std::cout << "╠══════════════════════════════════════════════════════════════╣" << std::endl;
-        std::cout << "║ Target Drive: " << std::left << std::setw(46) << target_drive << "║" << std::endl;
-        std::cout << "║ Filesystem:   " << std::left << std::setw(46) << filesystem_type << "║" << std::endl;
-        std::cout << "╚══════════════════════════════════════════════════════════════╝" << std::endl;
-        std::cout << COLOR_RESET << std::endl;
-        std::cout << COLOR_RED << "WARNING: ALL DATA ON " << target_drive << " WILL BE PERMANENTLY ERASED!" << COLOR_RESET << std::endl;
-        std::cout << COLOR_CYAN << "Type 'YES' to confirm: " << COLOR_RESET;
-        std::string confirm;
-        std::getline(std::cin, confirm);
-        if (confirm == "YES") {
-            prepare_target_partitions();
-            if (filesystem_type == "btrfs") { setup_btrfs_subvolumes(); } else { setup_ext4_filesystem(); }
-            copy_system_to_drive();
-            install_grub();
-            std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
-            post_install_menu();
-        } else {
-            std::cout << COLOR_CYAN << "Drive installation skipped. System built in: " << target_folder << COLOR_RESET << std::endl;
-        }
+        install_grub();
+        std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
+        post_install_menu();
     }
 
     void install_spitfire_ckge_full() {
-        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Full..." << COLOR_RESET << std::endl;
-        std::string target_folder = getTargetFolder();
+        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Full to " << target_drive << "..." << COLOR_RESET << std::endl;
+        std::string target_folder = "/mnt";
         std::string currentDir = getCurrentDir();
         if (!setup_target_directory(target_folder)) return;
         setup_pacman_and_files(target_folder);
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-full calamares-fix lutris protonup-qt hhd adjustor hhd-ui obs-studio sddm";
+        std::string pacstrap_cmd = "sudo pacstrap /mnt claudemods-desktop-full calamares-fix lutris protonup-qt hhd adjustor hhd-ui obs-studio sddm";
         if (!extra_packages.empty()) { pacstrap_cmd += " " + extra_packages; }
         execute_command(pacstrap_cmd);
         if (!verify_pacstrap_success(target_folder)) return;
         setup_boot_directory(target_folder);
         mount_system_dirs();
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable sddm\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable NetworkManager\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable sddm\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable NetworkManager\"");
         apply_timezone_keyboard_settings();
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub " + target_folder + "/etc/default/grub");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub.cfg " + target_folder + "/boot/grub/grub.cfg");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos " + target_folder + "/usr/share/grub/themes");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation " + target_folder + "/usr/share/plymouth/themes");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.sh " + target_folder + "/usr/local/bin/termfull.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"chmod +x /usr/local/bin/termfull.sh\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.service " + target_folder + "/etc/systemd/system/termfull.service");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable termfull.service >/dev/null 2>&1\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub /mnt/etc/default/grub");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub.cfg /mnt/boot/grub/grub.cfg");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos /mnt/usr/share/grub/themes");
+        execute_command("sudo chroot /mnt /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation /mnt/usr/share/plymouth/themes");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.sh /mnt/usr/local/bin/termfull.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"chmod +x /usr/local/bin/termfull.sh\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.service /mnt/etc/systemd/system/termfull.service");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable termfull.service >/dev/null 2>&1\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
         create_user();
         create_user_home_structure(target_folder);
-        execute_command("cd " + target_folder);
+        execute_command("cd /mnt");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-full-v1.01.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-v1.01.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-v1.01.zip -d " + target_folder + "/opt");
-        execute_command("sudo unzip -o " + currentDir + "/spitfire-full-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
-        execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
-        execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt/tweaksspitfire.sh");
-        execute_command("sudo chmod +x " + target_folder + "/opt/tweaksspitfire.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/konsolerc");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin " + target_folder + "/usr/share/sddm/themes/SpitFireLogin");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-v1.01.zip -d /mnt/opt");
+        execute_command("sudo unzip -o " + currentDir + "/spitfire-full-v1.01.zip -d /mnt/home/" + new_username + "/");
+        execute_command("sudo mkdir -p /mnt/etc/sddm.conf.d");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf /mnt/etc/sddm.conf.d/kde_settings.conf");
+        execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh /mnt/opt/tweaksspitfire.sh");
+        execute_command("sudo chmod +x /mnt/opt/tweaksspitfire.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/konsolerc /mnt/home/" + new_username + "/.config/konsolerc");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin /mnt/usr/share/sddm/themes/SpitFireLogin");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
         execute_command("sudo rm -rf " + currentDir + "/Arch-Systemtool-v1.01.zip");
         execute_command("sudo rm -rf " + currentDir + "/spitfire-full-v1.01.zip");
-        execute_command("sudo rm -rf " + target_folder + "/opt/tweaksspitfire.sh");
+        execute_command("sudo rm -rf /mnt/opt/tweaksspitfire.sh");
         fix_user_places_xbel(target_folder);
         install_calamares(target_folder);
         unmount_system_dirs();
-        std::cout << COLOR_GREEN << "Spitfire CKGE Full installation completed in: " << target_folder << COLOR_RESET << std::endl;
-        std::cout << COLOR_YELLOW << "\n╔══════════════════════════════════════════════════════════════╗" << std::endl;
-        std::cout << "║  READY TO INSTALL TO PHYSICAL DRIVE                         ║" << std::endl;
-        std::cout << "╠══════════════════════════════════════════════════════════════╣" << std::endl;
-        std::cout << "║ Target Drive: " << std::left << std::setw(46) << target_drive << "║" << std::endl;
-        std::cout << "║ Filesystem:   " << std::left << std::setw(46) << filesystem_type << "║" << std::endl;
-        std::cout << "╚══════════════════════════════════════════════════════════════╝" << std::endl;
-        std::cout << COLOR_RESET << std::endl;
-        std::cout << COLOR_RED << "WARNING: ALL DATA ON " << target_drive << " WILL BE PERMANENTLY ERASED!" << COLOR_RESET << std::endl;
-        std::cout << COLOR_CYAN << "Type 'YES' to confirm: " << COLOR_RESET;
-        std::string confirm;
-        std::getline(std::cin, confirm);
-        if (confirm == "YES") {
-            prepare_target_partitions();
-            if (filesystem_type == "btrfs") { setup_btrfs_subvolumes(); } else { setup_ext4_filesystem(); }
-            copy_system_to_drive();
-            install_grub();
-            std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
-            post_install_menu();
-        } else {
-            std::cout << COLOR_CYAN << "Drive installation skipped. System built in: " << target_folder << COLOR_RESET << std::endl;
-        }
+        install_grub();
+        std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
+        post_install_menu();
     }
 
     void install_spitfire_ckge_full_dev() {
-        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Full Dev..." << COLOR_RESET << std::endl;
-        std::string target_folder = getTargetFolder();
+        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Full Dev to " << target_drive << "..." << COLOR_RESET << std::endl;
+        std::string target_folder = "/mnt";
         std::string currentDir = getCurrentDir();
         if (!setup_target_directory(target_folder)) return;
         setup_pacman_and_files(target_folder);
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-fulldev calamares-fix lutris protonup-qt hhd adjustor hhd-ui sddm";
+        std::string pacstrap_cmd = "sudo pacstrap /mnt claudemods-desktop-fulldev calamares-fix lutris protonup-qt hhd adjustor hhd-ui sddm";
         if (!extra_packages.empty()) { pacstrap_cmd += " " + extra_packages; }
         execute_command(pacstrap_cmd);
         if (!verify_pacstrap_success(target_folder)) return;
         setup_boot_directory(target_folder);
         mount_system_dirs();
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable sddm\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable NetworkManager\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable sddm\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable NetworkManager\"");
         apply_timezone_keyboard_settings();
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub " + target_folder + "/etc/default/grub");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub.cfg " + target_folder + "/boot/grub/grub.cfg");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos " + target_folder + "/usr/share/grub/themes");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation " + target_folder + "/usr/share/plymouth/themes");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.sh " + target_folder + "/usr/local/bin/termfull.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"chmod +x /usr/local/bin/termfull.sh\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.service " + target_folder + "/etc/systemd/system/termfull.service");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable termfull.service >/dev/null 2>&1\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub /mnt/etc/default/grub");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub.cfg /mnt/boot/grub/grub.cfg");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos /mnt/usr/share/grub/themes");
+        execute_command("sudo chroot /mnt /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation /mnt/usr/share/plymouth/themes");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.sh /mnt/usr/local/bin/termfull.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"chmod +x /usr/local/bin/termfull.sh\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.service /mnt/etc/systemd/system/termfull.service");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable termfull.service >/dev/null 2>&1\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
         create_user();
         create_user_home_structure(target_folder);
-        execute_command("cd " + target_folder);
+        execute_command("cd /mnt");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-full-v1.01.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-v1.01.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-v1.01.zip -d " + target_folder + "/opt");
-        execute_command("sudo unzip -o " + currentDir + "/spitfire-full-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
-        execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
-        execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt/tweaksspitfire.sh");
-        execute_command("sudo chmod +x " + target_folder + "/opt/tweaksspitfire.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/konsolerc");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin " + target_folder + "/usr/share/sddm/themes/SpitFireLogin");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-v1.01.zip -d /mnt/opt");
+        execute_command("sudo unzip -o " + currentDir + "/spitfire-full-v1.01.zip -d /mnt/home/" + new_username + "/");
+        execute_command("sudo mkdir -p /mnt/etc/sddm.conf.d");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf /mnt/etc/sddm.conf.d/kde_settings.conf");
+        execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh /mnt/opt/tweaksspitfire.sh");
+        execute_command("sudo chmod +x /mnt/opt/tweaksspitfire.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/konsolerc /mnt/home/" + new_username + "/.config/konsolerc");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin /mnt/usr/share/sddm/themes/SpitFireLogin");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
         execute_command("sudo rm -rf " + currentDir + "/Arch-Systemtool-v1.01.zip");
         execute_command("sudo rm -rf " + currentDir + "/spitfire-full-v1.01.zip");
-        execute_command("sudo rm -rf " + target_folder + "/opt/tweaksspitfire.sh");
+        execute_command("sudo rm -rf /mnt/opt/tweaksspitfire.sh");
         fix_user_places_xbel(target_folder);
         install_calamares(target_folder);
         unmount_system_dirs();
-        std::cout << COLOR_GREEN << "Spitfire CKGE Full Dev installation completed in: " << target_folder << COLOR_RESET << std::endl;
-        std::cout << COLOR_YELLOW << "\n╔══════════════════════════════════════════════════════════════╗" << std::endl;
-        std::cout << "║  READY TO INSTALL TO PHYSICAL DRIVE                         ║" << std::endl;
-        std::cout << "╠══════════════════════════════════════════════════════════════╣" << std::endl;
-        std::cout << "║ Target Drive: " << std::left << std::setw(46) << target_drive << "║" << std::endl;
-        std::cout << "║ Filesystem:   " << std::left << std::setw(46) << filesystem_type << "║" << std::endl;
-        std::cout << "╚══════════════════════════════════════════════════════════════╝" << std::endl;
-        std::cout << COLOR_RESET << std::endl;
-        std::cout << COLOR_RED << "WARNING: ALL DATA ON " << target_drive << " WILL BE PERMANENTLY ERASED!" << COLOR_RESET << std::endl;
-        std::cout << COLOR_CYAN << "Type 'YES' to confirm: " << COLOR_RESET;
-        std::string confirm;
-        std::getline(std::cin, confirm);
-        if (confirm == "YES") {
-            prepare_target_partitions();
-            if (filesystem_type == "btrfs") { setup_btrfs_subvolumes(); } else { setup_ext4_filesystem(); }
-            copy_system_to_drive();
-            install_grub();
-            std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
-            post_install_menu();
-        } else {
-            std::cout << COLOR_CYAN << "Drive installation skipped. System built in: " << target_folder << COLOR_RESET << std::endl;
-        }
+        install_grub();
+        std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
+        post_install_menu();
     }
 
     void install_spitfire_ckge_black_full() {
-        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Black Full..." << COLOR_RESET << std::endl;
-        std::string target_folder = getTargetFolder();
+        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Black Full to " << target_drive << "..." << COLOR_RESET << std::endl;
+        std::string target_folder = "/mnt";
         std::string currentDir = getCurrentDir();
         if (!setup_target_directory(target_folder)) return;
         setup_pacman_and_files(target_folder);
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-full calamares-fix lutris protonup-qt hhd adjustor hhd-ui obs-studio sddm";
+        std::string pacstrap_cmd = "sudo pacstrap /mnt claudemods-desktop-full calamares-fix lutris protonup-qt hhd adjustor hhd-ui obs-studio sddm";
         if (!extra_packages.empty()) { pacstrap_cmd += " " + extra_packages; }
         execute_command(pacstrap_cmd);
         if (!verify_pacstrap_success(target_folder)) return;
         setup_boot_directory(target_folder);
         mount_system_dirs();
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable sddm\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable NetworkManager\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable sddm\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable NetworkManager\"");
         apply_timezone_keyboard_settings();
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub " + target_folder + "/etc/default/grub");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub.cfg " + target_folder + "/boot/grub/grub.cfg");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos " + target_folder + "/usr/share/grub/themes");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation " + target_folder + "/usr/share/plymouth/themes");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.sh " + target_folder + "/usr/local/bin/termfull.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"chmod +x /usr/local/bin/termfull.sh\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.service " + target_folder + "/etc/systemd/system/termfull.service");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable termfull.service >/dev/null 2>&1\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub /mnt/etc/default/grub");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub.cfg /mnt/boot/grub/grub.cfg");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos /mnt/usr/share/grub/themes");
+        execute_command("sudo chroot /mnt /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation /mnt/usr/share/plymouth/themes");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.sh /mnt/usr/local/bin/termfull.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"chmod +x /usr/local/bin/termfull.sh\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.service /mnt/etc/systemd/system/termfull.service");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable termfull.service >/dev/null 2>&1\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
         create_user();
         create_user_home_structure(target_folder);
-        execute_command("cd " + target_folder);
+        execute_command("cd /mnt");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-full-black-v1.01.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-CKGBE-v1.01.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-CKGBE-v1.01.zip -d " + target_folder + "/opt");
-        execute_command("sudo unzip -o " + currentDir + "/spitfire-full-black-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
-        execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
-        execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt/tweaksspitfire.sh");
-        execute_command("sudo chmod +x " + target_folder + "/opt/tweaksspitfire.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/konsolerc");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin " + target_folder + "/usr/share/sddm/themes/SpitFireLogin");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-CKGBE-v1.01.zip -d /mnt/opt");
+        execute_command("sudo unzip -o " + currentDir + "/spitfire-full-black-v1.01.zip -d /mnt/home/" + new_username + "/");
+        execute_command("sudo mkdir -p /mnt/etc/sddm.conf.d");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf /mnt/etc/sddm.conf.d/kde_settings.conf");
+        execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh /mnt/opt/tweaksspitfire.sh");
+        execute_command("sudo chmod +x /mnt/opt/tweaksspitfire.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/konsolerc /mnt/home/" + new_username + "/.config/konsolerc");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin /mnt/usr/share/sddm/themes/SpitFireLogin");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
         execute_command("sudo rm -rf " + currentDir + "/Arch-Systemtool-CKGBE-v1.01.zip");
         execute_command("sudo rm -rf " + currentDir + "/spitfire-full-black-v1.01.zip");
-        execute_command("sudo rm -rf " + target_folder + "/opt/tweaksspitfire.sh");
+        execute_command("sudo rm -rf /mnt/opt/tweaksspitfire.sh");
         fix_user_places_xbel(target_folder);
         install_calamares(target_folder);
         unmount_system_dirs();
-        std::cout << COLOR_GREEN << "Spitfire CKGE Black Full installation completed in: " << target_folder << COLOR_RESET << std::endl;
-        std::cout << COLOR_YELLOW << "\n╔══════════════════════════════════════════════════════════════╗" << std::endl;
-        std::cout << "║  READY TO INSTALL TO PHYSICAL DRIVE                         ║" << std::endl;
-        std::cout << "╠══════════════════════════════════════════════════════════════╣" << std::endl;
-        std::cout << "║ Target Drive: " << std::left << std::setw(46) << target_drive << "║" << std::endl;
-        std::cout << "║ Filesystem:   " << std::left << std::setw(46) << filesystem_type << "║" << std::endl;
-        std::cout << "╚══════════════════════════════════════════════════════════════╝" << std::endl;
-        std::cout << COLOR_RESET << std::endl;
-        std::cout << COLOR_RED << "WARNING: ALL DATA ON " << target_drive << " WILL BE PERMANENTLY ERASED!" << COLOR_RESET << std::endl;
-        std::cout << COLOR_CYAN << "Type 'YES' to confirm: " << COLOR_RESET;
-        std::string confirm;
-        std::getline(std::cin, confirm);
-        if (confirm == "YES") {
-            prepare_target_partitions();
-            if (filesystem_type == "btrfs") { setup_btrfs_subvolumes(); } else { setup_ext4_filesystem(); }
-            copy_system_to_drive();
-            install_grub();
-            std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
-            post_install_menu();
-        } else {
-            std::cout << COLOR_CYAN << "Drive installation skipped. System built in: " << target_folder << COLOR_RESET << std::endl;
-        }
+        install_grub();
+        std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
+        post_install_menu();
     }
 
     void install_spitfire_ckge_black_full_dev() {
-        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Black Full Dev..." << COLOR_RESET << std::endl;
-        std::string target_folder = getTargetFolder();
+        std::cout << COLOR_ORANGE << "Installing Spitfire CKGE Black Full Dev to " << target_drive << "..." << COLOR_RESET << std::endl;
+        std::string target_folder = "/mnt";
         std::string currentDir = getCurrentDir();
         if (!setup_target_directory(target_folder)) return;
         setup_pacman_and_files(target_folder);
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-fulldev calamares-fix lutris protonup-qt hhd adjustor hhd-ui sddm";
+        std::string pacstrap_cmd = "sudo pacstrap /mnt claudemods-desktop-fulldev calamares-fix lutris protonup-qt hhd adjustor hhd-ui sddm";
         if (!extra_packages.empty()) { pacstrap_cmd += " " + extra_packages; }
         execute_command(pacstrap_cmd);
         if (!verify_pacstrap_success(target_folder)) return;
         setup_boot_directory(target_folder);
         mount_system_dirs();
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable sddm\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable NetworkManager\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable sddm\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable NetworkManager\"");
         apply_timezone_keyboard_settings();
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub " + target_folder + "/etc/default/grub");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub.cfg " + target_folder + "/boot/grub/grub.cfg");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos " + target_folder + "/usr/share/grub/themes");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation " + target_folder + "/usr/share/plymouth/themes");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.sh " + target_folder + "/usr/local/bin/termfull.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"chmod +x /usr/local/bin/termfull.sh\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.service " + target_folder + "/etc/systemd/system/termfull.service");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable termfull.service >/dev/null 2>&1\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub /mnt/etc/default/grub");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/grub.cfg /mnt/boot/grub/grub.cfg");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos /mnt/usr/share/grub/themes");
+        execute_command("sudo chroot /mnt /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation /mnt/usr/share/plymouth/themes");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.sh /mnt/usr/local/bin/termfull.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"chmod +x /usr/local/bin/termfull.sh\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/termfull.service /mnt/etc/systemd/system/termfull.service");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable termfull.service >/dev/null 2>&1\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
         create_user();
         create_user_home_structure(target_folder);
-        execute_command("cd " + target_folder);
+        execute_command("cd /mnt");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/spitfire-full-black-v1.01.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-CKGBE-v1.01.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-CKGBE-v1.01.zip -d " + target_folder + "/opt");
-        execute_command("sudo unzip -o " + currentDir + "/spitfire-full-black-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
-        execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
-        execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh " + target_folder + "/opt/tweaksspitfire.sh");
-        execute_command("sudo chmod +x " + target_folder + "/opt/tweaksspitfire.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/konsolerc");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin " + target_folder + "/usr/share/sddm/themes/SpitFireLogin");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-CKGBE-v1.01.zip -d /mnt/opt");
+        execute_command("sudo unzip -o " + currentDir + "/spitfire-full-black-v1.01.zip -d /mnt/home/" + new_username + "/");
+        execute_command("sudo mkdir -p /mnt/etc/sddm.conf.d");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/kde_settings.conf /mnt/etc/sddm.conf.d/kde_settings.conf");
+        execute_command("sudo cp " + currentDir + "/needed-files/spitfire-ckge-minimal/tweaksspitfire.sh /mnt/opt/tweaksspitfire.sh");
+        execute_command("sudo chmod +x /mnt/opt/tweaksspitfire.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksspitfire.sh " + new_username + "'\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/konsolerc /mnt/home/" + new_username + "/.config/konsolerc");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/SpitFireLogin /mnt/usr/share/sddm/themes/SpitFireLogin");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.colorscheme /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/claudemods-cyan.profile /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
         execute_command("sudo rm -rf " + currentDir + "/Arch-Systemtool-CKGBE-v1.01.zip");
         execute_command("sudo rm -rf " + currentDir + "/spitfire-full-black-v1.01.zip");
-        execute_command("sudo rm -rf " + target_folder + "/opt/tweaksspitfire.sh");
+        execute_command("sudo rm -rf /mnt/opt/tweaksspitfire.sh");
         fix_user_places_xbel(target_folder);
         install_calamares(target_folder);
         unmount_system_dirs();
-        std::cout << COLOR_GREEN << "Spitfire CKGE Black Full Dev installation completed in: " << target_folder << COLOR_RESET << std::endl;
-        std::cout << COLOR_YELLOW << "\n╔══════════════════════════════════════════════════════════════╗" << std::endl;
-        std::cout << "║  READY TO INSTALL TO PHYSICAL DRIVE                         ║" << std::endl;
-        std::cout << "╠══════════════════════════════════════════════════════════════╣" << std::endl;
-        std::cout << "║ Target Drive: " << std::left << std::setw(46) << target_drive << "║" << std::endl;
-        std::cout << "║ Filesystem:   " << std::left << std::setw(46) << filesystem_type << "║" << std::endl;
-        std::cout << "╚══════════════════════════════════════════════════════════════╝" << std::endl;
-        std::cout << COLOR_RESET << std::endl;
-        std::cout << COLOR_RED << "WARNING: ALL DATA ON " << target_drive << " WILL BE PERMANENTLY ERASED!" << COLOR_RESET << std::endl;
-        std::cout << COLOR_CYAN << "Type 'YES' to confirm: " << COLOR_RESET;
-        std::string confirm;
-        std::getline(std::cin, confirm);
-        if (confirm == "YES") {
-            prepare_target_partitions();
-            if (filesystem_type == "btrfs") { setup_btrfs_subvolumes(); } else { setup_ext4_filesystem(); }
-            copy_system_to_drive();
-            install_grub();
-            std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
-            post_install_menu();
-        } else {
-            std::cout << COLOR_CYAN << "Drive installation skipped. System built in: " << target_folder << COLOR_RESET << std::endl;
-        }
+        install_grub();
+        std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
+        post_install_menu();
     }
 
     void install_apex_ckge_minimal() {
-        std::cout << COLOR_PURPLE << "Installing Apex CKGE Minimal..." << COLOR_RESET << std::endl;
-        std::string target_folder = getTargetFolder();
+        std::cout << COLOR_PURPLE << "Installing Apex CKGE Minimal to " << target_drive << "..." << COLOR_RESET << std::endl;
+        std::string target_folder = "/mnt";
         std::string currentDir = getCurrentDir();
         if (!setup_target_directory(target_folder)) return;
         setup_pacman_and_files(target_folder);
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop calamares-fix protonup-qt hhd adjustor hhd-ui sddm";
+        std::string pacstrap_cmd = "sudo pacstrap /mnt claudemods-desktop calamares-fix protonup-qt hhd adjustor hhd-ui sddm";
         if (!extra_packages.empty()) { pacstrap_cmd += " " + extra_packages; }
         execute_command(pacstrap_cmd);
         if (!verify_pacstrap_success(target_folder)) return;
         setup_boot_directory(target_folder);
         mount_system_dirs();
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable sddm\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable NetworkManager\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable sddm\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable NetworkManager\"");
         apply_timezone_keyboard_settings();
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/grub " + target_folder + "/etc/default/grub");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/grub.cfg " + target_folder + "/boot/grub/grub.cfg");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/cachyos " + target_folder + "/usr/share/grub/themes");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation " + target_folder + "/usr/share/plymouth/themes");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/term.sh " + target_folder + "/usr/local/bin/term.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"chmod +x /usr/local/bin/term.sh\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/term.service " + target_folder + "/etc/systemd/system/term.service");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable term.service >/dev/null 2>&1\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/grub /mnt/etc/default/grub");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/grub.cfg /mnt/boot/grub/grub.cfg");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/cachyos /mnt/usr/share/grub/themes");
+        execute_command("sudo chroot /mnt /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation /mnt/usr/share/plymouth/themes");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/term.sh /mnt/usr/local/bin/term.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"chmod +x /usr/local/bin/term.sh\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/term.service /mnt/etc/systemd/system/term.service");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable term.service >/dev/null 2>&1\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
         create_user();
         create_user_home_structure(target_folder);
-        execute_command("cd " + target_folder);
+        execute_command("cd /mnt");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/apex-minimal-v1.01.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-minimal.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-minimal.zip -d " + target_folder + "/opt");
-        execute_command("sudo unzip -o " + currentDir + "/apex-minimal-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
-        execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
-        execute_command("sudo cp " + currentDir + "/needed-files/apex-ckge-minimal/tweaksapex.sh " + target_folder + "/opt/tweaksapex.sh");
-        execute_command("sudo chmod +x " + target_folder + "/opt/tweaksapex.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksapex.sh " + new_username + "'\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/konsolerc");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/ApexLogin2 " + target_folder + "/usr/share/sddm/themes/ApexLogin2");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-minimal.zip -d /mnt/opt");
+        execute_command("sudo unzip -o " + currentDir + "/apex-minimal-v1.01.zip -d /mnt/home/" + new_username + "/");
+        execute_command("sudo mkdir -p /mnt/etc/sddm.conf.d");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/kde_settings.conf /mnt/etc/sddm.conf.d/kde_settings.conf");
+        execute_command("sudo cp " + currentDir + "/needed-files/apex-ckge-minimal/tweaksapex.sh /mnt/opt/tweaksapex.sh");
+        execute_command("sudo chmod +x /mnt/opt/tweaksapex.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksapex.sh " + new_username + "'\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/konsolerc /mnt/home/" + new_username + "/.config/konsolerc");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/ApexLogin2 /mnt/usr/share/sddm/themes/ApexLogin2");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.colorscheme /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.profile /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
         execute_command("sudo rm -rf " + currentDir + "/Arch-Systemtool-minimal.zip");
         execute_command("sudo rm -rf " + currentDir + "/apex-minimal-v1.01.zip");
-        execute_command("sudo rm -rf " + target_folder + "/opt/tweaksapex.sh");
+        execute_command("sudo rm -rf /mnt/opt/tweaksapex.sh");
         fix_user_places_xbel_apex(target_folder);
         install_calamares(target_folder);
         unmount_system_dirs();
-        std::cout << COLOR_GREEN << "Apex CKGE Minimal installation completed in: " << target_folder << COLOR_RESET << std::endl;
-        std::cout << COLOR_YELLOW << "\n╔══════════════════════════════════════════════════════════════╗" << std::endl;
-        std::cout << "║  READY TO INSTALL TO PHYSICAL DRIVE                         ║" << std::endl;
-        std::cout << "╠══════════════════════════════════════════════════════════════╣" << std::endl;
-        std::cout << "║ Target Drive: " << std::left << std::setw(46) << target_drive << "║" << std::endl;
-        std::cout << "║ Filesystem:   " << std::left << std::setw(46) << filesystem_type << "║" << std::endl;
-        std::cout << "╚══════════════════════════════════════════════════════════════╝" << std::endl;
-        std::cout << COLOR_RESET << std::endl;
-        std::cout << COLOR_RED << "WARNING: ALL DATA ON " << target_drive << " WILL BE PERMANENTLY ERASED!" << COLOR_RESET << std::endl;
-        std::cout << COLOR_CYAN << "Type 'YES' to confirm: " << COLOR_RESET;
-        std::string confirm;
-        std::getline(std::cin, confirm);
-        if (confirm == "YES") {
-            prepare_target_partitions();
-            if (filesystem_type == "btrfs") { setup_btrfs_subvolumes(); } else { setup_ext4_filesystem(); }
-            copy_system_to_drive();
-            install_grub();
-            std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
-            post_install_menu();
-        } else {
-            std::cout << COLOR_CYAN << "Drive installation skipped. System built in: " << target_folder << COLOR_RESET << std::endl;
-        }
+        install_grub();
+        std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
+        post_install_menu();
     }
 
     void install_apex_ckge_minimal_dev() {
-        std::cout << COLOR_PURPLE << "Installing Apex CKGE Minimal Dev..." << COLOR_RESET << std::endl;
-        std::string target_folder = getTargetFolder();
+        std::cout << COLOR_PURPLE << "Installing Apex CKGE Minimal Dev to " << target_drive << "..." << COLOR_RESET << std::endl;
+        std::string target_folder = "/mnt";
         std::string currentDir = getCurrentDir();
         if (!setup_target_directory(target_folder)) return;
         setup_pacman_and_files(target_folder);
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-dev calamares-fix lutris protonup-qt hhd adjustor hhd-ui sddm piper";
+        std::string pacstrap_cmd = "sudo pacstrap /mnt claudemods-desktop-dev calamares-fix lutris protonup-qt hhd adjustor hhd-ui sddm piper";
         if (!extra_packages.empty()) { pacstrap_cmd += " " + extra_packages; }
         execute_command(pacstrap_cmd);
         if (!verify_pacstrap_success(target_folder)) return;
         setup_boot_directory(target_folder);
         mount_system_dirs();
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable sddm\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable NetworkManager\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable sddm\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable NetworkManager\"");
         apply_timezone_keyboard_settings();
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/grub " + target_folder + "/etc/default/grub");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/grub.cfg " + target_folder + "/boot/grub/grub.cfg");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/cachyos " + target_folder + "/usr/share/grub/themes");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation " + target_folder + "/usr/share/plymouth/themes");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/term.sh " + target_folder + "/usr/local/bin/term.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"chmod +x /usr/local/bin/term.sh\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/term.service " + target_folder + "/etc/systemd/system/term.service");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable term.service >/dev/null 2>&1\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/grub /mnt/etc/default/grub");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/grub.cfg /mnt/boot/grub/grub.cfg");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/cachyos /mnt/usr/share/grub/themes");
+        execute_command("sudo chroot /mnt /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation /mnt/usr/share/plymouth/themes");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/term.sh /mnt/usr/local/bin/term.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"chmod +x /usr/local/bin/term.sh\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/term.service /mnt/etc/systemd/system/term.service");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable term.service >/dev/null 2>&1\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
         create_user();
         create_user_home_structure(target_folder);
-        execute_command("cd " + target_folder);
+        execute_command("cd /mnt");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/apex-minimal-v1.01.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-minimal.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-minimal.zip -d " + target_folder + "/opt");
-        execute_command("sudo unzip -o " + currentDir + "/apex-minimal-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
-        execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
-        execute_command("sudo cp " + currentDir + "/needed-files/apex-ckge-minimal/tweaksapex.sh " + target_folder + "/opt/tweaksapex.sh");
-        execute_command("sudo chmod +x " + target_folder + "/opt/tweaksapex.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksapex.sh " + new_username + "'\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/konsolerc");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/ApexLogin2 " + target_folder + "/usr/share/sddm/themes/ApexLogin2");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-minimal.zip -d /mnt/opt");
+        execute_command("sudo unzip -o " + currentDir + "/apex-minimal-v1.01.zip -d /mnt/home/" + new_username + "/");
+        execute_command("sudo mkdir -p /mnt/etc/sddm.conf.d");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/kde_settings.conf /mnt/etc/sddm.conf.d/kde_settings.conf");
+        execute_command("sudo cp " + currentDir + "/needed-files/apex-ckge-minimal/tweaksapex.sh /mnt/opt/tweaksapex.sh");
+        execute_command("sudo chmod +x /mnt/opt/tweaksapex.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksapex.sh " + new_username + "'\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/konsolerc /mnt/home/" + new_username + "/.config/konsolerc");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/ApexLogin2 /mnt/usr/share/sddm/themes/ApexLogin2");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.colorscheme /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.profile /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
         execute_command("sudo rm -rf " + currentDir + "/Arch-Systemtool-minimal.zip");
         execute_command("sudo rm -rf " + currentDir + "/apex-minimal-v1.01.zip");
-        execute_command("sudo rm -rf " + target_folder + "/opt/tweaksapex.sh");
+        execute_command("sudo rm -rf /mnt/opt/tweaksapex.sh");
         fix_user_places_xbel_apex(target_folder);
         install_calamares(target_folder);
         unmount_system_dirs();
-        std::cout << COLOR_GREEN << "Apex CKGE Minimal Dev installation completed in: " << target_folder << COLOR_RESET << std::endl;
-        std::cout << COLOR_YELLOW << "\n╔══════════════════════════════════════════════════════════════╗" << std::endl;
-        std::cout << "║  READY TO INSTALL TO PHYSICAL DRIVE                         ║" << std::endl;
-        std::cout << "╠══════════════════════════════════════════════════════════════╣" << std::endl;
-        std::cout << "║ Target Drive: " << std::left << std::setw(46) << target_drive << "║" << std::endl;
-        std::cout << "║ Filesystem:   " << std::left << std::setw(46) << filesystem_type << "║" << std::endl;
-        std::cout << "╚══════════════════════════════════════════════════════════════╝" << std::endl;
-        std::cout << COLOR_RESET << std::endl;
-        std::cout << COLOR_RED << "WARNING: ALL DATA ON " << target_drive << " WILL BE PERMANENTLY ERASED!" << COLOR_RESET << std::endl;
-        std::cout << COLOR_CYAN << "Type 'YES' to confirm: " << COLOR_RESET;
-        std::string confirm;
-        std::getline(std::cin, confirm);
-        if (confirm == "YES") {
-            prepare_target_partitions();
-            if (filesystem_type == "btrfs") { setup_btrfs_subvolumes(); } else { setup_ext4_filesystem(); }
-            copy_system_to_drive();
-            install_grub();
-            std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
-            post_install_menu();
-        } else {
-            std::cout << COLOR_CYAN << "Drive installation skipped. System built in: " << target_folder << COLOR_RESET << std::endl;
-        }
+        install_grub();
+        std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
+        post_install_menu();
     }
 
     void install_apex_ckge_full() {
-        std::cout << COLOR_PURPLE << "Installing Apex CKGE Full..." << COLOR_RESET << std::endl;
-        std::string target_folder = getTargetFolder();
+        std::cout << COLOR_PURPLE << "Installing Apex CKGE Full to " << target_drive << "..." << COLOR_RESET << std::endl;
+        std::string target_folder = "/mnt";
         std::string currentDir = getCurrentDir();
         if (!setup_target_directory(target_folder)) return;
         setup_pacman_and_files(target_folder);
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-full calamares-fix lutris protonup-qt hhd adjustor hhd-ui obs-studio sddm";
+        std::string pacstrap_cmd = "sudo pacstrap /mnt claudemods-desktop-full calamares-fix lutris protonup-qt hhd adjustor hhd-ui obs-studio sddm";
         if (!extra_packages.empty()) { pacstrap_cmd += " " + extra_packages; }
         execute_command(pacstrap_cmd);
         if (!verify_pacstrap_success(target_folder)) return;
         setup_boot_directory(target_folder);
         mount_system_dirs();
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable sddm\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable NetworkManager\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable sddm\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable NetworkManager\"");
         apply_timezone_keyboard_settings();
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/grub " + target_folder + "/etc/default/grub");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/grub.cfg " + target_folder + "/boot/grub/grub.cfg");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/cachyos " + target_folder + "/usr/share/grub/themes");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation " + target_folder + "/usr/share/plymouth/themes");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/termfull.sh " + target_folder + "/usr/local/bin/termfull.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"chmod +x /usr/local/bin/termfull.sh\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/termfull.service " + target_folder + "/etc/systemd/system/termfull.service");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable termfull.service >/dev/null 2>&1\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/grub /mnt/etc/default/grub");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/grub.cfg /mnt/boot/grub/grub.cfg");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/cachyos /mnt/usr/share/grub/themes");
+        execute_command("sudo chroot /mnt /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation /mnt/usr/share/plymouth/themes");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/termfull.sh /mnt/usr/local/bin/termfull.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"chmod +x /usr/local/bin/termfull.sh\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/termfull.service /mnt/etc/systemd/system/termfull.service");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable termfull.service >/dev/null 2>&1\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
         create_user();
         create_user_home_structure(target_folder);
-        execute_command("cd " + target_folder);
+        execute_command("cd /mnt");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/apex-full-v1.01.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-v1.01.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-v1.01.zip -d " + target_folder + "/opt");
-        execute_command("sudo unzip -o " + currentDir + "/apex-full-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
-        execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
-        execute_command("sudo cp " + currentDir + "/needed-files/apex-ckge-minimal/tweaksapex.sh " + target_folder + "/opt/tweaksapex.sh");
-        execute_command("sudo chmod +x " + target_folder + "/opt/tweaksapex.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksapex.sh " + new_username + "'\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/konsolerc");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/ApexLogin2 " + target_folder + "/usr/share/sddm/themes/ApexLogin2");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-v1.01.zip -d /mnt/opt");
+        execute_command("sudo unzip -o " + currentDir + "/apex-full-v1.01.zip -d /mnt/home/" + new_username + "/");
+        execute_command("sudo mkdir -p /mnt/etc/sddm.conf.d");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/kde_settings.conf /mnt/etc/sddm.conf.d/kde_settings.conf");
+        execute_command("sudo cp " + currentDir + "/needed-files/apex-ckge-minimal/tweaksapex.sh /mnt/opt/tweaksapex.sh");
+        execute_command("sudo chmod +x /mnt/opt/tweaksapex.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksapex.sh " + new_username + "'\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/konsolerc /mnt/home/" + new_username + "/.config/konsolerc");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/ApexLogin2 /mnt/usr/share/sddm/themes/ApexLogin2");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.colorscheme /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.profile /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
         execute_command("sudo rm -rf " + currentDir + "/Arch-Systemtool-v1.01.zip");
         execute_command("sudo rm -rf " + currentDir + "/apex-full-v1.01.zip");
-        execute_command("sudo rm -rf " + target_folder + "/opt/tweaksapex.sh");
+        execute_command("sudo rm -rf /mnt/opt/tweaksapex.sh");
         fix_user_places_xbel_apex(target_folder);
         install_calamares(target_folder);
         unmount_system_dirs();
-        std::cout << COLOR_GREEN << "Apex CKGE Full installation completed in: " << target_folder << COLOR_RESET << std::endl;
-        std::cout << COLOR_YELLOW << "\n╔══════════════════════════════════════════════════════════════╗" << std::endl;
-        std::cout << "║  READY TO INSTALL TO PHYSICAL DRIVE                         ║" << std::endl;
-        std::cout << "╠══════════════════════════════════════════════════════════════╣" << std::endl;
-        std::cout << "║ Target Drive: " << std::left << std::setw(46) << target_drive << "║" << std::endl;
-        std::cout << "║ Filesystem:   " << std::left << std::setw(46) << filesystem_type << "║" << std::endl;
-        std::cout << "╚══════════════════════════════════════════════════════════════╝" << std::endl;
-        std::cout << COLOR_RESET << std::endl;
-        std::cout << COLOR_RED << "WARNING: ALL DATA ON " << target_drive << " WILL BE PERMANENTLY ERASED!" << COLOR_RESET << std::endl;
-        std::cout << COLOR_CYAN << "Type 'YES' to confirm: " << COLOR_RESET;
-        std::string confirm;
-        std::getline(std::cin, confirm);
-        if (confirm == "YES") {
-            prepare_target_partitions();
-            if (filesystem_type == "btrfs") { setup_btrfs_subvolumes(); } else { setup_ext4_filesystem(); }
-            copy_system_to_drive();
-            install_grub();
-            std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
-            post_install_menu();
-        } else {
-            std::cout << COLOR_CYAN << "Drive installation skipped. System built in: " << target_folder << COLOR_RESET << std::endl;
-        }
+        install_grub();
+        std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
+        post_install_menu();
     }
 
     void install_apex_ckge_full_dev() {
-        std::cout << COLOR_PURPLE << "Installing Apex CKGE Full Dev..." << COLOR_RESET << std::endl;
-        std::string target_folder = getTargetFolder();
+        std::cout << COLOR_PURPLE << "Installing Apex CKGE Full Dev to " << target_drive << "..." << COLOR_RESET << std::endl;
+        std::string target_folder = "/mnt";
         std::string currentDir = getCurrentDir();
         if (!setup_target_directory(target_folder)) return;
         setup_pacman_and_files(target_folder);
-        std::string pacstrap_cmd = "sudo pacstrap " + target_folder + " claudemods-desktop-fulldev calamares-fix lutris protonup-qt hhd adjustor hhd-ui sddm";
+        std::string pacstrap_cmd = "sudo pacstrap /mnt claudemods-desktop-fulldev calamares-fix lutris protonup-qt hhd adjustor hhd-ui sddm";
         if (!extra_packages.empty()) { pacstrap_cmd += " " + extra_packages; }
         execute_command(pacstrap_cmd);
         if (!verify_pacstrap_success(target_folder)) return;
         setup_boot_directory(target_folder);
         mount_system_dirs();
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable sddm\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable NetworkManager\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable sddm\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable NetworkManager\"");
         apply_timezone_keyboard_settings();
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/grub " + target_folder + "/etc/default/grub");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/grub.cfg " + target_folder + "/boot/grub/grub.cfg");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/cachyos " + target_folder + "/usr/share/grub/themes");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation " + target_folder + "/usr/share/plymouth/themes");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/termfull.sh " + target_folder + "/usr/local/bin/termfull.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"chmod +x /usr/local/bin/termfull.sh\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/termfull.service " + target_folder + "/etc/systemd/system/termfull.service");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"systemctl enable termfull.service >/dev/null 2>&1\"");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/grub /mnt/etc/default/grub");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/grub.cfg /mnt/boot/grub/grub.cfg");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/cachyos /mnt/usr/share/grub/themes");
+        execute_command("sudo chroot /mnt /bin/bash -c \"grub-mkconfig -o /boot/grub/grub.cfg\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/spitfire-ckge-minimal/cachyos-bootanimation /mnt/usr/share/plymouth/themes");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/termfull.sh /mnt/usr/local/bin/termfull.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"chmod +x /usr/local/bin/termfull.sh\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/termfull.service /mnt/etc/systemd/system/termfull.service");
+        execute_command("sudo chroot /mnt /bin/bash -c \"systemctl enable termfull.service >/dev/null 2>&1\"");
+        execute_command("sudo chroot /mnt /bin/bash -c \"plymouth-set-default-theme -R cachyos-bootanimation\"");
         create_user();
         create_user_home_structure(target_folder);
-        execute_command("cd " + target_folder);
+        execute_command("cd /mnt");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/claudemods-desktop/apex-full-v1.01.zip");
         execute_command("sudo wget --show-progress --no-check-certificate --continue --tries=10 --timeout=30 --waitretry=5 https://claudemodsreloaded.co.uk/arch-systemtool/Arch-Systemtool-v1.01.zip");
-        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-v1.01.zip -d " + target_folder + "/opt");
-        execute_command("sudo unzip -o " + currentDir + "/apex-full-v1.01.zip -d " + target_folder + "/home/" + new_username + "/");
-        execute_command("sudo mkdir -p " + target_folder + "/etc/sddm.conf.d");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/kde_settings.conf " + target_folder + "/etc/sddm.conf.d/kde_settings.conf");
-        execute_command("sudo cp " + currentDir + "/needed-files/apex-ckge-minimal/tweaksapex.sh " + target_folder + "/opt/tweaksapex.sh");
-        execute_command("sudo chmod +x " + target_folder + "/opt/tweaksapex.sh");
-        execute_command("sudo chroot " + target_folder + " /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksapex.sh " + new_username + "'\"");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/konsolerc " + target_folder + "/home/" + new_username + "/.config/konsolerc");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/ApexLogin2 " + target_folder + "/usr/share/sddm/themes/ApexLogin2");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.colorscheme " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
-        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.profile " + target_folder + "/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
+        execute_command("sudo unzip -o " + currentDir + "/Arch-Systemtool-v1.01.zip -d /mnt/opt");
+        execute_command("sudo unzip -o " + currentDir + "/apex-full-v1.01.zip -d /mnt/home/" + new_username + "/");
+        execute_command("sudo mkdir -p /mnt/etc/sddm.conf.d");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/kde_settings.conf /mnt/etc/sddm.conf.d/kde_settings.conf");
+        execute_command("sudo cp " + currentDir + "/needed-files/apex-ckge-minimal/tweaksapex.sh /mnt/opt/tweaksapex.sh");
+        execute_command("sudo chmod +x /mnt/opt/tweaksapex.sh");
+        execute_command("sudo chroot /mnt /bin/bash -c \"su - " + new_username + " -c 'cd /opt && ./tweaksapex.sh " + new_username + "'\"");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/konsolerc /mnt/home/" + new_username + "/.config/konsolerc");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/ApexLogin2 /mnt/usr/share/sddm/themes/ApexLogin2");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.colorscheme /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.colorscheme");
+        execute_command("sudo cp -r " + currentDir + "/needed-files/apex-ckge-minimal/claudemods-cyan.profile /mnt/home/" + new_username + "/.local/share/konsole/claudemods-cyan.profile");
         execute_command("sudo rm -rf " + currentDir + "/Arch-Systemtool-v1.01.zip");
         execute_command("sudo rm -rf " + currentDir + "/apex-full-v1.01.zip");
-        execute_command("sudo rm -rf " + target_folder + "/opt/tweaksapex.sh");
+        execute_command("sudo rm -rf /mnt/opt/tweaksapex.sh");
         fix_user_places_xbel_apex(target_folder);
         install_calamares(target_folder);
         unmount_system_dirs();
-        std::cout << COLOR_GREEN << "Apex CKGE Full Dev installation completed in: " << target_folder << COLOR_RESET << std::endl;
-        std::cout << COLOR_YELLOW << "\n╔══════════════════════════════════════════════════════════════╗" << std::endl;
-        std::cout << "║  READY TO INSTALL TO PHYSICAL DRIVE                         ║" << std::endl;
-        std::cout << "╠══════════════════════════════════════════════════════════════╣" << std::endl;
-        std::cout << "║ Target Drive: " << std::left << std::setw(46) << target_drive << "║" << std::endl;
-        std::cout << "║ Filesystem:   " << std::left << std::setw(46) << filesystem_type << "║" << std::endl;
-        std::cout << "╚══════════════════════════════════════════════════════════════╝" << std::endl;
-        std::cout << COLOR_RESET << std::endl;
-        std::cout << COLOR_RED << "WARNING: ALL DATA ON " << target_drive << " WILL BE PERMANENTLY ERASED!" << COLOR_RESET << std::endl;
-        std::cout << COLOR_CYAN << "Type 'YES' to confirm: " << COLOR_RESET;
-        std::string confirm;
-        std::getline(std::cin, confirm);
-        if (confirm == "YES") {
-            prepare_target_partitions();
-            if (filesystem_type == "btrfs") { setup_btrfs_subvolumes(); } else { setup_ext4_filesystem(); }
-            copy_system_to_drive();
-            install_grub();
-            std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
-            post_install_menu();
-        } else {
-            std::cout << COLOR_CYAN << "Drive installation skipped. System built in: " << target_folder << COLOR_RESET << std::endl;
-        }
+        install_grub();
+        std::cout << COLOR_GREEN << "\nInstallation complete! System installed to " << target_drive << COLOR_RESET << std::endl;
+        post_install_menu();
     }
 
     void set_username() {
@@ -1526,11 +1341,11 @@ private:
 
     bool check_settings_configured() {
         if (target_drive.empty()) {
-            std::cout << COLOR_RED << "Error: Target drive not set!" << COLOR_RESET << std::endl;
+            std::cout << COLOR_RED << "Error: Target drive not set! Use 'Setup Bootloader and Drive' first." << COLOR_RESET << std::endl;
             return false;
         }
         if (filesystem_type.empty()) {
-            std::cout << COLOR_RED << "Error: Filesystem type not set!" << COLOR_RESET << std::endl;
+            std::cout << COLOR_RED << "Error: Filesystem type not set! Use 'Setup Bootloader and Drive' first." << COLOR_RESET << std::endl;
             return false;
         }
         if (new_username.empty()) {
@@ -1628,7 +1443,7 @@ private:
             selected = show_menu(main_options, "claudemods distribution iso creator", selected);
             switch(selected) {
                 case 0: setup_bootloader_and_drive(); break;
-                case 1: break; // Installation Path is fixed
+                case 1: break;
                 case 2: set_username(); break;
                 case 3: set_root_password(); break;
                 case 4: set_user_password(); break;
