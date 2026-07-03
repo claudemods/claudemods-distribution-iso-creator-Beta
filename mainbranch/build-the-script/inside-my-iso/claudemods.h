@@ -349,6 +349,7 @@ private:
         execute_command("sudo pacman -S archlinux-keyring");
         execute_command("sudo pacman-key --populate");
         execute_command("sudo pacman-key --init");
+        execute_command("sudo pacman -S arch-install-scripts");
     }
 
     bool verify_pacstrap_success(const std::string& target_folder) {
@@ -501,6 +502,7 @@ private:
         saveConfiguration();
         std::cout << std::endl;
         std::cout << COLOR_CYAN << "Press Enter to continue..." << COLOR_RESET;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cin.get();
     }
 
