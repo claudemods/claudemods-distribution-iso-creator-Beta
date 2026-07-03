@@ -346,6 +346,9 @@ private:
         execute_command("sudo cp -r " + currentDir + "/needed-files/pacman.conf " + target_folder + "/etc/pacman.conf");
         execute_command("sudo cp -r " + currentDir + "/needed-files/pacman.conf /etc/pacman.conf");
         execute_command("sudo pacman -Sy");
+        execute_command("sudo pacman -S archlinux-keyring");
+        execute_command("sudo pacman-key --populate");
+        execute_command("sudo pacman-key --init");
     }
 
     bool verify_pacstrap_success(const std::string& target_folder) {
