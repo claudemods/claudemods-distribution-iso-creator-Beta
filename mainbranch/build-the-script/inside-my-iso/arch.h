@@ -397,9 +397,6 @@ private:
             std::cout << COLOR_RED << "WARNING: ALL DATA ON " << target_drive << " WILL BE DESTROYED!" << COLOR_RESET << std::endl;
         }
         saveConfiguration();
-        std::cout << std::endl;
-        std::cout << COLOR_CYAN << "Press Enter to continue..." << COLOR_RESET;
-        std::cin.get();
     }
 
     void prepare_target_partitions() {
