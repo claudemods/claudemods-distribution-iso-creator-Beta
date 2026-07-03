@@ -1,3 +1,6 @@
+## changelog claudemods distributions v1.01 03-07-2026 (01:34)
+- claudemods dev option package lists updated (verified working)
+- im now going to build i script for use in a custom iso to setup and install the options provided
 ## changelog claudemods distributions v1.01 03-07-2026 (00:20)
 - claudemods dev option package lists updated (all installs fine)
 
