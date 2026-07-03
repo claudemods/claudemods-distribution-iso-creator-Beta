@@ -2,9 +2,7 @@
 #include <string>
 #include <limits>
 #include "claudemods.h"
-#include "claudemodshandheld.h"  // Added for handheld support
 #include "cachyos.h"
-#include "cachyoshandheld.h"     // Added for handheld support
 #include "arch.h"
 
 // Function to set text color
@@ -30,7 +28,7 @@ void displayHeader() {
 
     // Custom text in cyan below ASCII
     setColor("\033[38;2;0;255;255m");
-    std::cout << "claudemods distribution iso creator v1.01 20-06-2026" << std::endl;
+    std::cout << "claudemods distribution iso creator v1.01 03-07-2026" << std::endl;
     resetColor();
     std::cout << std::endl;
 }
@@ -41,13 +39,11 @@ void displayMenu() {
     setColor("\033[38;2;0;255;255m"); // Your cyan color
     std::cout << "=== DISTRIBUTIONS MENU ===" << std::endl;
     std::cout << "1. claudemods Desktop Distributions" << std::endl;
-    std::cout << "2. claudemods Handheld Distributions" << std::endl;  // Now implemented
-    std::cout << "3. Cachyos Desktop Distributions" << std::endl;
-    std::cout << "4. Cachyos Handheld Distributions" << std::endl;  // Now implemented
-    std::cout << "5. Arch Distributions" << std::endl;
-    std::cout << "6. Guides" << std::endl;
-    std::cout << "7. Changelog" << std::endl;
-    std::cout << "8. Exit" << std::endl;
+    std::cout << "2. Cachyos Desktop Distributions" << std::endl;
+    std::cout << "3. Arch Distributions" << std::endl;
+    std::cout << "4. Guides" << std::endl;
+    std::cout << "5. Changelog" << std::endl;
+    std::cout << "6. Exit" << std::endl;
     std::cout << "==========================" << std::endl;
     resetColor();
 }
@@ -116,18 +112,6 @@ void handleSelection(int choice) {
             break;
         case 2:
             setColor("\033[38;2;0;255;255m");
-            std::cout << "You selected: claudemods Handheld Distributions" << std::endl;
-            std::cout << "Starting Claudemods Handheld ISO creation process..." << std::endl;
-            resetColor();
-
-            // Launch the Claudemods Handheld installer
-            {
-                ClaudemodsHandheldInstaller installer;
-                installer.run();
-            }
-            break;
-        case 3:
-            setColor("\033[38;2;0;255;255m");
             std::cout << "You selected: Cachyos Desktop Distributions" << std::endl;
             std::cout << "Starting Cachyos ISO creation process..." << std::endl;
             resetColor();
@@ -138,19 +122,7 @@ void handleSelection(int choice) {
                 installer.run();
             }
             break;
-        case 4:
-            setColor("\033[38;2;0;255;255m");
-            std::cout << "You selected: Cachyos Handheld Distributions" << std::endl;
-            std::cout << "Starting Cachyos Handheld ISO creation process..." << std::endl;
-            resetColor();
-
-            // Launch the Cachyos Handheld installer
-            {
-                CachyosHandheldInstaller installer;
-                installer.run();
-            }
-            break;
-        case 5:
+        case 3:
             setColor("\033[38;2;0;255;255m");
             std::cout << "You selected: Arch Distributions" << std::endl;
             std::cout << "Starting Arch ISO creation process..." << std::endl;
@@ -162,7 +134,7 @@ void handleSelection(int choice) {
                 installer.run();
             }
             break;
-        case 6:
+        case 4:
             // Guides menu
         {
             int guideChoice;
@@ -206,7 +178,7 @@ void handleSelection(int choice) {
             } while (guideChoice != 4);
         }
         break;
-        case 7:
+        case 5:
             // Changelog
             setColor("\033[38;2;0;255;255m");
             std::cout << "Opening Changelog..." << std::endl;
@@ -222,14 +194,14 @@ void handleSelection(int choice) {
             resetColor();
             std::cin.get();
             break;
-        case 8:
+        case 6:
             setColor("\033[38;2;0;255;255m");
             std::cout << "Exiting program. Goodbye!" << std::endl;
             resetColor();
             break;
         default:
             setColor("\033[38;2;0;255;255m");
-            std::cout << "Invalid selection! Please choose 1-8." << std::endl;
+            std::cout << "Invalid selection! Please choose 1-6." << std::endl;
             resetColor();
             break;
     }
@@ -250,14 +222,14 @@ int main() {
         displayMenu();
 
         setColor("\033[38;2;0;255;255m");
-        std::cout << "Enter your choice (1-8): ";
+        std::cout << "Enter your choice (1-6): ";
         resetColor();
 
         if (!(std::cin >> choice)) {
             // Clear error state and invalid input
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "\033[31m" << "Invalid input! Please enter a number 1-8." << "\033[0m" << std::endl;
+            std::cout << "\033[31m" << "Invalid input! Please enter a number 1-6." << "\033[0m" << std::endl;
             continue;
         }
 
@@ -266,7 +238,7 @@ int main() {
 
         handleSelection(choice);
 
-        if (choice != 8 && choice >= 1 && choice <= 5) {
+        if (choice != 6 && choice >= 1 && choice <= 3) {
             std::cout << std::endl;
             setColor("\033[38;2;0;255;255m");
             std::cout << "Press Enter to return to main menu...";
@@ -274,7 +246,7 @@ int main() {
             std::cin.get();  // Only one get() needed now
         }
 
-    } while (choice != 8);
+    } while (choice != 6);
 
     return 0;
 }
