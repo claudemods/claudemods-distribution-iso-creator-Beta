@@ -493,7 +493,7 @@ private:
                 "mount -t efivarfs efivarfs /sys/firmware/efi/efivars 2>/dev/null || true; "
                 "grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --recheck; "
                 "grub-mkconfig -o /boot/grub/grub.cfg; "
-                "./opt/btrfsfstabcompressed.sh 2>/dev/null || genfstab -U / >> /etc/fstab; "
+                "./btrfsfstabcompressed.sh 2>/dev/null; "
                 "rm -rf /opt/btrfsfstabcompressed.sh 2>/dev/null; "
                 "mkinitcpio -P\"");
         } else {
