@@ -183,7 +183,7 @@ private:
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << COLOR_CYAN << "claudemods distribution iso creator Beta v1.01 05-06-2026" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "claudemods distribution iso creator Beta v1.01 06-06-2026" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
 
@@ -572,13 +572,14 @@ private:
         execute_command("sudo mount --bind /run /mnt/run");
         if (filesystem_type == "btrfs") {
             execute_command("sudo touch /mnt/etc/fstab");
+            execute_command("sudo cp btrfsfstabcompressed.sh /mnt/opt/btrfsfstabcompressed.sh");
             execute_command("sudo chroot /mnt /bin/bash -c \""
                 "modprobe efivarfs 2>/dev/null || true; "
                 "mount -t efivarfs efivarfs /sys/firmware/efi/efivars 2>/dev/null || true; "
                 "grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --recheck; "
                 "grub-mkconfig -o /boot/grub/grub.cfg; "
-                "./btrfsfstabcompressed.sh 2>/dev/null; "
-                "rm -rf btrfsfstabcompressed.sh 2>/dev/null; "
+                "./opt/btrfsfstabcompressed.sh 2>/dev/null; "
+                "rm -rf /opt/btrfsfstabcompressed.sh 2>/dev/null; "
                 "mkinitcpio -P\"");
         } else {
             execute_command("sudo chroot /mnt /bin/bash -c \""
