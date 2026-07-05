@@ -1,3 +1,4 @@
+
 #ifndef ARCH_H
 #define ARCH_H
 
@@ -190,7 +191,7 @@ private:
         std::cout << "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗" << std::endl;
         std::cout << "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝" << std::endl;
         std::cout << "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░" << std::endl;
-        std::cout << COLOR_CYAN << "claudemods Arch Linux distribution installer iso method v1.01 03-07-2026" << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "claudemods Arch Linux distribution installer iso method v1.01 05-07-2026" << COLOR_RESET << std::endl;
         std::cout << std::endl;
     }
 
@@ -236,21 +237,20 @@ private:
                     std::string setting_value;
                     switch(i) {
                         case 0: setting_value = target_drive.empty() ? "[Not Set]" : target_drive; break;
-                        case 1: setting_value = "current directory as arch-distro"; break;
-                        case 2: setting_value = new_username.empty() ? "[Not Set]" : new_username; break;
-                        case 3: setting_value = root_password.empty() ? "[Not Set]" : root_password; break;
-                        case 4: setting_value = user_password.empty() ? "[Not Set]" : user_password; break;
-                        case 5: setting_value = timezone.empty() ? "[Not Set]" : timezone; break;
-                        case 6: setting_value = keyboard_layout.empty() ? "[Not Set]" : keyboard_layout; break;
-                        case 7: setting_value = selected_kernel.empty() ? "[Not Set]" : selected_kernel; break;
-                        case 8: setting_value = " [Default GB]"; break;
-                        case 9: setting_value = current_desktop_name.empty() ? "[Not Set]" : current_desktop_name; break;
-                        case 10: setting_value = extra_packages.empty() ? "[Not Set]" : extra_packages; break;
+                        case 1: setting_value = new_username.empty() ? "[Not Set]" : new_username; break;
+                        case 2: setting_value = root_password.empty() ? "[Not Set]" : root_password; break;
+                        case 3: setting_value = user_password.empty() ? "[Not Set]" : user_password; break;
+                        case 4: setting_value = timezone.empty() ? "[Not Set]" : timezone; break;
+                        case 5: setting_value = keyboard_layout.empty() ? "[Not Set]" : keyboard_layout; break;
+                        case 6: setting_value = selected_kernel.empty() ? "[Not Set]" : selected_kernel; break;
+                        case 7: setting_value = " [Default GB]"; break;
+                        case 8: setting_value = current_desktop_name.empty() ? "[Not Set]" : current_desktop_name; break;
+                        case 9: setting_value = extra_packages.empty() ? "[Not Set]" : extra_packages; break;
                         default: setting_value = ""; break;
                     }
                     if (i == 0) {
                         menu_line = options[i];
-                    } else if (i == 8) {
+                    } else if (i == 7) {
                         menu_line = options[i] + " " + setting_value;
                     } else {
                         menu_line = options[i] + " " + setting_value;
@@ -299,7 +299,6 @@ private:
                   << (target_drive.empty() ? "[Not Set]" : target_drive) << std::endl;
         std::cout << COLOR_CYAN << "Filesystem: " << COLOR_RESET
                   << (filesystem_type.empty() ? "[Not Set]" : filesystem_type) << std::endl;
-        std::cout << COLOR_CYAN << "Installation Path: " << COLOR_RESET << getTargetFolder() << std::endl;
         std::cout << COLOR_CYAN << "Username: " << COLOR_RESET
         << (new_username.empty() ? "[Not Set]" : new_username) << std::endl;
         std::cout << COLOR_CYAN << "Root Password: " << COLOR_RESET
@@ -490,7 +489,7 @@ private:
 
     void unmount_target() {
         std::cout << COLOR_CYAN << "Unmounting target filesystems..." << COLOR_RESET << std::endl;
-        execute_command("sudo umount -R /mnt 2>/dev/null || true");
+        execute_command("sudo umount -l /mnt 2>/dev/null || true");
     }
 
     void post_install_menu() {
@@ -990,7 +989,6 @@ private:
     void show_main_menu() {
         std::vector<std::string> main_options = {
             "Setup Bootloader and Drive: ",
-            "Installation Path: ",
             "Set Username",
             "Set Root Password",
             "Set User Password",
@@ -1011,18 +1009,17 @@ private:
             selected = show_menu(main_options, "claudemods Arch Linux distribution installer", selected);
             switch(selected) {
                 case 0: setup_bootloader_and_drive(); break;
-                case 1: break;
-                case 2: set_username(); break;
-                case 3: set_root_password(); break;
-                case 4: set_user_password(); break;
-                case 5: set_timezone(); break;
-                case 6: set_keyboard_layout(); break;
-                case 7: set_kernel(); break;
-                case 8: set_wireless_regdom(); break;
-                case 9: show_desktop_selection(); break;
-                case 10: set_extra_packages(); break;
-                case 11: start_installation(); break;
-                case 12: std::cout << COLOR_GREEN << "Exiting. Goodbye!" << COLOR_RESET << std::endl; return;
+                case 1: set_username(); break;
+                case 2: set_root_password(); break;
+                case 3: set_user_password(); break;
+                case 4: set_timezone(); break;
+                case 5: set_keyboard_layout(); break;
+                case 6: set_kernel(); break;
+                case 7: set_wireless_regdom(); break;
+                case 8: show_desktop_selection(); break;
+                case 9: set_extra_packages(); break;
+                case 10: start_installation(); break;
+                case 11: std::cout << COLOR_GREEN << "Exiting. Goodbye!" << COLOR_RESET << std::endl; return;
             }
             std::cout << COLOR_CYAN << "Press Enter to continue..." << COLOR_RESET;
             std::cin.get();
