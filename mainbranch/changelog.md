@@ -1,5 +1,5 @@
 ## changlelog all distributions v1.01 06-07-2026 17:17pm GMT (uk time)
-claudemods distribution iso updated with fixes to btrfs and umount command
+claudemods distribution iso updated with fixes to btrfs and umount command and also it now removes packages after install
 download link: https://claudemodsreloaded.co.uk/claudemods-isos/?dir=claudemods-distribution-creator
 
 password: 2026
