@@ -492,7 +492,7 @@ private:
             execute_command("sudo chroot /mnt /bin/bash -c \""
                 "modprobe efivarfs 2>/dev/null || true; "
                 "mount -t efivarfs efivarfs /sys/firmware/efi/efivars 2>/dev/null || true; "
-                "grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --recheck; "
+                "grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Cachyos --recheck; "
                 "grub-mkconfig -o /boot/grub/grub.cfg; "
                 "./opt/btrfsfstabcompressed.sh 2>/dev/null; "
                 "rm -rf /opt/btrfsfstabcompressed.sh 2>/dev/null; "
@@ -503,7 +503,7 @@ private:
                 "modprobe efivarfs 2>/dev/null || true; "
                 "mount -t efivarfs efivarfs /sys/firmware/efi/efivars 2>/dev/null || true; "
                 "genfstab -U / >> /etc/fstab; "
-                "grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --recheck; "
+                "grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Cachyos --recheck; "
                 "grub-mkconfig -o /boot/grub/grub.cfg; "
                 "pacman -Scc --noconfirm; "
                 "mkinitcpio -P\"");
