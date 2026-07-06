@@ -1,3 +1,10 @@
+## changlelog all distributions v1.01 06-07-2026 17:17pm GMT (uk time)
+claudemods distribution iso updated with fixes to btrfs and umount command
+download link: https://claudemodsreloaded.co.uk/claudemods-isos/?dir=claudemods-distribution-creator (btrfs not working)
+
+password: 2026
+
+
 ## changlelog all distributions v1.01 05-07-2026 19:17pm GMT (uk time)
 new claudemods distribution creator iso is out this for installing my distribution options i provide using a 750mb custom iso
 download link: https://claudemodsreloaded.co.uk/claudemods-isos/?dir=claudemods-distribution-creator (btrfs not working)
