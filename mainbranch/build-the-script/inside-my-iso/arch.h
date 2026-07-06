@@ -476,6 +476,7 @@ private:
                 "grub-mkconfig -o /boot/grub/grub.cfg; "
                 "./opt/btrfsfstabcompressed.sh 2>/dev/null; "
                 "rm -rf /opt/btrfsfstabcompressed.sh 2>/dev/null; "
+                "pacman -Scc --noconfirm; "
                 "mkinitcpio -P\"");
         } else {
             execute_command("sudo chroot /mnt /bin/bash -c \""
@@ -484,6 +485,7 @@ private:
                 "genfstab -U / >> /etc/fstab; "
                 "grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --recheck; "
                 "grub-mkconfig -o /boot/grub/grub.cfg; "
+                "pacman -Scc --noconfirm; "
                 "mkinitcpio -P\"");
         }
     }
