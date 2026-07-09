@@ -1,8 +1,3 @@
-// claudemods_installer.cpp - Complete Qt6 GUI Application
-// ALL original code preserved, ALL functions intact, ALL commands unchanged
-// Fixed lambda captures for C++20 compliance
-// Fixed QWidget::close() return type mismatch
-
 #include <QApplication>
 #include <QMainWindow>
 #include <QPushButton>
@@ -97,7 +92,7 @@ public:
         current_distro_name = "";
         extra_packages = "";
         target_drive = "";
-        filesystem_type = "";
+        filesystem_type = "ext4";
         m_process = nullptr;
         m_busy = false;
 
@@ -106,14 +101,7 @@ public:
         extractRequiredFiles();
         display_current_settings();
 
-        addLog("░█████╗░██╗░░░░░░█████╗░██║░░░██╗██████╗░███████╗███╗░░░███╗░█████╗░██████╗░░██████╗", "#ff0000");
-        addLog("██╔══██╗██║░░░░░██╔══██╗██║░░░██║██╔══██╗██╔════╝████╗░████║██╔══██╗██╔══██╗██╔════╝", "#ff0000");
-        addLog("██║░░╚═╝██║░░░░░███████║██║░░░██║██║░░██║█████╗░░██╔████╔██║██║░░██║██║░░██║╚█████╗░", "#ff0000");
-        addLog("██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗", "#ff0000");
-        addLog("╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝", "#ff0000");
-        addLog("░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░", "#ff0000");
-        addLog("claudemods distribution iso creator Beta v1.01 06-06-2026", "#00ffff");
-        addLog("Qt6 GUI Edition - All original functionality preserved", "#00ffff");
+        addLog("Ready - claudemods distribution iso creator Beta v1.01", "#00ffff");
         addLog("", "#ffffff");
     }
 
@@ -146,7 +134,7 @@ private:
     void setupUI()
     {
         setWindowTitle("claudemods distribution iso creator Beta v1.01");
-        setMinimumSize(1400, 900);
+        setMinimumSize(1200, 800);
         setStyleSheet("QMainWindow { background-color: #1a1a1a; }");
 
         QMenuBar *menuBar = new QMenuBar();
@@ -181,69 +169,53 @@ private:
         mainLayout->setContentsMargins(5, 5, 5, 5);
 
         QWidget *leftPanel = new QWidget();
-        leftPanel->setFixedWidth(400);
+        leftPanel->setFixedWidth(350);
         leftPanel->setStyleSheet("QWidget { background-color: #222; border-radius: 10px; }");
         QVBoxLayout *leftLayout = new QVBoxLayout(leftPanel);
-        leftLayout->setSpacing(8);
+        leftLayout->setSpacing(2);
+        leftLayout->setContentsMargins(5, 5, 5, 5);
 
-        QLabel *headerLabel = new QLabel();
-        headerLabel->setStyleSheet("color: #ff0000; font-family: 'Courier New', monospace; font-size: 6px; padding: 10px; background-color: #111; border-radius: 8px;");
-        headerLabel->setText(
-            "░█████╗░██╗░░░░░░█████╗░██║░░░██╗██████╗░███████╗███╗░░░███╗░█████╗░██████╗░░██████╗\n"
-            "██╔══██╗██║░░░░░██╔══██╗██║░░░██║██╔══██╗██╔════╝████╗░████║██╔══██╗██╔══██╗██╔════╝\n"
-            "██║░░╚═╝██║░░░░░███████║██║░░░██║██║░░██║█████╗░░██╔████╔██║██║░░██║██║░░██║╚█████╗░\n"
-            "██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗\n"
-            "╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝\n"
-            "░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░"
-        );
+        QLabel *headerLabel = new QLabel("claudemods distribution iso creator");
+        headerLabel->setStyleSheet("color: #ff0000; font-family: 'Courier New', monospace; font-size: 11px; padding: 3px; background-color: #111; border-radius: 8px; font-weight: bold;");
+        headerLabel->setAlignment(Qt::AlignCenter);
+        headerLabel->setMaximumHeight(25);
         leftLayout->addWidget(headerLabel);
 
-        QLabel *versionLabel = new QLabel("claudemods distribution iso creator\nBeta v1.01 - Qt6 Edition");
-        versionLabel->setStyleSheet("color: #00ffff; font-size: 11px; padding: 5px;");
-        versionLabel->setAlignment(Qt::AlignCenter);
-        leftLayout->addWidget(versionLabel);
-
         QGroupBox *settingsGroup = new QGroupBox("Current Settings");
-        settingsGroup->setStyleSheet("QGroupBox { color: #ffff00; border: 2px solid #555; border-radius: 8px; margin-top: 15px; font-weight: bold; font-size: 13px; padding-top: 10px; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px; }");
+        settingsGroup->setStyleSheet("QGroupBox { color: #ffff00; border: 2px solid #555; border-radius: 8px; margin-top: 4px; font-weight: bold; font-size: 10px; padding-top: 6px; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px; }");
         QVBoxLayout *settingsLayout = new QVBoxLayout(settingsGroup);
+        settingsLayout->setContentsMargins(3, 10, 3, 3);
         m_settingsLabel = new QLabel();
-        m_settingsLabel->setStyleSheet("color: #00ffff; font-size: 11px; font-family: 'Courier New', monospace; padding: 5px;");
+        m_settingsLabel->setStyleSheet("color: #00ffff; font-size: 10px; font-family: 'Courier New', monospace; padding: 2px;");
         m_settingsLabel->setWordWrap(true);
+        m_settingsLabel->setMinimumHeight(150);
+        m_settingsLabel->setMaximumHeight(150);
         settingsLayout->addWidget(m_settingsLabel);
         leftLayout->addWidget(settingsGroup);
 
-        QScrollArea *scrollArea = new QScrollArea();
-        scrollArea->setWidgetResizable(true);
-        scrollArea->setStyleSheet("QScrollArea { border: none; background: transparent; } QScrollBar:vertical { background: #111; width: 10px; } QScrollBar::handle:vertical { background: #333; border-radius: 5px; }");
-
-        QWidget *scrollWidget = new QWidget();
-        QVBoxLayout *scrollLayout = new QVBoxLayout(scrollWidget);
-        scrollLayout->setSpacing(6);
-
-        auto addButton = [this, scrollLayout](const QString &text, const QString &color, std::function<void()> slot) {
+        auto addButton = [this, leftLayout](const QString &text, const QString &, std::function<void()> slot) {
             QPushButton *btn = new QPushButton(text);
-            btn->setStyleSheet(QString("QPushButton { background-color: %1; color: white; font-weight: bold; padding: 12px 15px; border: none; border-radius: 8px; font-size: 13px; text-align: left; } QPushButton:hover { opacity: 0.8; } QPushButton:disabled { background-color: #555; color: #888; }").arg(color));
-            btn->setMinimumHeight(42);
+            btn->setStyleSheet(QString("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 4px 8px; border: none; border-radius: 4px; font-size: 10px; text-align: left; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; } QPushButton:disabled { background-color: #555; color: #888; }"));
+            btn->setMinimumHeight(28);
+            btn->setMaximumHeight(28);
             btn->setCursor(Qt::PointingHandCursor);
             connect(btn, &QPushButton::clicked, this, slot);
-            scrollLayout->addWidget(btn);
+            leftLayout->addWidget(btn);
         };
 
-        addButton("💾 Setup Bootloader and Drive", "#ff6600", [this]() { setup_bootloader_and_drive(); });
-        addButton("👤 Set Username", "#0088ff", [this]() { set_username(); });
+        addButton("💾 Setup Bootloader and Drive", "#cc0000", [this]() { setup_bootloader_and_drive(); });
+        addButton("👤 Set Username", "#cc0000", [this]() { set_username(); });
         addButton("🔑 Set Root Password", "#cc0000", [this]() { set_root_password(); });
-        addButton("🔒 Set User Password", "#cc6600", [this]() { set_user_password(); });
-        addButton("🕐 Set Timezone", "#00aa88", [this]() { set_timezone(); });
-        addButton("⌨️ Set Keyboard Layout", "#888800", [this]() { set_keyboard_layout(); });
-        addButton("📡 Set Wireless Regdom", "#aa00aa", [this]() { set_wireless_regdom(); });
-        addButton("📦 Select Distro to Install", "#ff00ff", [this]() { show_distro_selection(); });
-        addButton("📥 Install Extra Packages", "#0088cc", [this]() { set_extra_packages(); });
-        addButton("🚀 START INSTALLATION", "#00ff00", [this]() { start_installation(); });
-        addButton("❌ Exit", "#ff0000", [this]() { closeApplication(); });
+        addButton("🔒 Set User Password", "#cc0000", [this]() { set_user_password(); });
+        addButton("🕐 Set Timezone", "#cc0000", [this]() { set_timezone(); });
+        addButton("⌨️ Set Keyboard Layout", "#cc0000", [this]() { set_keyboard_layout(); });
+        addButton("📡 Set Wireless Regdom", "#cc0000", [this]() { set_wireless_regdom(); });
+        addButton("📦 Select Distro to Install", "#cc0000", [this]() { show_distro_selection(); });
+        addButton("📥 Install Extra Packages", "#cc0000", [this]() { set_extra_packages(); });
+        addButton("🚀 START INSTALLATION", "#cc0000", [this]() { start_installation(); });
+        addButton("❌ Exit", "#cc0000", [this]() { closeApplication(); });
 
-        scrollLayout->addStretch();
-        scrollArea->setWidget(scrollWidget);
-        leftLayout->addWidget(scrollArea);
+        leftLayout->addStretch();
 
         QWidget *rightPanel = new QWidget();
         rightPanel->setStyleSheet("QWidget { background-color: #111; border-radius: 10px; }");
@@ -251,14 +223,14 @@ private:
 
         QHBoxLayout *logHeaderLayout = new QHBoxLayout();
         QLabel *logIcon = new QLabel("🖥️");
-        logIcon->setStyleSheet("font-size: 20px;");
+        logIcon->setStyleSheet("font-size: 18px;");
         QLabel *logLabel = new QLabel("KONSOLE LOG OUTPUT");
-        logLabel->setStyleSheet("color: #00ffff; font-weight: bold; font-size: 16px; font-family: 'Courier New', monospace;");
+        logLabel->setStyleSheet("color: #00ffff; font-weight: bold; font-size: 14px; font-family: 'Courier New', monospace;");
         logHeaderLayout->addWidget(logIcon);
         logHeaderLayout->addWidget(logLabel);
         logHeaderLayout->addStretch();
         QPushButton *clearLogBtn = new QPushButton("Clear Log");
-        clearLogBtn->setStyleSheet("QPushButton { background-color: #555; color: white; padding: 8px 15px; border: none; border-radius: 5px; } QPushButton:hover { background-color: #777; }");
+        clearLogBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; padding: 6px 12px; border: none; border-radius: 5px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         connect(clearLogBtn, &QPushButton::clicked, this, [this]() { m_logOutput->clear(); });
         logHeaderLayout->addWidget(clearLogBtn);
         rightLayout->addLayout(logHeaderLayout);
@@ -289,7 +261,7 @@ private:
         splitter->addWidget(rightPanel);
         splitter->setStretchFactor(0, 0);
         splitter->setStretchFactor(1, 1);
-        splitter->setSizes({400, 1000});
+        splitter->setSizes({350, 850});
         splitter->setStyleSheet("QSplitter::handle { background-color: #333; width: 3px; }");
         mainLayout->addWidget(splitter);
     }
@@ -440,12 +412,6 @@ private:
     }
 
     void display_header() {
-        addLog("░█████╗░██╗░░░░░░█████╗░██║░░░██╗██████╗░███████╗███╗░░░███╗░█████╗░██████╗░░██████╗", "#ff0000");
-        addLog("██╔══██╗██║░░░░░██╔══██╗██║░░░██║██╔══██╗██╔════╝████╗░████║██╔══██╗██╔══██╗██╔════╝", "#ff0000");
-        addLog("██║░░╚═╝██║░░░░░███████║██║░░░██║██║░░██║█████╗░░██╔████╔██║██║░░██║██║░░██║╚█████╗░", "#ff0000");
-        addLog("██║░░██╗██║░░░░░██╔══██║██║░░░██║██║░░██║██╔══╝░░██║╚██╔╝██║██║░░██║██║░░██║░╚═══██╗", "#ff0000");
-        addLog("╚█████╔╝███████╗██║░░██║╚██████╔╝██████╔╝███████╗██║░╚═╝░██║╚█████╔╝██████╔╝██████╔╝", "#ff0000");
-        addLog("░╚════╝░╚══════╝╚═╝░░░░░░╚═════╝░╚═════╝░╚══════╝╚═╝░░░░░╚═╝░╚════╝░╚═════╝░╚═════╝░", "#ff0000");
         addLog("claudemods distribution iso creator Beta v1.01 06-06-2026", "#00ffff");
     }
 
@@ -628,8 +594,8 @@ private:
 
         QVBoxLayout *mainLayout = new QVBoxLayout(dialog);
 
-        QLabel *titleLabel = new QLabel("╔══════════════════════════════════════════════════════════════╗\n║ Setup Bootloader and Drive                                                      ║\n╚══════════════════════════════════════════════════════════════╝");
-        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 12px;");
+        QLabel *titleLabel = new QLabel("Setup Bootloader and Drive");
+        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 14px; font-weight: bold;");
         mainLayout->addWidget(titleLabel);
 
         QGroupBox *currentGroup = new QGroupBox("Current Drive Settings:");
@@ -652,14 +618,14 @@ private:
         currentGrid->addWidget(fsValue, 1, 1);
         mainLayout->addWidget(currentGroup);
 
-        QGroupBox *drivesGroup = new QGroupBox("Available drives:");
+        QGroupBox *drivesGroup = new QGroupBox("Available drives - Click to select:");
         drivesGroup->setStyleSheet("QGroupBox { color: #00ffff; border: 2px solid #555; border-radius: 8px; margin-top: 15px; font-weight: bold; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px; }");
         QVBoxLayout *drivesLayout = new QVBoxLayout(drivesGroup);
 
         QTableWidget *driveTable = new QTableWidget();
         driveTable->setColumnCount(3);
         driveTable->setHorizontalHeaderLabels({"NAME", "SIZE", "MODEL"});
-        driveTable->setStyleSheet("QTableWidget { background-color: #2d2d2d; color: #ffff00; border: 1px solid #555; } QTableWidget::item { padding: 5px; } QHeaderView::section { background-color: #333; color: #00ffff; font-weight: bold; padding: 5px; }");
+        driveTable->setStyleSheet("QTableWidget { background-color: #2d2d2d; color: #ffff00; border: 1px solid #555; } QTableWidget::item { padding: 5px; } QTableWidget::item:selected { background-color: #ff0000; color: #ffff00; } QTableWidget::item:hover { background-color: #ff0000; color: #ffff00; } QHeaderView::section { background-color: #333; color: #00ffff; font-weight: bold; padding: 5px; }");
         driveTable->horizontalHeader()->setStretchLastSection(true);
         driveTable->setSelectionBehavior(QAbstractItemView::SelectRows);
         driveTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -692,57 +658,58 @@ private:
         drivesLayout->addWidget(driveTable);
         mainLayout->addWidget(drivesGroup);
 
-        QLabel *warningLabel = new QLabel("⚠️ WARNING: The selected drive will be COMPLETELY ERASED!");
+        QLabel *warningLabel = new QLabel("WARNING: The selected drive will be COMPLETELY ERASED!");
         warningLabel->setStyleSheet("color: #ffff00; font-weight: bold; font-size: 14px; background-color: #330000; padding: 10px; border: 2px solid #ff0000; border-radius: 5px;");
         mainLayout->addWidget(warningLabel);
 
-        QGroupBox *inputGroup = new QGroupBox("Enter target drive (e.g., /dev/sda):");
+        QGroupBox *inputGroup = new QGroupBox("Selected drive:");
         inputGroup->setStyleSheet("QGroupBox { color: #ff6600; border: 2px solid #555; border-radius: 8px; margin-top: 15px; font-weight: bold; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px; }");
         QHBoxLayout *inputLayout = new QHBoxLayout(inputGroup);
         QLineEdit *driveInput = new QLineEdit();
         driveInput->setStyleSheet("QLineEdit { background-color: #2d2d2d; color: #00ff00; border: 1px solid #555; padding: 8px; border-radius: 5px; font-size: 13px; } QLineEdit:focus { border-color: #00ffff; }");
         driveInput->setPlaceholderText("/dev/sda");
         driveInput->setText(QString::fromStdString(target_drive));
-        QPushButton *selectBtn = new QPushButton("Use Selected");
-        selectBtn->setStyleSheet("QPushButton { background-color: #0088ff; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; } QPushButton:hover { opacity: 0.8; }");
-        connect(selectBtn, &QPushButton::clicked, this, [this, driveTable, driveInput]() {
-            int selectedRow = driveTable->currentRow();
-            if (selectedRow >= 0) {
-                driveInput->setText(driveTable->item(selectedRow, 0)->text());
+        driveInput->setReadOnly(true);
+        inputLayout->addWidget(driveInput);
+        mainLayout->addWidget(inputGroup);
+
+        // Auto-select drive when clicked
+        connect(driveTable, &QTableWidget::cellClicked, this, [this, driveInput, driveTable](int row, int col) {
+            Q_UNUSED(col);
+            QTableWidgetItem *item = driveTable->item(row, 0);
+            if (item) {
+                driveInput->setText(item->text());
             }
         });
-        inputLayout->addWidget(driveInput);
-        inputLayout->addWidget(selectBtn);
-        mainLayout->addWidget(inputGroup);
 
         QGroupBox *fsGroup = new QGroupBox("Select filesystem type:");
         fsGroup->setStyleSheet("QGroupBox { color: #aa00aa; border: 2px solid #555; border-radius: 8px; margin-top: 15px; font-weight: bold; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px; }");
         QVBoxLayout *fsLayout = new QVBoxLayout(fsGroup);
 
         QComboBox *fsCombo = new QComboBox();
-        fsCombo->setStyleSheet("QComboBox { background-color: #2d2d2d; color: #00ff00; border: 1px solid #555; padding: 8px; border-radius: 5px; font-size: 13px; } QComboBox::drop-down { border: none; } QComboBox QAbstractItemView { background-color: #2d2d2d; color: #00ff00; selection-background-color: #444; }");
-        fsCombo->addItem("Btrfs (with subvolumes, compression, snapshots support)");
+        fsCombo->setStyleSheet("QComboBox { background-color: #2d2d2d; color: #00ff00; border: 1px solid #555; padding: 8px; border-radius: 5px; font-size: 13px; } QComboBox::drop-down { border: none; } QComboBox QAbstractItemView { background-color: #2d2d2d; color: #00ff00; selection-background-color: #ff0000; } QComboBox QAbstractItemView::item:hover { background-color: #ff0000; color: #ffff00; }");
         fsCombo->addItem("Ext4 (standard filesystem)");
-        if (filesystem_type == "btrfs") fsCombo->setCurrentIndex(0);
-        else if (filesystem_type == "ext4") fsCombo->setCurrentIndex(1);
+        fsCombo->addItem("Btrfs (with subvolumes, compression, snapshots support)");
+        if (filesystem_type == "ext4") fsCombo->setCurrentIndex(0);
+        else if (filesystem_type == "btrfs") fsCombo->setCurrentIndex(1);
         fsLayout->addWidget(fsCombo);
 
         QLabel *btrfsInfo = new QLabel("Btrfs subvolumes will be created: @, @home, @root, @srv, @cache, @tmp, @log\nCompression: zstd level 22");
         btrfsInfo->setStyleSheet("color: #00ffff;");
-        btrfsInfo->setVisible(fsCombo->currentIndex() == 0);
+        btrfsInfo->setVisible(fsCombo->currentIndex() == 1);
         fsLayout->addWidget(btrfsInfo);
 
         connect(fsCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this, btrfsInfo](int idx) {
-            btrfsInfo->setVisible(idx == 0);
+            btrfsInfo->setVisible(idx == 1);
         });
         mainLayout->addWidget(fsGroup);
 
         QHBoxLayout *btnLayout = new QHBoxLayout();
         QPushButton *confirmBtn = new QPushButton("Confirm & Save");
-        confirmBtn->setStyleSheet("QPushButton { background-color: #ff6600; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; } QPushButton:hover { opacity: 0.8; }");
+        confirmBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         confirmBtn->setMinimumHeight(45);
         QPushButton *cancelBtn = new QPushButton("Cancel");
-        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; } QPushButton:hover { opacity: 0.8; }");
+        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         cancelBtn->setMinimumHeight(45);
         btnLayout->addWidget(confirmBtn);
         btnLayout->addWidget(cancelBtn);
@@ -761,24 +728,22 @@ private:
 
             if (!target_drive.empty()) {
                 if (fsCombo->currentIndex() == 0) {
+                    filesystem_type = "ext4";
+                    addLog("Filesystem set to: Ext4", "#00ff00");
+                } else {
                     filesystem_type = "btrfs";
                     addLog("Filesystem set to: Btrfs", "#00ff00");
                     addLog("Btrfs subvolumes will be created: @, @home, @root, @srv, @cache, @tmp, @log", "#00ffff");
                     addLog("Compression: zstd level 22", "#00ffff");
-                } else {
-                    filesystem_type = "ext4";
-                    addLog("Filesystem set to: Ext4", "#00ff00");
                 }
             }
 
             if (!target_drive.empty() && !filesystem_type.empty()) {
-                addLog("═══════════════════════════════════════", "#ff6600");
-                addLog("  Drive Configuration Summary:", "#ff6600");
+                addLog("Drive Configuration Summary:", "#ff6600");
                 addLog("  Drive: " + QString::fromStdString(target_drive), "#ff6600");
                 addLog("  Partition 1: " + QString::fromStdString(target_drive) + "1 (EFI - FAT32, 550MB)", "#ff6600");
                 addLog("  Partition 2: " + QString::fromStdString(target_drive) + "2 (Root - " + QString::fromStdString(filesystem_type == "btrfs" ? "Btrfs" : "Ext4") + ")", "#ff6600");
                 addLog("  Bootloader: GRUB (UEFI)", "#ff6600");
-                addLog("═══════════════════════════════════════", "#ff6600");
                 addLog("WARNING: ALL DATA ON " + QString::fromStdString(target_drive) + " WILL BE DESTROYED!", "#ff0000");
             }
 
@@ -898,21 +863,16 @@ private:
 
         QVBoxLayout *layout = new QVBoxLayout(dialog);
 
-        QLabel *completeLabel = new QLabel("╔══════════════════════════════════════════════╗\n"
-        "║           INSTALLATION COMPLETE              ║\n"
-        "╠══════════════════════════════════════════════╣\n"
-        "║  1. Reboot now                              ║\n"
-        "║  2. Exit to shell                           ║\n"
-        "╚══════════════════════════════════════════════╝");
+        QLabel *completeLabel = new QLabel("INSTALLATION COMPLETE\n\n1. Reboot now\n2. Exit to shell");
         completeLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 12px;");
         layout->addWidget(completeLabel);
 
         QHBoxLayout *btnLayout = new QHBoxLayout();
-        QPushButton *rebootBtn = new QPushButton("🔄 Reboot Now");
-        rebootBtn->setStyleSheet("QPushButton { background-color: #00aa00; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; } QPushButton:hover { opacity: 0.8; }");
+        QPushButton *rebootBtn = new QPushButton("Reboot Now");
+        rebootBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         rebootBtn->setMinimumHeight(45);
-        QPushButton *shellBtn = new QPushButton("💻 Exit to Shell");
-        shellBtn->setStyleSheet("QPushButton { background-color: #0088ff; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; } QPushButton:hover { opacity: 0.8; }");
+        QPushButton *shellBtn = new QPushButton("Exit to Shell");
+        shellBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         shellBtn->setMinimumHeight(45);
 
         btnLayout->addWidget(rebootBtn);
@@ -1004,8 +964,8 @@ private:
         dialog->setStyleSheet("QDialog { background-color: #1e1e1e; }");
 
         QVBoxLayout *layout = new QVBoxLayout(dialog);
-        QLabel *titleLabel = new QLabel("╔══════════════════════════════════════════╗\n║           Set Username                  ║\n╚══════════════════════════════════════════╝");
-        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 12px;");
+        QLabel *titleLabel = new QLabel("Set Username");
+        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 14px; font-weight: bold;");
         layout->addWidget(titleLabel);
 
         QLabel *promptLabel = new QLabel("Enter username:");
@@ -1020,9 +980,9 @@ private:
 
         QHBoxLayout *btnLayout = new QHBoxLayout();
         QPushButton *okBtn = new QPushButton("Set Username");
-        okBtn->setStyleSheet("QPushButton { background-color: #00aa00; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; }");
+        okBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         QPushButton *cancelBtn = new QPushButton("Cancel");
-        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; }");
+        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         btnLayout->addWidget(okBtn);
         btnLayout->addWidget(cancelBtn);
         layout->addLayout(btnLayout);
@@ -1050,8 +1010,8 @@ private:
         dialog->setStyleSheet("QDialog { background-color: #1e1e1e; }");
 
         QVBoxLayout *layout = new QVBoxLayout(dialog);
-        QLabel *titleLabel = new QLabel("╔══════════════════════════════════════════╗\n║        Set Root Password               ║\n╚══════════════════════════════════════════╝");
-        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 12px;");
+        QLabel *titleLabel = new QLabel("Set Root Password");
+        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 14px; font-weight: bold;");
         layout->addWidget(titleLabel);
 
         QLabel *promptLabel = new QLabel("Enter root password:");
@@ -1072,7 +1032,7 @@ private:
         layout->addWidget(confirmInput);
 
         QCheckBox *showPassword = new QCheckBox("Show password");
-        showPassword->setStyleSheet("color: #aaaaaa;");
+        showPassword->setStyleSheet("QCheckBox { color: #aaaaaa; } QCheckBox:hover { color: #ffff00; }");
         connect(showPassword, &QCheckBox::toggled, this, [passwordInput, confirmInput](bool checked) {
             passwordInput->setEchoMode(checked ? QLineEdit::Normal : QLineEdit::Password);
             confirmInput->setEchoMode(checked ? QLineEdit::Normal : QLineEdit::Password);
@@ -1081,9 +1041,9 @@ private:
 
         QHBoxLayout *btnLayout = new QHBoxLayout();
         QPushButton *okBtn = new QPushButton("Set Password");
-        okBtn->setStyleSheet("QPushButton { background-color: #00aa00; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; }");
+        okBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         QPushButton *cancelBtn = new QPushButton("Cancel");
-        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; }");
+        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         btnLayout->addWidget(okBtn);
         btnLayout->addWidget(cancelBtn);
         layout->addLayout(btnLayout);
@@ -1116,8 +1076,8 @@ private:
         dialog->setStyleSheet("QDialog { background-color: #1e1e1e; }");
 
         QVBoxLayout *layout = new QVBoxLayout(dialog);
-        QLabel *titleLabel = new QLabel("╔══════════════════════════════════════════╗\n║        Set User Password               ║\n╚══════════════════════════════════════════╝");
-        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 12px;");
+        QLabel *titleLabel = new QLabel("Set User Password");
+        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 14px; font-weight: bold;");
         layout->addWidget(titleLabel);
 
         QLabel *promptLabel = new QLabel("Enter user password:");
@@ -1138,7 +1098,7 @@ private:
         layout->addWidget(confirmInput);
 
         QCheckBox *showPassword = new QCheckBox("Show password");
-        showPassword->setStyleSheet("color: #aaaaaa;");
+        showPassword->setStyleSheet("QCheckBox { color: #aaaaaa; } QCheckBox:hover { color: #ffff00; }");
         connect(showPassword, &QCheckBox::toggled, this, [passwordInput, confirmInput](bool checked) {
             passwordInput->setEchoMode(checked ? QLineEdit::Normal : QLineEdit::Password);
             confirmInput->setEchoMode(checked ? QLineEdit::Normal : QLineEdit::Password);
@@ -1147,9 +1107,9 @@ private:
 
         QHBoxLayout *btnLayout = new QHBoxLayout();
         QPushButton *okBtn = new QPushButton("Set Password");
-        okBtn->setStyleSheet("QPushButton { background-color: #00aa00; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; }");
+        okBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         QPushButton *cancelBtn = new QPushButton("Cancel");
-        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; }");
+        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         btnLayout->addWidget(okBtn);
         btnLayout->addWidget(cancelBtn);
         layout->addLayout(btnLayout);
@@ -1182,12 +1142,12 @@ private:
         dialog->setStyleSheet("QDialog { background-color: #1e1e1e; }");
 
         QVBoxLayout *layout = new QVBoxLayout(dialog);
-        QLabel *titleLabel = new QLabel("╔══════════════════════════════════════════╗\n║         Select Timezone                ║\n╚══════════════════════════════════════════╝");
-        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 12px;");
+        QLabel *titleLabel = new QLabel("Select Timezone");
+        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 14px; font-weight: bold;");
         layout->addWidget(titleLabel);
 
         QListWidget *timezoneList = new QListWidget();
-        timezoneList->setStyleSheet("QListWidget { background-color: #2d2d2d; color: #00ff00; border: 1px solid #555; font-size: 14px; } QListWidget::item { padding: 10px; } QListWidget::item:selected { background-color: #444; }");
+        timezoneList->setStyleSheet("QListWidget { background-color: #2d2d2d; color: #00ff00; border: 1px solid #555; font-size: 14px; } QListWidget::item { padding: 10px; } QListWidget::item:selected { background-color: #ff0000; color: #ffff00; } QListWidget::item:hover { background-color: #ff0000; color: #ffff00; }");
 
         QStringList timezones = {"America/New_York (US English)", "Europe/London (UK English)", "Europe/Berlin (German)", "Europe/Paris (French)", "Europe/Madrid (Spanish)", "Europe/Rome (Italian)", "Asia/Tokyo (Japanese)", "Other (manual entry)"};
         QStringList tzValues = {"America/New_York", "Europe/London", "Europe/Berlin", "Europe/Paris", "Europe/Madrid", "Europe/Rome", "Asia/Tokyo", ""};
@@ -1213,9 +1173,9 @@ private:
 
         QHBoxLayout *btnLayout = new QHBoxLayout();
         QPushButton *okBtn = new QPushButton("Set Timezone");
-        okBtn->setStyleSheet("QPushButton { background-color: #00aa00; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; }");
+        okBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         QPushButton *cancelBtn = new QPushButton("Cancel");
-        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; }");
+        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         btnLayout->addWidget(okBtn);
         btnLayout->addWidget(cancelBtn);
         layout->addLayout(btnLayout);
@@ -1248,12 +1208,12 @@ private:
         dialog->setStyleSheet("QDialog { background-color: #1e1e1e; }");
 
         QVBoxLayout *layout = new QVBoxLayout(dialog);
-        QLabel *titleLabel = new QLabel("╔══════════════════════════════════════════╗\n║      Select Keyboard Layout            ║\n╚══════════════════════════════════════════╝");
-        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 12px;");
+        QLabel *titleLabel = new QLabel("Select Keyboard Layout");
+        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 14px; font-weight: bold;");
         layout->addWidget(titleLabel);
 
         QListWidget *layoutList = new QListWidget();
-        layoutList->setStyleSheet("QListWidget { background-color: #2d2d2d; color: #00ff00; border: 1px solid #555; font-size: 14px; } QListWidget::item { padding: 10px; } QListWidget::item:selected { background-color: #444; }");
+        layoutList->setStyleSheet("QListWidget { background-color: #2d2d2d; color: #00ff00; border: 1px solid #555; font-size: 14px; } QListWidget::item { padding: 10px; } QListWidget::item:selected { background-color: #ff0000; color: #ffff00; } QListWidget::item:hover { background-color: #ff0000; color: #ffff00; }");
 
         QStringList layouts = {"us (US English)", "uk (UK English)", "de (German)", "fr (French)", "es (Spanish)", "it (Italian)", "jp (Japanese)", "Other (manual entry)"};
         QStringList layoutValues = {"us", "uk", "de", "fr", "es", "it", "jp", ""};
@@ -1279,9 +1239,9 @@ private:
 
         QHBoxLayout *btnLayout = new QHBoxLayout();
         QPushButton *okBtn = new QPushButton("Set Layout");
-        okBtn->setStyleSheet("QPushButton { background-color: #00aa00; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; }");
+        okBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         QPushButton *cancelBtn = new QPushButton("Cancel");
-        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; }");
+        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         btnLayout->addWidget(okBtn);
         btnLayout->addWidget(cancelBtn);
         layout->addLayout(btnLayout);
@@ -1312,12 +1272,11 @@ private:
         std::string wireless_regdom_file = currentDir + "/needed-files/wireless-regdom";
         addLog("Opening wireless regulatory domain file for editing...", "#00ffff");
         addLog("File: " + QString::fromStdString(wireless_regdom_file), "#ffff00");
-        addLog("Use Ctrl+X to exit nano after editing", "#ffff00");
 
         QMessageBox::information(this, "Wireless Regdom",
-                                 QString("Edit the file:\n%1\n\nUse an external editor to modify this file.").arg(QString::fromStdString(wireless_regdom_file)));
+                                 QString("Edit the file:\n%1\n\nKate will open for editing.").arg(QString::fromStdString(wireless_regdom_file)));
 
-        execute_command("nano " + wireless_regdom_file);
+        execute_command("kate " + wireless_regdom_file);
         addLog("Wireless regulatory domain file updated.", "#00ff00");
     }
 
@@ -1328,8 +1287,8 @@ private:
         dialog->setStyleSheet("QDialog { background-color: #1e1e1e; }");
 
         QVBoxLayout *layout = new QVBoxLayout(dialog);
-        QLabel *titleLabel = new QLabel("╔══════════════════════════════════════════╗\n║      Install Extra Packages            ║\n╚══════════════════════════════════════════╝");
-        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 12px;");
+        QLabel *titleLabel = new QLabel("Install Extra Packages");
+        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 14px; font-weight: bold;");
         layout->addWidget(titleLabel);
 
         QLabel *promptLabel = new QLabel("Enter extra packages (space separated):");
@@ -1344,9 +1303,9 @@ private:
 
         QHBoxLayout *btnLayout = new QHBoxLayout();
         QPushButton *okBtn = new QPushButton("Set Packages");
-        okBtn->setStyleSheet("QPushButton { background-color: #00aa00; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; }");
+        okBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         QPushButton *cancelBtn = new QPushButton("Cancel");
-        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; }");
+        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         btnLayout->addWidget(okBtn);
         btnLayout->addWidget(cancelBtn);
         layout->addLayout(btnLayout);
@@ -1375,17 +1334,17 @@ private:
         dialog->setStyleSheet("QDialog { background-color: #1e1e1e; }");
 
         QVBoxLayout *layout = new QVBoxLayout(dialog);
-        QLabel *titleLabel = new QLabel("╔══════════════════════════════════════════╗\n║   Select Distribution to Install       ║\n╚══════════════════════════════════════════╝");
-        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 12px;");
+        QLabel *titleLabel = new QLabel("Select Distribution to Install");
+        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 14px; font-weight: bold;");
         layout->addWidget(titleLabel);
 
         QTabWidget *tabWidget = new QTabWidget();
-        tabWidget->setStyleSheet("QTabWidget::pane { background-color: #2d2d2d; border: 1px solid #555; } QTabBar::tab { background-color: #333; color: #00ffff; padding: 10px 20px; font-weight: bold; } QTabBar::tab:selected { background-color: #444; border-bottom: 3px solid #ff6600; }");
+        tabWidget->setStyleSheet("QTabWidget::pane { background-color: #2d2d2d; border: 1px solid #555; } QTabBar::tab { background-color: #333; color: #00ffff; padding: 10px 20px; font-weight: bold; } QTabBar::tab:selected { background-color: #ff0000; border-bottom: 3px solid #ffff00; } QTabBar::tab:hover { background-color: #ff0000; color: #ffff00; }");
 
         QWidget *spitfireTab = new QWidget();
         QVBoxLayout *spitfireLayout = new QVBoxLayout(spitfireTab);
         QListWidget *spitfireList = new QListWidget();
-        spitfireList->setStyleSheet("QListWidget { background-color: #2d2d2d; color: #ff6600; border: none; font-size: 14px; } QListWidget::item { padding: 12px; border-bottom: 1px solid #444; } QListWidget::item:selected { background-color: #444; color: #ffff00; }");
+        spitfireList->setStyleSheet("QListWidget { background-color: #2d2d2d; color: #ff6600; border: none; font-size: 14px; } QListWidget::item { padding: 12px; border-bottom: 1px solid #444; } QListWidget::item:selected { background-color: #ff0000; color: #ffff00; } QListWidget::item:hover { background-color: #ff0000; color: #ffff00; }");
         spitfireList->addItems({"Install Spitfire CKGE Minimal", "Install Spitfire CKGE Minimal Dev", "Install Spitfire CKGE Full", "Install Spitfire CKGE Full Dev", "Install Spitfire CKGE Black Full", "Install Spitfire CKGE Black Full Dev"});
         spitfireLayout->addWidget(spitfireList);
         tabWidget->addTab(spitfireTab, "Spitfire Series");
@@ -1393,7 +1352,7 @@ private:
         QWidget *apexTab = new QWidget();
         QVBoxLayout *apexLayout = new QVBoxLayout(apexTab);
         QListWidget *apexList = new QListWidget();
-        apexList->setStyleSheet("QListWidget { background-color: #2d2d2d; color: #aa00aa; border: none; font-size: 14px; } QListWidget::item { padding: 12px; border-bottom: 1px solid #444; } QListWidget::item:selected { background-color: #444; color: #ffff00; }");
+        apexList->setStyleSheet("QListWidget { background-color: #2d2d2d; color: #aa00aa; border: none; font-size: 14px; } QListWidget::item { padding: 12px; border-bottom: 1px solid #444; } QListWidget::item:selected { background-color: #ff0000; color: #ffff00; } QListWidget::item:hover { background-color: #ff0000; color: #ffff00; }");
         apexList->addItems({"Install Apex CKGE Minimal", "Install Apex CKGE Minimal Dev", "Install Apex CKGE Full", "Install Apex CKGE Full Dev"});
         apexLayout->addWidget(apexList);
         tabWidget->addTab(apexTab, "Apex Series");
@@ -1402,13 +1361,13 @@ private:
 
         QHBoxLayout *btnLayout = new QHBoxLayout();
         QPushButton *selectBtn = new QPushButton("Select Distribution");
-        selectBtn->setStyleSheet("QPushButton { background-color: #00aa00; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; }");
+        selectBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         selectBtn->setMinimumHeight(45);
         QPushButton *cancelBtn = new QPushButton("Cancel");
-        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; }");
+        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         cancelBtn->setMinimumHeight(45);
         QPushButton *backBtn = new QPushButton("Back to Main Menu");
-        backBtn->setStyleSheet("QPushButton { background-color: #555; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; }");
+        backBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         backBtn->setMinimumHeight(45);
         btnLayout->addWidget(selectBtn);
         btnLayout->addWidget(backBtn);
@@ -1450,31 +1409,27 @@ private:
         }
 
         QDialog *confirmDialog = new QDialog(this);
-        confirmDialog->setWindowTitle("⚠️ Start Installation - Confirmation Required");
+        confirmDialog->setWindowTitle("Start Installation - Confirmation Required");
         confirmDialog->setMinimumSize(600, 400);
         confirmDialog->setStyleSheet("QDialog { background-color: #1e1e1e; }");
 
         QVBoxLayout *layout = new QVBoxLayout(confirmDialog);
 
-        QLabel *warningLabel = new QLabel("⚠️  WARNING: DESTRUCTIVE OPERATION");
+        QLabel *warningLabel = new QLabel("WARNING: DESTRUCTIVE OPERATION");
         warningLabel->setStyleSheet("color: #ff0000; font-size: 18px; font-weight: bold; text-align: center; background-color: #330000; padding: 15px; border: 2px solid #ff0000; border-radius: 5px;");
         layout->addWidget(warningLabel);
 
         QLabel *summaryLabel = new QLabel();
         summaryLabel->setStyleSheet("color: #ffff00; font-size: 14px; font-family: 'Courier New', monospace; background-color: #2d2d2d; padding: 15px; border-radius: 5px;");
         summaryLabel->setText(QString(
-            "═══════════════════════════════════════\n"
-            "  Installation Summary:\n"
-            "  ─────────────────────────────────\n"
-            "  Drive:      %1\n"
-            "  Filesystem: %2\n"
-            "  Distro:     %3\n"
-            "  Username:   %4\n"
-            "  Timezone:   %5\n"
-            "  Keyboard:   %6\n"
-            "  ─────────────────────────────────\n"
-            "  ALL DATA ON %1 WILL BE DESTROYED!\n"
-            "═══════════════════════════════════════"
+            "Installation Summary:\n"
+            "Drive:      %1\n"
+            "Filesystem: %2\n"
+            "Distro:     %3\n"
+            "Username:   %4\n"
+            "Timezone:   %5\n"
+            "Keyboard:   %6\n"
+            "ALL DATA ON %1 WILL BE DESTROYED!"
         ).arg(QString::fromStdString(target_drive), QString::fromStdString(filesystem_type), QString::fromStdString(current_distro_name), QString::fromStdString(new_username), QString::fromStdString(timezone), QString::fromStdString(keyboard_layout)));
         layout->addWidget(summaryLabel);
 
@@ -1493,11 +1448,11 @@ private:
         layout->addWidget(progressBar);
 
         QHBoxLayout *btnLayout = new QHBoxLayout();
-        QPushButton *startBtn = new QPushButton("🚀 Start Installation");
-        startBtn->setStyleSheet("QPushButton { background-color: #ff0000; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; }");
+        QPushButton *startBtn = new QPushButton("Start Installation");
+        startBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         startBtn->setMinimumHeight(45);
         QPushButton *cancelBtn = new QPushButton("Cancel");
-        cancelBtn->setStyleSheet("QPushButton { background-color: #00aa00; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; }");
+        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
         cancelBtn->setMinimumHeight(45);
         btnLayout->addWidget(startBtn);
         btnLayout->addWidget(cancelBtn);
@@ -1509,9 +1464,7 @@ private:
                 progressBar->setVisible(true);
                 progressBar->setMaximum(0);
 
-                addLog("\n═══════════════════════════════════════", "#ff6600");
-                addLog("  STARTING INSTALLATION", "#ff6600");
-                addLog("═══════════════════════════════════════\n", "#ff6600");
+                addLog("STARTING INSTALLATION", "#ff6600");
 
                 QTimer::singleShot(500, this, [this, confirmDialog, progressBar]() {
                     confirmDialog->accept();
@@ -1616,7 +1569,7 @@ private:
         install_calamares(target_folder);
         unmount_system_dirs();
         install_grub();
-        addLog("\nInstallation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
+        addLog("Installation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
         post_install_menu();
     }
 
@@ -1669,7 +1622,7 @@ private:
         install_calamares(target_folder);
         unmount_system_dirs();
         install_grub();
-        addLog("\nInstallation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
+        addLog("Installation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
         post_install_menu();
     }
 
@@ -1721,7 +1674,7 @@ private:
         install_calamares(target_folder);
         unmount_system_dirs();
         install_grub();
-        addLog("\nInstallation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
+        addLog("Installation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
         post_install_menu();
     }
 
@@ -1773,7 +1726,7 @@ private:
         install_calamares(target_folder);
         unmount_system_dirs();
         install_grub();
-        addLog("\nInstallation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
+        addLog("Installation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
         post_install_menu();
     }
 
@@ -1825,7 +1778,7 @@ private:
         install_calamares(target_folder);
         unmount_system_dirs();
         install_grub();
-        addLog("\nInstallation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
+        addLog("Installation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
         post_install_menu();
     }
 
@@ -1877,7 +1830,7 @@ private:
         install_calamares(target_folder);
         unmount_system_dirs();
         install_grub();
-        addLog("\nInstallation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
+        addLog("Installation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
         post_install_menu();
     }
 
@@ -1929,7 +1882,7 @@ private:
         install_calamares(target_folder);
         unmount_system_dirs();
         install_grub();
-        addLog("\nInstallation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
+        addLog("Installation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
         post_install_menu();
     }
 
@@ -1981,7 +1934,7 @@ private:
         install_calamares(target_folder);
         unmount_system_dirs();
         install_grub();
-        addLog("\nInstallation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
+        addLog("Installation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
         post_install_menu();
     }
 
@@ -2033,7 +1986,7 @@ private:
         install_calamares(target_folder);
         unmount_system_dirs();
         install_grub();
-        addLog("\nInstallation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
+        addLog("Installation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
         post_install_menu();
     }
 
@@ -2085,7 +2038,7 @@ private:
         install_calamares(target_folder);
         unmount_system_dirs();
         install_grub();
-        addLog("\nInstallation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
+        addLog("Installation complete! System installed to " + QString::fromStdString(target_drive), "#00ff00");
         post_install_menu();
     }
 };
