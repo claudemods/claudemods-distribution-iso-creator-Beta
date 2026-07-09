@@ -71,9 +71,6 @@ private:
     std::string extra_packages;
     std::string target_drive;
     std::string filesystem_type;
-    std::string target_partition;
-    std::string existing_efi_partition;
-    bool use_existing_efi;
 
     struct termios oldt, newt;
 
@@ -96,9 +93,6 @@ public:
         extra_packages = "";
         target_drive = "";
         filesystem_type = "ext4";
-        target_partition = "";
-        existing_efi_partition = "";
-        use_existing_efi = false;
         m_process = nullptr;
         m_busy = false;
 
@@ -514,8 +508,8 @@ private:
         execute_command("sudo unzip -o " + currentDir + "/needed-files/pacman.d.zip -d /etc/pacman.d");
         execute_command("sudo cp -r " + currentDir + "/needed-files/pacman.conf " + target_folder + "/etc/pacman.conf");
         execute_command("sudo cp -r " + currentDir + "/needed-files/pacman.conf /etc/pacman.conf");
-        execute_command("sudo pacman -Sy");
-        execute_command("sudo pacman -S archlinux-keyring");
+        execute_command("sudo pacman -Sy --noconfirm");
+        execute_command("sudo pacman -S --noconfirm archlinux-keyring");
         execute_command("sudo pacman-key --populate");
         execute_command("sudo pacman-key --init");
     }
@@ -595,66 +589,47 @@ private:
     void setup_bootloader_and_drive() {
         QDialog *dialog = new QDialog(this);
         dialog->setWindowTitle("Setup Bootloader and Drive");
-        dialog->setMinimumSize(1100, 750);
-        dialog->setMaximumSize(1100, 750);
-        dialog->setStyleSheet("QDialog { background-color: #1a1a1a; }");
+        dialog->setMinimumSize(900, 700);
+        dialog->setStyleSheet("QDialog { background-color: #1e1e1e; }");
 
         QVBoxLayout *mainLayout = new QVBoxLayout(dialog);
-        mainLayout->setSpacing(8);
-        mainLayout->setContentsMargins(12, 12, 12, 12);
 
-        // Title
-        QLabel *titleLabel = new QLabel("💾 Bootloader & Drive Configuration");
-        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 15px; font-weight: bold; padding: 5px;");
+        QLabel *titleLabel = new QLabel("Setup Bootloader and Drive");
+        titleLabel->setStyleSheet("color: #00ffff; font-family: 'Courier New', monospace; font-size: 14px; font-weight: bold;");
         mainLayout->addWidget(titleLabel);
 
-        // Main content area with horizontal split
-        QHBoxLayout *contentLayout = new QHBoxLayout();
-        contentLayout->setSpacing(10);
-
-        // LEFT COLUMN - Drive selection
-        QVBoxLayout *leftColumn = new QVBoxLayout();
-        leftColumn->setSpacing(6);
-
-        // Current Settings Summary
-        QGroupBox *currentGroup = new QGroupBox("Current Configuration");
-        currentGroup->setStyleSheet("QGroupBox { color: #ffff00; border: 1px solid #555; border-radius: 5px; margin-top: 8px; font-weight: bold; font-size: 11px; padding-top: 8px; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 3px; }");
+        QGroupBox *currentGroup = new QGroupBox("Current Drive Settings:");
+        currentGroup->setStyleSheet("QGroupBox { color: #ffff00; border: 2px solid #555; border-radius: 8px; margin-top: 15px; font-weight: bold; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px; }");
         QGridLayout *currentGrid = new QGridLayout(currentGroup);
-        currentGrid->setSpacing(4);
-        currentGrid->setContentsMargins(8, 12, 8, 8);
 
-        QLabel *driveLabel = new QLabel("Drive:");
-        driveLabel->setStyleSheet("color: #00ffff; font-size: 11px;");
-        QLabel *driveValue = new QLabel(QString::fromStdString(target_drive.empty() ? "Not Selected" : target_drive));
-        driveValue->setStyleSheet("color: #00ff00; font-weight: bold; font-size: 11px;");
+        QLabel *driveLabel = new QLabel("Target Drive:");
+        driveLabel->setStyleSheet("color: #00ffff;");
+        QLabel *driveValue = new QLabel(QString::fromStdString(target_drive.empty() ? "[Not Set]" : target_drive));
+        driveValue->setStyleSheet("color: #00ff00; font-weight: bold;");
 
         QLabel *fsLabel = new QLabel("Filesystem:");
-        fsLabel->setStyleSheet("color: #00ffff; font-size: 11px;");
-        QLabel *fsValue = new QLabel(QString::fromStdString(filesystem_type.empty() ? "Not Selected" : filesystem_type));
-        fsValue->setStyleSheet("color: #00ff00; font-weight: bold; font-size: 11px;");
+        fsLabel->setStyleSheet("color: #00ffff;");
+        QLabel *fsValue = new QLabel(QString::fromStdString(filesystem_type.empty() ? "[Not Set]" : filesystem_type));
+        fsValue->setStyleSheet("color: #00ff00; font-weight: bold;");
 
         currentGrid->addWidget(driveLabel, 0, 0);
         currentGrid->addWidget(driveValue, 0, 1);
         currentGrid->addWidget(fsLabel, 1, 0);
         currentGrid->addWidget(fsValue, 1, 1);
-        leftColumn->addWidget(currentGroup);
+        mainLayout->addWidget(currentGroup);
 
-        // Available Drives
-        QGroupBox *drivesGroup = new QGroupBox("Available Drives");
-        drivesGroup->setStyleSheet("QGroupBox { color: #00ffff; border: 1px solid #555; border-radius: 5px; margin-top: 8px; font-weight: bold; font-size: 11px; padding-top: 8px; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 3px; }");
+        QGroupBox *drivesGroup = new QGroupBox("Available drives - Click to select:");
+        drivesGroup->setStyleSheet("QGroupBox { color: #00ffff; border: 2px solid #555; border-radius: 8px; margin-top: 15px; font-weight: bold; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px; }");
         QVBoxLayout *drivesLayout = new QVBoxLayout(drivesGroup);
-        drivesLayout->setContentsMargins(5, 12, 5, 5);
 
         QTableWidget *driveTable = new QTableWidget();
         driveTable->setColumnCount(3);
-        driveTable->setHorizontalHeaderLabels({"Device", "Size", "Model"});
-        driveTable->setStyleSheet("QTableWidget { background-color: #252525; color: #ffff00; border: 1px solid #444; gridline-color: #333; font-size: 10px; } QTableWidget::item { padding: 3px; } QTableWidget::item:selected { background-color: #cc0000; color: #ffff00; } QTableWidget::item:hover { background-color: #cc0000; color: #ffff00; } QHeaderView::section { background-color: #2a2a2a; color: #00ffff; font-weight: bold; padding: 3px; border: 1px solid #444; font-size: 10px; }");
+        driveTable->setHorizontalHeaderLabels({"NAME", "SIZE", "MODEL"});
+        driveTable->setStyleSheet("QTableWidget { background-color: #2d2d2d; color: #ffff00; border: 1px solid #555; } QTableWidget::item { padding: 5px; } QTableWidget::item:selected { background-color: #ff0000; color: #ffff00; } QTableWidget::item:hover { background-color: #ff0000; color: #ffff00; } QHeaderView::section { background-color: #333; color: #00ffff; font-weight: bold; padding: 5px; }");
         driveTable->horizontalHeader()->setStretchLastSection(true);
         driveTable->setSelectionBehavior(QAbstractItemView::SelectRows);
         driveTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
         driveTable->verticalHeader()->setVisible(false);
-        driveTable->setMaximumHeight(160);
-        driveTable->setMinimumHeight(160);
 
         std::string cmd = "lsblk -d -o NAME,SIZE,MODEL | grep -v 'loop\\|sr0\\|zram'";
         std::string result = exec_cmd(cmd.c_str());
@@ -674,163 +649,73 @@ private:
                 if (start != std::string::npos) { model = model.substr(start); }
 
                 driveTable->insertRow(row);
-                QTableWidgetItem *nameItem = new QTableWidgetItem(QString::fromStdString("/dev/" + name));
-                nameItem->setForeground(QBrush(QColor("#00ff00")));
-                driveTable->setItem(row, 0, nameItem);
+                driveTable->setItem(row, 0, new QTableWidgetItem(QString::fromStdString("/dev/" + name)));
                 driveTable->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(size_str)));
                 driveTable->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(model)));
                 row++;
             }
         }
         drivesLayout->addWidget(driveTable);
-        leftColumn->addWidget(drivesGroup);
+        mainLayout->addWidget(drivesGroup);
 
-        // Filesystem Selection
-        QGroupBox *fsGroup = new QGroupBox("Filesystem Type");
-        fsGroup->setStyleSheet("QGroupBox { color: #aa00aa; border: 1px solid #555; border-radius: 5px; margin-top: 8px; font-weight: bold; font-size: 11px; padding-top: 8px; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 3px; }");
+        QLabel *warningLabel = new QLabel("WARNING: The selected drive will be COMPLETELY ERASED!");
+        warningLabel->setStyleSheet("color: #ffff00; font-weight: bold; font-size: 14px; background-color: #330000; padding: 10px; border: 2px solid #ff0000; border-radius: 5px;");
+        mainLayout->addWidget(warningLabel);
+
+        QGroupBox *inputGroup = new QGroupBox("Selected drive:");
+        inputGroup->setStyleSheet("QGroupBox { color: #ff6600; border: 2px solid #555; border-radius: 8px; margin-top: 15px; font-weight: bold; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px; }");
+        QHBoxLayout *inputLayout = new QHBoxLayout(inputGroup);
+        QLineEdit *driveInput = new QLineEdit();
+        driveInput->setStyleSheet("QLineEdit { background-color: #2d2d2d; color: #00ff00; border: 1px solid #555; padding: 8px; border-radius: 5px; font-size: 13px; } QLineEdit:focus { border-color: #00ffff; }");
+        driveInput->setPlaceholderText("/dev/sda");
+        driveInput->setText(QString::fromStdString(target_drive));
+        driveInput->setReadOnly(true);
+        inputLayout->addWidget(driveInput);
+        mainLayout->addWidget(inputGroup);
+
+        // Auto-select drive when clicked
+        connect(driveTable, &QTableWidget::cellClicked, this, [this, driveInput, driveTable](int row, int col) {
+            Q_UNUSED(col);
+            QTableWidgetItem *item = driveTable->item(row, 0);
+            if (item) {
+                driveInput->setText(item->text());
+            }
+        });
+
+        QGroupBox *fsGroup = new QGroupBox("Select filesystem type:");
+        fsGroup->setStyleSheet("QGroupBox { color: #aa00aa; border: 2px solid #555; border-radius: 8px; margin-top: 15px; font-weight: bold; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px; }");
         QVBoxLayout *fsLayout = new QVBoxLayout(fsGroup);
-        fsLayout->setContentsMargins(8, 12, 8, 8);
 
         QComboBox *fsCombo = new QComboBox();
-        fsCombo->setStyleSheet("QComboBox { background-color: #252525; color: #00ff00; border: 1px solid #555; padding: 6px; border-radius: 4px; font-size: 11px; } QComboBox::drop-down { border: none; } QComboBox QAbstractItemView { background-color: #252525; color: #00ff00; selection-background-color: #cc0000; }");
-        fsCombo->addItem("Ext4 (Standard)");
-        fsCombo->addItem("Btrfs (Subvolumes, Compression zstd:22)");
+        fsCombo->setStyleSheet("QComboBox { background-color: #2d2d2d; color: #00ff00; border: 1px solid #555; padding: 8px; border-radius: 5px; font-size: 13px; } QComboBox::drop-down { border: none; } QComboBox QAbstractItemView { background-color: #2d2d2d; color: #00ff00; selection-background-color: #ff0000; } QComboBox QAbstractItemView::item:hover { background-color: #ff0000; color: #ffff00; }");
+        fsCombo->addItem("Ext4 (standard filesystem)");
+        fsCombo->addItem("Btrfs (with subvolumes, compression, snapshots support)");
         if (filesystem_type == "ext4") fsCombo->setCurrentIndex(0);
         else if (filesystem_type == "btrfs") fsCombo->setCurrentIndex(1);
         fsLayout->addWidget(fsCombo);
 
-        QLabel *btrfsInfo = new QLabel("Subvolumes: @, @home, @root, @srv, @cache, @tmp, @log");
-        btrfsInfo->setStyleSheet("color: #00ffff; font-size: 9px; padding: 3px;");
+        QLabel *btrfsInfo = new QLabel("Btrfs subvolumes will be created: @, @home, @root, @srv, @cache, @tmp, @log\nCompression: zstd level 22");
+        btrfsInfo->setStyleSheet("color: #00ffff;");
         btrfsInfo->setVisible(fsCombo->currentIndex() == 1);
         fsLayout->addWidget(btrfsInfo);
 
         connect(fsCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this, btrfsInfo](int idx) {
             btrfsInfo->setVisible(idx == 1);
         });
-        leftColumn->addWidget(fsGroup);
+        mainLayout->addWidget(fsGroup);
 
-        // RIGHT COLUMN - Partitions
-        QVBoxLayout *rightColumn = new QVBoxLayout();
-        rightColumn->setSpacing(6);
-
-        // Selected Drive Display
-        QGroupBox *selectedGroup = new QGroupBox("Selected Drive");
-        selectedGroup->setStyleSheet("QGroupBox { color: #ff6600; border: 1px solid #555; border-radius: 5px; margin-top: 8px; font-weight: bold; font-size: 11px; padding-top: 8px; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 3px; }");
-        QHBoxLayout *selectedLayout = new QHBoxLayout(selectedGroup);
-        selectedLayout->setContentsMargins(8, 12, 8, 8);
-        QLineEdit *driveInput = new QLineEdit();
-        driveInput->setStyleSheet("QLineEdit { background-color: #252525; color: #00ff00; border: 1px solid #555; padding: 6px; border-radius: 4px; font-size: 12px; font-weight: bold; } QLineEdit:focus { border-color: #00ffff; }");
-        driveInput->setPlaceholderText("Select a drive from the list");
-        driveInput->setText(QString::fromStdString(target_drive));
-        driveInput->setReadOnly(true);
-        selectedLayout->addWidget(driveInput);
-        rightColumn->addWidget(selectedGroup);
-
-        // Partitions Table
-        QGroupBox *partitionsGroup = new QGroupBox("Drive Partitions");
-        partitionsGroup->setStyleSheet("QGroupBox { color: #aa00aa; border: 1px solid #555; border-radius: 5px; margin-top: 8px; font-weight: bold; font-size: 11px; padding-top: 8px; } QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 3px; }");
-        QVBoxLayout *partitionsLayout = new QVBoxLayout(partitionsGroup);
-        partitionsLayout->setContentsMargins(5, 12, 5, 5);
-        
-        QTableWidget *partitionTable = new QTableWidget();
-        partitionTable->setColumnCount(5);
-        partitionTable->setHorizontalHeaderLabels({"Partition", "Size", "Type", "Label", "OS Detected"});
-        partitionTable->setStyleSheet("QTableWidget { background-color: #252525; color: #ffff00; border: 1px solid #444; gridline-color: #333; font-size: 10px; } QTableWidget::item { padding: 3px; } QHeaderView::section { background-color: #2a2a2a; color: #00ffff; font-weight: bold; padding: 3px; border: 1px solid #444; font-size: 10px; }");
-        partitionTable->horizontalHeader()->setStretchLastSection(true);
-        partitionTable->verticalHeader()->setVisible(false);
-        partitionTable->setMaximumHeight(260);
-        partitionTable->setMinimumHeight(260);
-        partitionsLayout->addWidget(partitionTable);
-        rightColumn->addWidget(partitionsGroup);
-
-        // Warning
-        QLabel *warningLabel = new QLabel("⚠ WARNING: Clean install will COMPLETELY ERASE the selected drive! Dual boot preserves existing OS.");
-        warningLabel->setStyleSheet("color: #ffff00; font-weight: bold; font-size: 10px; background-color: #330000; padding: 8px; border: 1px solid #ff0000; border-radius: 4px;");
-        warningLabel->setWordWrap(true);
-        rightColumn->addWidget(warningLabel);
-
-        contentLayout->addLayout(leftColumn);
-        contentLayout->addLayout(rightColumn);
-        mainLayout->addLayout(contentLayout);
-
-        // Buttons
         QHBoxLayout *btnLayout = new QHBoxLayout();
-        btnLayout->setSpacing(10);
-        QPushButton *confirmBtn = new QPushButton("✓ Confirm & Save Configuration");
-        confirmBtn->setStyleSheet("QPushButton { background-color: #008800; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; font-size: 12px; } QPushButton:hover { background-color: #00aa00; border: 2px solid #ffff00; }");
-        confirmBtn->setMinimumHeight(40);
-        QPushButton *cancelBtn = new QPushButton("✗ Cancel");
-        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 10px 20px; border: none; border-radius: 5px; font-size: 12px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
-        cancelBtn->setMinimumHeight(40);
+        QPushButton *confirmBtn = new QPushButton("Confirm & Save");
+        confirmBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
+        confirmBtn->setMinimumHeight(45);
+        QPushButton *cancelBtn = new QPushButton("Cancel");
+        cancelBtn->setStyleSheet("QPushButton { background-color: #cc0000; color: white; font-weight: bold; padding: 12px 25px; border: none; border-radius: 5px; font-size: 14px; } QPushButton:hover { background-color: #ff0000; border: 2px solid #ffff00; }");
+        cancelBtn->setMinimumHeight(45);
         btnLayout->addWidget(confirmBtn);
         btnLayout->addWidget(cancelBtn);
         mainLayout->addLayout(btnLayout);
 
-        // Connect drive selection
-        connect(driveTable, &QTableWidget::cellClicked, this, [this, driveInput, partitionTable, driveTable](int row, int col) {
-            Q_UNUSED(col);
-            QTableWidgetItem *item = driveTable->item(row, 0);
-            if (item) {
-                std::string selectedDrive = item->text().toStdString();
-                driveInput->setText(QString::fromStdString(selectedDrive));
-
-                partitionTable->setRowCount(0);
-                std::string partCmd = "lsblk -o NAME,SIZE,FSTYPE,LABEL,MOUNTPOINT " + selectedDrive + " | grep -v NAME | grep -v '^$'";
-                std::string partResult = exec_cmd(partCmd.c_str());
-                if (!partResult.empty()) {
-                    std::istringstream partStream(partResult);
-                    std::string partLine;
-                    int partRow = 0;
-                    while (std::getline(partStream, partLine)) {
-                        if (!partLine.empty()) {
-                            std::istringstream partLineStream(partLine);
-                            std::string partName, partSize, partType, partLabel, partMount;
-                            partLineStream >> partName >> partSize >> partType;
-
-                            std::string remaining;
-                            std::getline(partLineStream, remaining);
-                            std::istringstream remStream(remaining);
-                            remStream >> partLabel;
-                            if (remStream >> partMount) {
-                            } else {
-                                partMount = partLabel;
-                                partLabel = "";
-                            }
-
-                            std::string fullPartPath = "/dev/" + partName;
-
-                            std::string detectedOS = "";
-                            if (partType == "ntfs") detectedOS = "Windows";
-                            else if (partType == "vfat" && (partSize.find("M") != std::string::npos || partSize.find("G") != std::string::npos)) {
-                                detectedOS = "EFI Boot";
-                            }
-                            else if (partType == "ext4" || partType == "btrfs" || partType == "xfs") detectedOS = "Linux";
-                            else if (partType == "swap") detectedOS = "Swap";
-
-                            partitionTable->insertRow(partRow);
-                            partitionTable->setItem(partRow, 0, new QTableWidgetItem(QString::fromStdString(fullPartPath)));
-                            partitionTable->setItem(partRow, 1, new QTableWidgetItem(QString::fromStdString(partSize)));
-                            partitionTable->setItem(partRow, 2, new QTableWidgetItem(QString::fromStdString(partType.empty() ? "-" : partType)));
-                            partitionTable->setItem(partRow, 3, new QTableWidgetItem(QString::fromStdString(partLabel.empty() ? "-" : partLabel)));
-                            partitionTable->setItem(partRow, 4, new QTableWidgetItem(QString::fromStdString(detectedOS.empty() ? "-" : detectedOS)));
-
-                            if (detectedOS == "Windows") {
-                                partitionTable->item(partRow, 4)->setForeground(QBrush(QColor("#00aaff")));
-                            } else if (detectedOS == "Linux") {
-                                partitionTable->item(partRow, 4)->setForeground(QBrush(QColor("#ffaa00")));
-                            } else if (detectedOS == "EFI Boot") {
-                                partitionTable->item(partRow, 4)->setForeground(QBrush(QColor("#00ff00")));
-                            }
-
-                            partRow++;
-                        }
-                    }
-                }
-            }
-        });
-
-        // Connect confirm button
-        connect(confirmBtn, &QPushButton::clicked, this, [this, driveInput, fsCombo, dialog, partitionTable]() {
+        connect(confirmBtn, &QPushButton::clicked, this, [this, driveInput, fsCombo, dialog]() {
             std::string drive_input = driveInput->text().toStdString();
             if (drive_input.empty()) {
                 addLog("No drive selected. Keeping current setting.", "#ffff00");
@@ -839,21 +724,6 @@ private:
             } else {
                 target_drive = drive_input;
                 addLog("Target drive set to: " + QString::fromStdString(target_drive), "#00ff00");
-
-                bool hasExistingOS = false;
-                for (int i = 0; i < partitionTable->rowCount(); i++) {
-                    QTableWidgetItem *osItem = partitionTable->item(i, 4);
-                    if (osItem && (osItem->text() == "Windows" || osItem->text() == "Linux")) {
-                        hasExistingOS = true;
-                        addLog("Detected " + osItem->text() + " on " + partitionTable->item(i, 0)->text(), "#ffff00");
-                    }
-                }
-
-                if (hasExistingOS) {
-                    addLog("Existing operating system(s) detected! Dual boot configuration will be used.", "#ff6600");
-                    addLog("The installer will create a new partition or use existing Linux partition.", "#ff6600");
-                    addLog("Existing EFI partition will be preserved and shared.", "#ff6600");
-                }
             }
 
             if (!target_drive.empty()) {
@@ -869,40 +739,11 @@ private:
             }
 
             if (!target_drive.empty() && !filesystem_type.empty()) {
-                bool hasWindows = false;
-                bool hasLinux = false;
-                std::string existingEFI = "";
-
-                for (int i = 0; i < partitionTable->rowCount(); i++) {
-                    QTableWidgetItem *osItem = partitionTable->item(i, 4);
-                    if (osItem && osItem->text() == "Windows") hasWindows = true;
-                    if (osItem && osItem->text() == "Linux") hasLinux = true;
-                    if (osItem && osItem->text() == "EFI Boot") {
-                        existingEFI = partitionTable->item(i, 0)->text().toStdString();
-                    }
-                }
-
                 addLog("Drive Configuration Summary:", "#ff6600");
                 addLog("  Drive: " + QString::fromStdString(target_drive), "#ff6600");
-
-                if (hasWindows || hasLinux) {
-                    addLog("  Mode: DUAL BOOT (preserving existing OS)", "#ff6600");
-                    if (!existingEFI.empty()) {
-                        addLog("  Existing EFI: " + QString::fromStdString(existingEFI) + " (will be preserved and shared)", "#ff6600");
-                    } else {
-                        addLog("  EFI: New EFI partition will be created (550MB FAT32)", "#ff6600");
-                    }
-                    addLog("  Root: New " + QString::fromStdString(filesystem_type == "btrfs" ? "Btrfs" : "Ext4") + " partition (in free space or replacing existing Linux)", "#ff6600");
-                    addLog("  Bootloader: GRUB with os-prober for multi-boot menu", "#ff6600");
-                    if (hasWindows) {
-                        addLog("  ⚠ Windows detected - Windows Boot Manager will be preserved", "#ffff00");
-                    }
-                } else {
-                    addLog("  Mode: CLEAN INSTALL (full drive)", "#ff6600");
-                    addLog("  Partition 1: " + QString::fromStdString(target_drive) + "1 (EFI - FAT32, 550MB)", "#ff6600");
-                    addLog("  Partition 2: " + QString::fromStdString(target_drive) + "2 (Root - " + QString::fromStdString(filesystem_type == "btrfs" ? "Btrfs" : "Ext4") + ")", "#ff6600");
-                    addLog("  Bootloader: GRUB (UEFI)", "#ff6600");
-                }
+                addLog("  Partition 1: " + QString::fromStdString(target_drive) + "1 (EFI - FAT32, 550MB)", "#ff6600");
+                addLog("  Partition 2: " + QString::fromStdString(target_drive) + "2 (Root - " + QString::fromStdString(filesystem_type == "btrfs" ? "Btrfs" : "Ext4") + ")", "#ff6600");
+                addLog("  Bootloader: GRUB (UEFI)", "#ff6600");
                 addLog("WARNING: ALL DATA ON " + QString::fromStdString(target_drive) + " WILL BE DESTROYED!", "#ff0000");
             }
 
@@ -919,101 +760,30 @@ private:
 
     void prepare_target_partitions() {
         addLog("Preparing target partitions on " + QString::fromStdString(target_drive) + "...", "#00ffff");
-
-        std::string checkCmd = "lsblk -o FSTYPE " + target_drive + " 2>/dev/null | grep -E 'ntfs|ext4|btrfs|xfs|vfat'";
-        std::string existingOS = exec_cmd(checkCmd.c_str());
-        bool hasExistingOS = !existingOS.empty();
-
-        if (hasExistingOS) {
-            addLog("Existing operating system detected! Using dual boot configuration...", "#ff6600");
-
-            std::string efiCmd = "lsblk -o NAME,FSTYPE,SIZE " + target_drive + " | grep vfat";
-            std::string efiResult = exec_cmd(efiCmd.c_str());
-
-            if (!efiResult.empty()) {
-                std::istringstream efiStream(efiResult);
-                std::string efiLine;
-                std::getline(efiStream, efiLine);
-                std::istringstream efiLineStream(efiLine);
-                std::string efiName;
-                efiLineStream >> efiName;
-                existing_efi_partition = "/dev/" + efiName;
-                use_existing_efi = true;
-                addLog("Found existing EFI partition: " + QString::fromStdString(existing_efi_partition), "#00ff00");
-            }
-
-            std::string freeSpaceCmd = "sudo parted -s " + target_drive + " unit MB print free | grep 'Free Space' | tail -1";
-            std::string freeSpace = exec_cmd(freeSpaceCmd.c_str());
-
-            if (freeSpace.find("Free Space") != std::string::npos) {
-                addLog("Found free space for dual boot installation", "#00ff00");
-                execute_command("sudo parted -s " + target_drive + " mkpart primary " + filesystem_type + " -1 100%");
-                execute_command("sudo partprobe " + target_drive);
-                sleep(2);
-            } else {
-                addLog("No free space found. Searching for existing Linux partition to replace...", "#ffff00");
-                std::string linuxPartCmd = "lsblk -o NAME,FSTYPE " + target_drive + " | grep -E 'ext4|btrfs|xfs' | head -1 | awk '{print $1}'";
-                std::string linuxPart = exec_cmd(linuxPartCmd.c_str());
-                linuxPart.erase(std::remove(linuxPart.begin(), linuxPart.end(), '\n'), linuxPart.end());
-
-                if (!linuxPart.empty()) {
-                    std::string linuxPartPath = "/dev/" + linuxPart;
-                    addLog("Will replace existing Linux partition: " + QString::fromStdString(linuxPartPath), "#ff6600");
-                    execute_command("sudo wipefs -a " + linuxPartPath);
-                    target_partition = linuxPartPath;
-                } else {
-                    addLog("Error: No free space and no Linux partition found for dual boot!", "#ff0000");
-                    exit(1);
-                }
-            }
-
-            std::string root_part;
-            if (!target_partition.empty()) {
-                root_part = target_partition;
-            } else {
-                std::string lastPartCmd = "sudo parted -s " + target_drive + " print | grep '^ ' | tail -1 | awk '{print $1}'";
-                std::string lastPartNum = exec_cmd(lastPartCmd.c_str());
-                lastPartNum.erase(std::remove(lastPartNum.begin(), lastPartNum.end(), '\n'), lastPartNum.end());
-                root_part = target_drive + lastPartNum;
-            }
-
-            if (filesystem_type == "btrfs") {
-                execute_command("sudo mkfs.btrfs -f -L CLAUDEMODS " + root_part);
-            } else {
-                execute_command("sudo mkfs.ext4 -F -L CLAUDEMODS " + root_part);
-            }
-
+        execute_command("sudo umount -f " + target_drive + "* 2>/dev/null || true");
+        execute_command("sudo wipefs -a " + target_drive);
+        execute_command("sudo parted -s " + target_drive + " mklabel gpt");
+        execute_command("sudo parted -s " + target_drive + " mkpart primary fat32 1MiB 551MiB");
+        execute_command("sudo parted -s " + target_drive + " mkpart primary " + filesystem_type + " 551MiB 100%");
+        execute_command("sudo parted -s " + target_drive + " set 1 esp on");
+        execute_command("sudo partprobe " + target_drive);
+        sleep(2);
+        std::string efi_part = target_drive + "1";
+        std::string root_part = target_drive + "2";
+        if (!is_block_device(efi_part) || !is_block_device(root_part)) {
+            addLog("Error: Failed to create partitions", "#ff0000");
+            exit(1);
+        }
+        execute_command("sudo mkfs.vfat -F32 " + efi_part);
+        if (filesystem_type == "btrfs") {
+            execute_command("sudo mkfs.btrfs -f -L ROOT " + root_part);
         } else {
-            execute_command("sudo umount -f " + target_drive + "* 2>/dev/null || true");
-            execute_command("sudo wipefs -a " + target_drive);
-            execute_command("sudo parted -s " + target_drive + " mklabel gpt");
-            execute_command("sudo parted -s " + target_drive + " mkpart primary fat32 1MiB 551MiB");
-            execute_command("sudo parted -s " + target_drive + " mkpart primary " + filesystem_type + " 551MiB 100%");
-            execute_command("sudo parted -s " + target_drive + " set 1 esp on");
-            execute_command("sudo partprobe " + target_drive);
-            sleep(2);
-            std::string efi_part = target_drive + "1";
-            std::string root_part = target_drive + "2";
-            if (!is_block_device(efi_part) || !is_block_device(root_part)) {
-                addLog("Error: Failed to create partitions", "#ff0000");
-                exit(1);
-            }
-            execute_command("sudo mkfs.vfat -F32 " + efi_part);
-            if (filesystem_type == "btrfs") {
-                execute_command("sudo mkfs.btrfs -f -L ROOT " + root_part);
-            } else {
-                execute_command("sudo mkfs.ext4 -F -L ROOT " + root_part);
-            }
+            execute_command("sudo mkfs.ext4 -F -L ROOT " + root_part);
         }
     }
 
     void setup_btrfs_subvolumes() {
-        std::string root_part;
-        if (!target_partition.empty()) {
-            root_part = target_partition;
-        } else {
-            root_part = target_drive + "2";
-        }
+        std::string root_part = target_drive + "2";
         addLog("Setting up Btrfs subvolumes with zstd:22 compression...", "#00ffff");
         execute_command("sudo mount " + root_part + " /mnt");
         execute_command("sudo btrfs subvolume create /mnt/@");
@@ -1040,12 +810,7 @@ private:
     }
 
     void setup_ext4_filesystem() {
-        std::string root_part;
-        if (!target_partition.empty()) {
-            root_part = target_partition;
-        } else {
-            root_part = target_drive + "2";
-        }
+        std::string root_part = target_drive + "2";
         addLog("Setting up Ext4 filesystem...", "#00ffff");
         execute_command("sudo mount " + root_part + " /mnt");
         execute_command("sudo mkdir -p /mnt/{home,boot/efi,etc,usr,var,proc,sys,dev,tmp,run}");
@@ -1053,32 +818,20 @@ private:
 
     void install_grub() {
         addLog("Installing GRUB bootloader...", "#00ffff");
-
-        if (use_existing_efi) {
-            addLog("Using existing EFI partition: " + QString::fromStdString(existing_efi_partition), "#ff6600");
-            execute_command("sudo mount " + existing_efi_partition + " /mnt/boot/efi");
-        } else if (is_block_device(target_drive + "1")) {
-            std::string efi_part = target_drive + "1";
-            execute_command("sudo mount " + efi_part + " /mnt/boot/efi");
-        }
-
+        std::string efi_part = target_drive + "1";
+        execute_command("sudo mount " + efi_part + " /mnt/boot/efi");
         execute_command("sudo mount --bind /sys/firmware/efi/efivars /mnt/sys/firmware/efi/efivars 2>/dev/null || true");
         execute_command("sudo mount --bind /dev /mnt/dev");
         execute_command("sudo mount --bind /dev/pts /mnt/dev/pts");
         execute_command("sudo mount --bind /proc /mnt/proc");
         execute_command("sudo mount --bind /sys /mnt/sys");
         execute_command("sudo mount --bind /run /mnt/run");
-
-        execute_command("sudo chroot /mnt /bin/bash -c \"pacman -S --noconfirm os-prober 2>/dev/null || true\"");
-        execute_command("sudo chroot /mnt /bin/bash -c \"echo 'GRUB_DISABLE_OS_PROBER=false' >> /etc/default/grub\"");
-
         if (filesystem_type == "btrfs") {
             execute_command("sudo touch /mnt/etc/fstab");
             execute_command("sudo cp btrfsfstabcompressed.sh /mnt/opt/btrfsfstabcompressed.sh");
             execute_command("sudo chroot /mnt /bin/bash -c \""
             "modprobe efivarfs 2>/dev/null || true; "
             "mount -t efivarfs efivarfs /sys/firmware/efi/efivars 2>/dev/null || true; "
-            "os-prober; "
             "grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Cachyos --recheck; "
             "grub-mkconfig -o /boot/grub/grub.cfg; "
             "./opt/btrfsfstabcompressed.sh 2>/dev/null; "
@@ -1089,15 +842,12 @@ private:
             execute_command("sudo chroot /mnt /bin/bash -c \""
             "modprobe efivarfs 2>/dev/null || true; "
             "mount -t efivarfs efivarfs /sys/firmware/efi/efivars 2>/dev/null || true; "
-            "os-prober; "
             "genfstab -U / >> /etc/fstab; "
             "grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=cachyos --recheck; "
             "grub-mkconfig -o /boot/grub/grub.cfg; "
             "rm -rf /var/cache/pacman/pkg/*; "
             "mkinitcpio -P\"");
         }
-
-        addLog("Bootloader installed with multi-boot support.", "#00ff00");
     }
 
     void unmount_target() {
