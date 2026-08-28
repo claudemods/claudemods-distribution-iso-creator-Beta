@@ -1,3 +1,8 @@
+## changlelog all distributions v1.01 28-08-2026 18:10pm GMT (uk time)
+cachyos kdegrub package list updated / claudemods non dev option package lists updated
+im working on fixing my dev version issues from the new package list currently the login screen doesnt show
+
+
 ## changlelog all distributions v1.01 06-07-2026 17:17pm GMT (uk time)
 claudemods distribution iso updated with fixes to btrfs and umount command and also it now removes packages after install
 download link: https://claudemodsreloaded.co.uk/claudemods-isos/?dir=claudemods-distribution-creator
